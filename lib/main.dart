@@ -11,11 +11,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'view/login/login.dart';
-
-// import 'package:square_in_app_payments/models.dart';
-// import 'package:square_in_app_payments/in_app_payments.dart';
-//import 'package:square_in_app_payments/google_pay_constants.dart' as google_pay_constants;
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Firebase.initializeApp(

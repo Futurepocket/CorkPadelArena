@@ -8,17 +8,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:951659670595:android:55a5fe8c00e40080adb8f6",
+        "mobilesdk_app_id": "1:951659670595:android:fdeb6403d63b0755adb8f6",
         "android_client_info": {
-          "package_name": "com.example.cork_padel_arena"
+          "package_name": "com.corkpadel.arena"
         }
       },
       "oauth_client": [
         {
-          "client_id": "951659670595-hg4qig7a08jv5bjkfseupod3rgp03rnr.apps.googleusercontent.com",
+          "client_id": "951659670595-c16sca06lctfb4ucrc703j7kng4qsh1e.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.cork_padel_arena",
+            "package_name": "com.corkpadel.arena",
             "certificate_hash": "6639e2ed6ec00b072dbf7cfb7db258586726f740"
           }
         },

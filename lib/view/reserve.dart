@@ -37,9 +37,15 @@ class _ReserveState extends State<Reserve> {
   bool _isNotNow = false;
 
   @override
-  void initState() {
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
     _warning = AppLocalizations.of(context)!.noTimeChosen;
+    super.didChangeDependencies();
+  }
+  @override
+  void initState() {
     super.initState();
+
   }
   //List<Reservation> reservationList = [];
 
@@ -453,7 +459,7 @@ print(comparison);
                   ),
                 ),
 ////////////////// LIST SHOWING RESERVES FOR THIS DAY ////////////////////////////////////////////////
-                Text('${AppLocalizations.of(context)!.reservedSlots}:'),
+                if(_selectedDate !=null )Text('${AppLocalizations.of(context)!.reservedSlots}:'),
                 _selectedDate != null
                     ? StreamBuilder(
                         stream:
