@@ -41,6 +41,20 @@ class _MyAppState extends State<MyApp> {
   // Future<void> _initSquarePayment() async {
   //   await InAppPayments.setSquareApplicationId('APPLICATION_ID');
   // }
+  final Map<int, Color> _colorMap = {
+    50: Color.fromRGBO(190, 255, 249, 1),
+    100: Color.fromRGBO(190, 255, 229, 1),
+    200: Color.fromRGBO(190, 255, 209, 1),
+    300: Color.fromRGBO(190, 255, 189, 1),
+    400: Color.fromRGBO(190, 255, 169, 1),
+    500: Color.fromRGBO(190, 255, 149, 1),
+    600: Color.fromRGBO(190, 255, 129, 1),
+    700: Color.fromRGBO(190, 255, 109, 1),
+    800: Color.fromRGBO(190, 247, 89, 1),
+    900: Color.fromRGBO(190, 227, 69, 1),
+    1000: Color.fromRGBO(190, 207, 49, 1)
+  };
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -60,7 +74,7 @@ class _MyAppState extends State<MyApp> {
             titleTextStyle: TextStyle(color: Colors.white, fontSize: 24, fontFamily: GoogleFonts.robotoCondensed().fontFamily),
             iconTheme: IconThemeData(color: Colors.white)),
         visualDensity: VisualDensity.adaptivePlatformDensity,
-        primarySwatch: Colors.lime,
+        primarySwatch: MaterialColor(_colorMap[1000]!.value, _colorMap),
         fontFamily: GoogleFonts.roboto().fontFamily,
       ),
       initialRoute: '/login',

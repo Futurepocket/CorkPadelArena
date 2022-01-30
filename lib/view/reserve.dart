@@ -253,6 +253,7 @@ print(comparison);
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Theme.of(context).colorScheme.secondaryVariant,
         onPressed: () {
           _showShoppingCart(context);
         },
@@ -545,7 +546,7 @@ class ToastWidget extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(5.0),
         child: Material(
-          color: Colors.lime,
+          color: Theme.of(context).primaryColor,
           elevation: 10.0,
           borderRadius: BorderRadius.circular(10),
           child: Padding(

@@ -113,7 +113,7 @@ class _DashState extends State<Dash> {
       Pages(
         Icon(Icons.person, size: 50),
         AppLocalizations.of(context)!.profile,
-        Colors.lime,
+        Theme.of(context).primaryColor,
             (BuildContext ctx) {
           Navigator.of(
             ctx,
@@ -125,7 +125,7 @@ class _DashState extends State<Dash> {
       Pages(
         Icon(Icons.calendar_today, size: 50),
         AppLocalizations.of(context)!.makeReservation,
-        Colors.lime,
+        Theme.of(context).primaryColor,
             (BuildContext ctx) {
           Navigator.of(
             ctx,
@@ -137,7 +137,7 @@ class _DashState extends State<Dash> {
       Pages(
         Icon(Icons.perm_contact_calendar, size: 50),
         AppLocalizations.of(context)!.myReservations,
-        Colors.lime,
+        Theme.of(context).primaryColor,
             (BuildContext ctx) {
           Navigator.of(
             ctx,
@@ -152,7 +152,7 @@ class _DashState extends State<Dash> {
             size: 50,
           ),
           AppLocalizations.of(context)!.contacts,
-          Colors.lime, (BuildContext ctx) {
+          Theme.of(context).primaryColor, (BuildContext ctx) {
         Navigator.of(
           ctx,
         ).push(MaterialPageRoute(builder: (_) {
@@ -165,7 +165,7 @@ class _DashState extends State<Dash> {
           size: 50,
         ),
         AppLocalizations.of(context)!.onlineShop,
-        Colors.lime,
+        Theme.of(context).primaryColor,
             (BuildContext ctx) async {
           if (await canLaunch('https://www.corkpadel.pt/en/store')) {
             await launch(
@@ -184,7 +184,7 @@ class _DashState extends State<Dash> {
             size: 50,
           ),
           AppLocalizations.of(context)!.logout,
-          Colors.lime, (BuildContext ctx) {
+          Theme.of(context).primaryColor, (BuildContext ctx) {
         FirebaseAuth.instance.signOut();
         Navigator.of(
           ctx,

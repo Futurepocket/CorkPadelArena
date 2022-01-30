@@ -48,7 +48,7 @@ class _MyReservationsState extends State<MyReservations> {
                       style: TextStyle(
                         fontFamily: 'Roboto Condensed',
                         fontSize: 26,
-                        color: Colors.lime,
+                        color: Theme.of(context).primaryColor,
                       ),
                     ),
                     Row(
@@ -100,7 +100,7 @@ class _MyReservationsState extends State<MyReservations> {
                         style: TextStyle(
                           fontFamily: 'Roboto Condensed',
                           fontSize: 20,
-                          color: Colors.lime,
+                          color: Theme.of(context).primaryColor,
                         ),
                       )
                     : Text(
@@ -108,7 +108,7 @@ class _MyReservationsState extends State<MyReservations> {
                         style: TextStyle(
                           fontFamily: 'Roboto Condensed',
                           fontSize: 20,
-                          color: Colors.lime,
+                          color: Theme.of(context).primaryColor,
                         ),
                       ),
                 StreamBuilder(

@@ -197,6 +197,39 @@ class _UserDetailsWidgetState extends State<UserDetailsWidget> {
                     },
                   ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: TextFormField(
+                    textInputAction: TextInputAction.next,
+                    keyboardType:
+                    TextInputType.numberWithOptions(decimal: false),
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.all(10),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Theme.of(context).primaryColor, width: 1.5),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Theme.of(context).primaryColor, width: 1.5),
+                      ),
+                      labelText: AppLocalizations.of(context)!.phone,
+                    ),
+                    onSaved: (value) {
+                      Userr().phoneNbr = value.toString();
+                    },
+                    //TODO DIFFERENT COUNTRIES HAVE DIFFERENT VALIDATIONS FOR THIS NUMBER
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return AppLocalizations.of(context)!.required;
+                      }
+                      if (value.length > 9) {
+                        return AppLocalizations.of(context)!.invalidPhone;
+                      }
+                      return null;
+                    },
+                  ),
+                ),
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,

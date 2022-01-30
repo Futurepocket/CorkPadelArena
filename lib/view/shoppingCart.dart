@@ -18,7 +18,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
   checkoutValue _check = checkoutValue();
   var number;
   List listForLength = <Card>[];
-
+  DatabaseReference database = FirebaseDatabase.instance.ref();
   @override
   Widget build(BuildContext context) {
     number = 0;
@@ -130,10 +130,28 @@ class _ShoppingCartState extends State<ShoppingCart> {
                                         onPrimary: Colors.white,
                                       ),
                                       child: Text(
-                                        "Pagamento",
+                                        Userr().role == 'administrador'? "Finalizar"
+                                        :"Pagamento",
                                         style: TextStyle(fontSize: 15),
                                       ),
                                       onPressed: () {
+                                        if(Userr().role == 'administrador'){
+                                          final reservations = database.child('reservations');
+                                          reservationsToCheckOut.forEach((element) async{
+                                            try {
+                                              //await reservations.set(_reservation);
+                                              await reservations.child(element.id).child("state").set('pago');
+                                              await reservations.child(element.id).child("completed").set(true);
+                                              Navigator.of(context).pop();
+                                              reservationsToCheckOut.clear();
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                  newSnackBar(context, Text('Reservas Efetuadas')));
+                                            } catch (e) {
+                                              print('There is an error!');
+                                            }
+                                          });
+                                        }
+                                        else
                                         Navigator.of(
                                           context,
                                         ).push(
@@ -158,7 +176,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
   void _deleting(BuildContext context, String id) {
     final _database =
-        FirebaseDatabase.instance.reference().child('reservations').child(id);
+        FirebaseDatabase.instance.ref().child('reservations').child(id);
     showDialog<void>(
       context: context,
       builder: (context) {

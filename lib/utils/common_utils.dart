@@ -40,6 +40,13 @@ void showToast({
   Timer(Duration(seconds: 4), () => overlayEntry.remove());
 }
 
+SnackBar newSnackBar(BuildContext context, Text content) {
+  return SnackBar(
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      elevation: 6.0,
+      content: content);
+}
+
 void showErrorDialog(BuildContext context, String title, Exception e) {
   showDialog<void>(
     context: context,

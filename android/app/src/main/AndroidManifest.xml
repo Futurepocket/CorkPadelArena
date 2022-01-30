@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.corPadel.arena">
+    package="com.corkpadel.arena">
    <application
-        android:label="cork_padel_arena"
+        android:label="Cork Padel Arena"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

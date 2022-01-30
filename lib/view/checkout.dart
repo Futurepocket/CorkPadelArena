@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:cork_padel_arena/models/userr.dart';
+import 'package:cork_padel_arena/utils/common_utils.dart';
 import 'package:cork_padel_arena/view/mbway_payment.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
@@ -12,7 +14,6 @@ class Checkout extends StatefulWidget {
 }
 
 class _CheckoutState extends State<Checkout> {
-  Userr _user = Userr();
   Future<void>? _launched;
   checkoutValue _check = checkoutValue();
 
@@ -33,7 +34,7 @@ class _CheckoutState extends State<Checkout> {
       return const Text('');
     }
   }
-
+  DatabaseReference database = FirebaseDatabase.instance.ref();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,7 +62,7 @@ class _CheckoutState extends State<Checkout> {
                 style: TextStyle(
                   fontFamily: 'Roboto Condensed',
                   fontSize: 26,
-                  color: Colors.lime,
+                  color: Theme.of(context).primaryColor,
                 ),
               ),
             ),
@@ -82,7 +83,7 @@ class _CheckoutState extends State<Checkout> {
                   height: 50,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
-                    color: Colors.lime,
+                    color: Theme.of(context).primaryColor,
                   ),
                   child: IconButton(
                     icon: Image.asset('assets/images/mb.png'),
@@ -106,13 +107,13 @@ class _CheckoutState extends State<Checkout> {
                   height: 50,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
-                    color: Colors.lime,
+                    color: Theme.of(context).primaryColor,
                   ),
                   child: IconButton(
                     icon: Image.asset('assets/images/Logo_MBWay.png'),
                     iconSize: 75,
                     onPressed: () {
-                      Navigator.of(
+                        Navigator.of(
                         context,
                       ).push(MaterialPageRoute(builder: (_) {
                         return MbWayPayment();

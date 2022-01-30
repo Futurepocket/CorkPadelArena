@@ -85,19 +85,23 @@ void getUserDetails() async {
 
 
 
-void registerAccount(String email, String displayName, String password,
+Future<bool> registerAccount(String email, String displayName, String password,
     void Function(FirebaseAuthException e) errorCallback) async {
   try {
     var credential = await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: email, password: password);
-    await credential.user!.updateDisplayName(displayName);
-    final User? user = credential.user;
-    fbUser = FirebaseAuth.instance.currentUser;
-    fbUser!.sendEmailVerification();
-    Userr().id = user!.uid.toString();
-    Userr().email = user.email.toString();
+    await credential.user!.updateDisplayName(displayName).then((value) {
+      final User? user = credential.user;
+      fbUser = FirebaseAuth.instance.currentUser;
+      fbUser!.sendEmailVerification();
+      Userr().id = user!.uid.toString();
+      Userr().email = user.email.toString();
+    }
+    );
+return true;
   } on FirebaseAuthException catch (e) {
     errorCallback(e);
+    return false;
   }
 }
 

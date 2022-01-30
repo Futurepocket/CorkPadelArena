@@ -8,6 +8,7 @@ class Userr {
   String _address = '';
   String _city = '';
   String _postCode = '';
+  String _phoneNbr = '';
   String _nif = '';
   String _email = '';
 
@@ -21,6 +22,7 @@ class Userr {
   String get surname => _surname;
   String get address => _address;
   String get city => _city;
+  String get phoneNbr => _phoneNbr;
   String get postCode => _postCode;
   String get nif => _nif;
   String get email => _email;
@@ -31,6 +33,7 @@ class Userr {
   set surname(String value) => _surname = value;
   set address(String value) => _address = value;
   set city(String value) => _city = value;
+  set phoneNbr(String value) => _phoneNbr = value;
   set postCode(String value) => _postCode = value;
   set nif(String value) => _nif = value;
   set email(String value) => _email = value;

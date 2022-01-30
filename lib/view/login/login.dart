@@ -56,7 +56,7 @@ class _LoginState extends State<Login> {
                         AppLocalizations.of(context)!.signIn,
                         style: TextStyle(
                           fontSize: 26,
-                          color: Colors.lime,
+                          color: Theme.of(context).primaryColor,
                         ),
                       ),
                       Container(
@@ -75,10 +75,10 @@ class _LoginState extends State<Login> {
                                   decoration: InputDecoration(
                                     contentPadding: EdgeInsets.all(10),
                                     focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.lime, width: 1.5),
+                                      borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 1.5),
                                     ),
                                     enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.lime, width: 1.5),
+                                      borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 1.5),
                                     ),
                                     labelText: 'Email',
                                   ),
@@ -106,10 +106,10 @@ class _LoginState extends State<Login> {
                                         child: Icon(_isObscure? Icons.visibility : Icons.visibility_off)),
                                     contentPadding: EdgeInsets.all(10),
                                     focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.lime, width: 1.5),
+                                      borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 1.5),
                                     ),
                                     enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.lime, width: 1.5),
+                                      borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 1.5),
                                     ),
                                     labelText: AppLocalizations.of(context)!.password,
                                     // errorText: 'Error Text',
@@ -175,7 +175,7 @@ class _LoginState extends State<Login> {
                 text: TextSpan(
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.lime,
+                      color: Theme.of(context).primaryColor,
                     ),
                     children: <TextSpan>[
                       TextSpan(text: AppLocalizations.of(context)!.forgotPassword),
@@ -183,7 +183,7 @@ class _LoginState extends State<Login> {
                           text: AppLocalizations.of(context)!.tapHere,
                           style: TextStyle(
                               fontSize: 16,
-                              color: Colors.lime,
+                              color: Theme.of(context).primaryColor,
                               fontWeight: FontWeight.bold),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () async {
@@ -203,7 +203,7 @@ class _LoginState extends State<Login> {
                                 padding: const EdgeInsets.all(20.0),
                                 child: Text(AppLocalizations.of(context)!.or, style: TextStyle(
                                     fontSize: 16,
-                                    color: Colors.lime,
+                                    color: Theme.of(context).primaryColor,
                                 )),
                               ),
 

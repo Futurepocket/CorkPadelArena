@@ -19,4 +19,16 @@ class Payment {
         required this.tlmCliente,
       });
 
+  Map<String, dynamic> toMap(){
+    return{
+      "IdPedido":IdPedido,
+      "DataHoraPedidoRegistado": DataHoraPedidoRegistado,
+      "DataHoraPedidoAtualizado": DataHoraPedidoAtualizado,
+      "MsgDescricao": MsgDescricao,
+      "Referencia": Referencia,
+      "EmailCliente": EmailCliente,
+      "tlmCliente": tlmCliente,
+    };
+  }
+
 }

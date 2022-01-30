@@ -73,14 +73,14 @@ class _EmailVerifyState extends State<EmailVerify> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 18,
-                color: Colors.lime,
+                color: Theme.of(context).primaryColor,
               ),
             ),
             Text(
               '\n${AppLocalizations.of(context)!.didNotReceive}\n',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 18,
-                color: Colors.lime,),
+                color: Theme.of(context).primaryColor,),
             ),
             Container(
               width: 150,

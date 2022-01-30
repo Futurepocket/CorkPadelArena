@@ -41,7 +41,7 @@ class _ProfileState extends State<Profile> {
               style: TextStyle(
                 fontFamily: 'Roboto Condensed',
                 fontSize: 26,
-                color: Colors.lime,
+                color: Theme.of(context).primaryColor,
               ),
             ),
             Container(

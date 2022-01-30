@@ -4,6 +4,7 @@ import 'package:cork_padel_arena/models/checkoutValue.dart';
 import 'package:cork_padel_arena/models/payment.dart';
 import 'package:cork_padel_arena/models/userr.dart';
 import 'package:cork_padel_arena/utils/color_loader.dart';
+import 'package:cork_padel_arena/utils/common_utils.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -39,17 +40,64 @@ class _MbWayPaymentState extends State<MbWayPayment> {
     emailController.text = Userr().email;
     super.initState();
   }
+String emailDetails = '';
+  generateEmailDetails(){
+    reservationsToCheckOut.forEach((element) {
+      emailDetails += '\nDia: ${element.day}, das ${element.hour} às ${element.duration}.\n';
+    });
+    reservationsToCheckOut.clear();
+  }
 
-  _sendEmail() async {
+  _sendClientEmail() async {
     await(firestore.collection("reservationEmails").add({
-      'to': 'cartachan@gmail.com',
+      'to': emailController.text,
       'message': {
-        'subject': "Isto e um teste",
-        'text': "Isto e mesmo um teste",
-        //'html': '//todo this is for the html email body',
+        'subject': "Reserva Confirmada",
+        'html': '''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+        
+        <p>Olá, ${Userr().name},</p>
+        <p>Obrigado pela sua reserva.</p>
+        Detalhes:\n
+        <p>${emailDetails}</p>
+       \n
+       <p>Valor: € ${_check.price.toString()}</p>
+       <p>Obrigado,</p>
+
+       A sua equipa Cork Padel Arena
+        
+        </html>''',
       },
     },)
     .then((value) => print("email queued"),
+    )
+    );
+    print('Email done');
+  }
+
+  _sendCompanyEmail() async {
+    await(firestore.collection("reservationEmails").add({
+      'to': 'david.carvalhan@gmail.com', //TODO ADD corkpadel@corkpadel.com
+      'message': {
+        'subject': "Nova reserva de ${Userr().name} ${Userr().surname} na Arena",
+        'html': '''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+        
+        <p>Reserva de ${Userr().name} ${Userr().surname},</p>
+        <p>Email: ${tlmController.text} Tlm: ${emailController.text},</p>
+        \n
+        Detalhes:\n
+        <p>${emailDetails}</p>
+       \n
+       <p>Valor: € ${_check.price.toString()}</p> 
+       
+       <p>Obrigado,</p>
+       <p>A sua equipa Cork Padel Arena</p>
+        
+        </html>''',
+      },
+    },)
+        .then((value) => print("email queued"),
     )
     );
     print('Email done');
@@ -59,10 +107,10 @@ class _MbWayPaymentState extends State<MbWayPayment> {
   Widget build(BuildContext context) {
 
     _saveAll() async{
-      //TODO CHANGE DATABASE THIS ONE IS THE REALTIME
-      final reservations = database.child('payments');
+      CollectionReference payments = FirebaseFirestore.instance.collection('payments');
       String _idd = 'Arena${paymentTlm}' + DateFormat('ddMMyyyy HH:mm').format(DateTime.now());
-      final pmt = reservations.child(_idd);
+
+/////////////////////SAVING PAYMENT////////////////////////////////////
       Payment _payment = Payment(
           IdPedido: idPedido!,
           DataHoraPedidoRegistado: DataHoraPedidoRegistado!,
@@ -71,20 +119,26 @@ class _MbWayPaymentState extends State<MbWayPayment> {
           EmailCliente: paymentEmail!,
           Referencia: 'Arena${paymentTlm}',
           tlmCliente: paymentTlm!);
-      try {
-        //await reservations.set(_reservation);
-            await pmt.set({
-              'IdPedido': _payment.IdPedido,
-    'DataHoraPedidoRegistado': _payment.DataHoraPedidoRegistado,
-    'MsgDescricao': _payment.MsgDescricao,
-    'DataHoraPedidoAtualizado': _payment.DataHoraPedidoAtualizado,
-    'EmailCliente': _payment.EmailCliente,
-    'Referencia': _payment.Referencia,
-    'tlmCliente': _payment.tlmCliente,
-  });
-} catch (e) {
-  print('There is an error!');
-}
+      await payments.doc(_idd).set({
+      _payment.toMap()
+      }).then((value) {
+        print("payment saved");
+        ScaffoldMessenger.of(context).showSnackBar(
+            newSnackBar(context, Text('Reservas Efetuados')));
+      }).catchError((onError) => print("Failed to save payment: $onError"));
+//////////////////////////SAVING RESERVATION////////////////////////////////////
+      final reservations = database.child('reservations');
+reservationsToCheckOut.forEach((element) async{
+  try {
+    await reservations.child(element.id).child("state").set('pago');
+    await reservations.child(element.id).child("completed").set(true);
+  } catch (e) {
+    print('There is an error!');
+  }
+  generateEmailDetails();
+  _sendClientEmail();
+  _sendCompanyEmail();
+});
     }
 
     void _saveForm(BuildContext context) {
@@ -180,6 +234,11 @@ class _MbWayPaymentState extends State<MbWayPayment> {
                             _resultText = "Pagamento efectuado com sucesso";
                             _isAproved = false;
                             _saveAll();
+                            Navigator.of(context).pop();
+                            Navigator.of(context).pop();
+                            Navigator.of(context).pop();
+                            Navigator.of(context).pop();
+                            Navigator.of(context).pop();
                           });
                           await Future.delayed(const Duration(milliseconds: 2000), () {});
                         }else{
@@ -258,14 +317,14 @@ class _MbWayPaymentState extends State<MbWayPayment> {
                   ),
                 ),
               ),
-              const Padding(
+              Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: const Text(
+                child: Text(
                   'Pagamento',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Roboto Condensed',
                     fontSize: 26,
-                    color: Colors.lime,
+                    color: Theme.of(context).primaryColor,
                   ),
                 ),
               ),
@@ -363,11 +422,14 @@ class _MbWayPaymentState extends State<MbWayPayment> {
                     onPrimary: Colors.white,
                   ),
                   child: Text(
-                    "Enviar Email teste" ,
+                    'TEST EMAIL',
                     style: TextStyle(fontSize: 15),
                   ),
                   onPressed: () {
-                    _sendEmail();
+
+                    generateEmailDetails();
+                   _sendClientEmail();
+                   _sendCompanyEmail();
                   },
                 ),
               ),

@@ -1,4 +1,4 @@
-package com.example.cork_padel_arena
+package com.corkpadel.arena
 
 import io.flutter.embedding.android.FlutterActivity
 
