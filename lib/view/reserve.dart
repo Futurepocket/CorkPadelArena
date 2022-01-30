@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:cork_padel_arena/models/ReservationStreamPublisher.dart';
 import 'package:cork_padel_arena/models/reservation.dart';
 import 'package:cork_padel_arena/models/userr.dart';
@@ -27,7 +28,7 @@ void showToast({
 class _ReserveState extends State<Reserve> {
   DatabaseReference database = FirebaseDatabase.instance.ref();
   String? _selectedDuration;
-  String _warning = 'Nenhuma Hora Escolhida!';
+  String _warning = '';
   String _warning2 = '';
 
   DateTime? _selectedDate;
@@ -37,6 +38,7 @@ class _ReserveState extends State<Reserve> {
 
   @override
   void initState() {
+    _warning = AppLocalizations.of(context)!.noTimeChosen;
     super.initState();
   }
   //List<Reservation> reservationList = [];
@@ -241,6 +243,7 @@ print(comparison);
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
       floatingActionButton: FloatingActionButton(
@@ -276,7 +279,7 @@ print(comparison);
                 Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: Text(
-                    'Efectuar Reserva',
+                    AppLocalizations.of(context)!.makeReservation,
                     style: TextStyle(
                       fontFamily: 'Roboto Condensed',
                       fontSize: 26,
@@ -286,9 +289,8 @@ print(comparison);
                 ),
                 Padding(
                   padding: const EdgeInsets.all(10.0),
-                  child: Text(
-                    'Atencao!! Os slots reservados desaparecerao ' +
-                        'passados 30 minutos se nenhum pagamento for effectuado.',
+                  child: Text(AppLocalizations.of(context)!.attention30Mins
+                    ,
                     style: TextStyle(
                       fontFamily: 'Roboto Condensed',
                       fontSize: 16,
@@ -307,10 +309,9 @@ print(comparison);
 //TEXT SHOWING CHOSEN DATE////////////////////////////////////////////////
                               child: Text(
                                 _selectedDate == null
-                                    ? 'Nenhuma data escolhida!'
-                                    : 'Data Escolhida: ' +
-                                        DateFormat.yMd('pt')
-                                            .format(_selectedDate!),
+                                    ? AppLocalizations.of(context)!.noDateChosen
+                                    : '${AppLocalizations.of(context)!
+                      .dateChosen}: ${DateFormat.yMd('pt').format(_selectedDate!)}',
                                 style: TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.bold),
                               ),
@@ -320,7 +321,8 @@ print(comparison);
                               onPressed: () {
                                 _presentDatePicker();
                               },
-                              child: Text("Escolher Data",
+                              child: Text(AppLocalizations.of(context)!
+                                  .chooseDate,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                   )),
@@ -338,8 +340,8 @@ print(comparison);
                               child: Text(
                                 _timeChosen == null
                                     ? _warning
-                                    : 'Hora Escolhida: ' +
-                                        "${_timeChosen!.format(context)}",
+                                    : '${AppLocalizations.of(context)!
+                                    .timeChosen}: ${_timeChosen!.format(context)}',
                                 style: TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.bold),
                               ),
@@ -347,7 +349,8 @@ print(comparison);
 //BUTTON TO CHOOSE TIME ////////////////////////////////////////////////
                             TextButton(
                               onPressed: _presentTimePicker,
-                              child: Text("Escolher Hora",
+                              child: Text(AppLocalizations.of(context)!
+                                  .chooseTime,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                   )),
@@ -363,7 +366,7 @@ print(comparison);
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: <Widget>[
                                 Text(
-                                  'Duracao:',
+                                  '${AppLocalizations.of(context)!.duration}:',
                                   style: TextStyle(
                                       fontSize: 16, fontWeight: FontWeight.bold),
                                 ),
@@ -373,7 +376,7 @@ print(comparison);
                                   width: 120,
 //DROPDOWN LIST TO CHOOSE DURATION ////////////////////////////////////////////////
                                   child: DropdownButton<String>(
-                                    hint: Text('Escolha'),
+                                    hint: Text(AppLocalizations.of(context)!.choose),
                                     value: _selectedDuration,
                                     items: <String>['30', '60', '90', '120']
                                         .map((String value) {
@@ -399,7 +402,7 @@ print(comparison);
                                   ),
                                 ),
                                 Text(
-                                  'Minutos',
+                                  AppLocalizations.of(context)!.minutes,
                                   style: TextStyle(
                                       fontSize: 16, fontWeight: FontWeight.bold),
                                 ),
@@ -420,7 +423,7 @@ print(comparison);
                       onPrimary: Colors.white,
                     ),
                     child: Text(
-                      "Reservar",
+                      AppLocalizations.of(context)!.reserve,
                       style: TextStyle(fontSize: 15),
                     ),
                     onPressed: () {
@@ -435,14 +438,14 @@ print(comparison);
                         return;
                       } else if (!_reservationValid || !_isNotNow) {
                         _timeChosen = null;
-                        _warning = 'Slot invalido!';
+                        _warning = AppLocalizations.of(context)!.invalidSlot;
                         setState(() {
-                          _warning2 = 'Slot invalido!';
+                          _warning2 = AppLocalizations.of(context)!.invalidSlot;
                         });
                         return;
                       } else if (_selectedDuration == null) {
                         setState(() {
-                          _warning2 = 'Escolha uma duracao';
+                          _warning2 = AppLocalizations.of(context)!.chooseDuration;
                         });
                         return;
                       }
@@ -450,7 +453,7 @@ print(comparison);
                   ),
                 ),
 ////////////////// LIST SHOWING RESERVES FOR THIS DAY ////////////////////////////////////////////////
-                Text('Slots Reservados neste dia:'),
+                Text('${AppLocalizations.of(context)!.reservedSlots}:'),
                 _selectedDate != null
                     ? StreamBuilder(
                         stream:
@@ -478,12 +481,12 @@ print(comparison);
                                 return ListTile(
                                   leading: Icon(Icons.lock_clock),
                                   title: Text(
-                                      "Das ${nextReservation.hour}  as  ${nextReservation.duration}"),
+"${AppLocalizations.of(context)!.from} ${nextReservation.hour} ${AppLocalizations.of(context)!.to} ${nextReservation.duration}"),
                                 );
                               }));
                             } catch (e) {
                               return Text(
-                                  'Ainda nao existem reservas neste dia');
+                                  AppLocalizations.of(context)!.noReservationsOnDay);
                             }
                           }
                           // }
@@ -494,7 +497,7 @@ print(comparison);
                               ),
                             );
                           }
-                          return Text('Ainda nao existem reservas neste dia');
+                          return Text(AppLocalizations.of(context)!.noReservationsOnDay);
                         })
                     : SizedBox(),
               ],
@@ -507,7 +510,6 @@ print(comparison);
 }
 
 extension TimeOfDayExtension on TimeOfDay {
-  // Ported from org.threeten.bp;
   TimeOfDay plusMinutes(int minutes) {
     if (minutes == 0) {
       return this;
