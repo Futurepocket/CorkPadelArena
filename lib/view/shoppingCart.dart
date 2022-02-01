@@ -1,3 +1,4 @@
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:cork_padel_arena/models/ReservationStreamPublisher.dart';
 import 'package:cork_padel_arena/models/reservation.dart';
 import 'package:cork_padel_arena/models/userr.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'checkout.dart';
 
 class ShoppingCart extends StatefulWidget {
+
   @override
   _ShoppingCartState createState() => _ShoppingCartState();
 }
@@ -92,9 +94,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
                     }
                     // }
                     if (tilesList.isNotEmpty) {
-                      _check.reservations = tilesList.length;
-                      _check.price = _check.reservations * 10;
-
                       return Column(
                         children: [
                           Expanded(
@@ -142,8 +141,9 @@ class _ShoppingCartState extends State<ShoppingCart> {
                                               //await reservations.set(_reservation);
                                               await reservations.child(element.id).child("state").set('pago');
                                               await reservations.child(element.id).child("completed").set(true);
-                                              Navigator.of(context).pop();
+                                              Navigator.of(context).pop(true);
                                               reservationsToCheckOut.clear();
+                                              _check.reservations = 0;
                                               ScaffoldMessenger.of(context).showSnackBar(
                                                   newSnackBar(context, Text('Reservas Efetuadas')));
                                             } catch (e) {
@@ -165,7 +165,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
                         ],
                       );
                     }
-                    return Text('O carrinho esta vazio');
+                    return Text(AppLocalizations.of(context)!.shoppingCartEmpty);
                   }),
             ),
           ),
@@ -180,44 +180,54 @@ class _ShoppingCartState extends State<ShoppingCart> {
     showDialog<void>(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: Text(
-            'Cancelar',
-            style: const TextStyle(fontSize: 24),
-          ),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text(
-                  'Tem certeza de que quer cancelar esta reserva?',
-                  style: const TextStyle(fontSize: 18),
+        return StatefulBuilder(
+            builder: (context, setState)
+        {
+          return AlertDialog(
+            title: Text(
+              AppLocalizations.of(context)!.cancel,
+              style: const TextStyle(fontSize: 24),
+            ),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  Text(
+                    AppLocalizations.of(context)!.sureToCancelReservation,
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              StyledButton(
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+                child: Text(
+                  AppLocalizations.of(context)!.doNotCancel,
+                  style: TextStyle(color: Theme.of(context).colorScheme.primary),
                 ),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            StyledButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text(
-                'Nao cancelar',
-                style: TextStyle(color: Colors.deepPurple),
+                background: Colors.white,
+                border: Theme.of(context).colorScheme.primary,
               ),
-            ),
-            StyledButton(
-              onPressed: () {
-                _database.remove();
-                _check.lessReservations();
-                Navigator.of(context).pop();
-              },
-              child: const Text(
-                'Sim, Cancelar',
-                style: TextStyle(color: Colors.deepPurple),
+              StyledButton(
+                onPressed: () {
+                  _database.remove();
+                  _check.reservations -= 1;
+                  _check.price = _check.reservations * 10;
+                  reservationsToCheckOut.removeWhere((element) => element.id == id);
+                  Navigator.of(context).pop(true);
+                },
+                child: Text(
+                  AppLocalizations.of(context)!.yesCancel,
+                  style: const TextStyle(color: Colors.white),
+                ),
+                background: Colors.red,
+                border: Colors.red,
               ),
-            ),
-          ],
-        );
+            ],
+          );
+        });
       },
     );
   }

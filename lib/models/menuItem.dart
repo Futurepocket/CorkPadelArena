@@ -24,21 +24,19 @@ class MenuItem extends StatelessWidget {
         padding: const EdgeInsets.all(5),
         child: Column(
           children: [
-            Expanded(child: ikon),
-            Text(
-              title,
-              style: TextStyle(fontSize: 16),
-            ),
+            Flexible(
+              flex: 10,
+                child: ikon),
+              Flexible(
+                flex: 2,
+                child: Text(
+                  title,
+                  style: TextStyle(fontSize: 16, color: Colors.grey.shade800),
+                ),
+              ),
           ],
         ),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [color.withOpacity(0.7), color],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(15),
-        ),
+
       ),
     );
   }

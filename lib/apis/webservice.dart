@@ -4,7 +4,8 @@ import 'package:http/http.dart';
 const defaultHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
 };
-String host = 'https://mbway.ifthenpay.com';
+String MBWAYhost = 'https://mbway.ifthenpay.com';
+String MBhost = 'https://ifthenpay.com/api';
 
 class Resource<T> {
   final String url;
@@ -20,12 +21,6 @@ class Webservice {
   // String proxy = 'https://thingproxy.freeboard.io/fetch/';
   String proxy = '';
 
-/*  This is the main GET method for requests.
-      Developer Note:  if you are developing on the Android emulator you might need to disable
-      Android studio HTTP proxy settings to avoid "connection closed while receiving data" errors. Also having
-      an http connection rather than https also contributes to this error.
-      See https://stackoverflow.com/questions/54349683/another-exception-was-thrown-httpexception-connection-closed-while-receiving-d
-  */
   Future<T> get<T>(Resource<T> resource) async {
     Map<String, String> headers = {
       ...defaultHeader,
@@ -34,7 +29,7 @@ class Webservice {
     // print('skey ${this.skey}');
     // print('GET headers: ${headers}');
     String resourceUrl =
-        "${host}${resource.url}";
+        "${MBWAYhost}${resource.url}";
 
     //client.connectionTimeout = const Duration(seconds: 10);
     final response = await http.get(
@@ -43,6 +38,29 @@ class Webservice {
     );
     if (response.statusCode == 200) {
       // print('Response headers: ${response.headers}');
+      return resource.parse(response);
+    } else {
+      Map<String, dynamic> error = jsonDecode(response.body);
+      throw Exception(error["message"]);
+    }
+  }
+  Future<T> post<T>(Resource<T> resource) async {
+    Map<String, String> headers = {
+      ...defaultHeader,
+      ...resource.headers,
+    };
+
+    String resourceUrl =
+        "${MBhost}${resource.url}";
+
+
+    final response = await http.post(
+      Uri.parse(resourceUrl),
+      headers: headers,
+      body: resource.body
+    );
+
+    if (response.statusCode == 200) {
       return resource.parse(response);
     } else {
       Map<String, dynamic> error = jsonDecode(response.body);

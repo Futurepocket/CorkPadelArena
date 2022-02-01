@@ -16,22 +16,24 @@ class _EmailVerifyState extends State<EmailVerify> {
 
   startTimer(){
     Timer.periodic(Duration(seconds: 5), (timer) {
-    checkEmailVerified();
-    if (emailVerified == true) {
-      timer.cancel();
-      final String _email = fbUser!.email.toString();
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc(_email).get().then((value) {
-        if(value.exists){
-          Navigator.of(context).pushReplacementNamed('/dash');
-        }
-        else {
-          Navigator.of(context).pushReplacementNamed(
-              '/userDetails');
-        }
-      });
-    }
+    checkEmailVerified().then((value) {
+      if (emailVerified == true) {
+        timer.cancel();
+        final String _email = fbUser!.email.toString();
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(_email).get().then((value) {
+          if(value.exists){
+            Navigator.of(context).pushReplacementNamed('/dash');
+          }
+          else {
+            Navigator.of(context).pushReplacementNamed(
+                '/userDetails');
+          }
+        });
+      }
+    } );
+
   });}
 
   @override

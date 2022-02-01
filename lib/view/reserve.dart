@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:cork_padel_arena/models/checkoutValue.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:cork_padel_arena/models/ReservationStreamPublisher.dart';
 import 'package:cork_padel_arena/models/reservation.dart';
@@ -26,6 +27,8 @@ void showToast({
 }
 
 class _ReserveState extends State<Reserve> {
+  checkoutValue _check = checkoutValue();
+
   DatabaseReference database = FirebaseDatabase.instance.ref();
   String? _selectedDuration;
   String _warning = '';
@@ -189,17 +192,10 @@ print(comparison);
     String number = num.parse(rndnumber).toString();
     return number;
   }
+  settingState(){
+    setState(() {
 
-  void _showShoppingCart(BuildContext ctx) {
-    showModalBottomSheet(
-        context: ctx,
-        builder: (_) {
-          return GestureDetector(
-            onTap: () {},
-            child: ShoppingCart(),
-            behavior: HitTestBehavior.opaque,
-          );
-        });
+    });
   }
 
   var tempReservations = <Reservation>[];
@@ -228,6 +224,11 @@ print(comparison);
         id: _idd,
         dateMade: DateFormat('dd/MM/yyyy').format(DateTime.now()),
         timeMade: DateFormat('HH:mm').format(DateTime.now()));
+    setState(() {
+      reservationsToCheckOut.add(_reservation);
+      _check.reservations = reservationsToCheckOut.length;
+      _check.price = _check.reservations * 10;
+    });
     try {
       //await reservations.set(_reservation);
       await day.set({
@@ -251,175 +252,217 @@ print(comparison);
   Widget build(BuildContext context) {
 
     return Scaffold(
-      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Theme.of(context).colorScheme.secondaryVariant,
-        onPressed: () {
-          _showShoppingCart(context);
-        },
-        child: Icon(Icons.shopping_cart),
-      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: shopCart(context, settingState),
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text("Cork Padel Arena"),
         backgroundColor: Theme.of(context).primaryColor,
       ),
-      body: Container(
-        child: SingleChildScrollView(
+      body: SingleChildScrollView(
           child: Container(
             alignment: Alignment.topCenter,
-            margin: EdgeInsets.all(10),
+            margin: EdgeInsets.only(top: 40, left: 20),
             constraints: BoxConstraints(
                 minHeight: 600, minWidth: double.infinity, maxHeight: 650),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               //mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Image.asset(
-                    'assets/images/logo.png',
-                    width: 80.0,
-                    height: 100.0,
+                Text(
+                  AppLocalizations.of(context)!.reservations,
+                  style: TextStyle(
+                    fontFamily: 'Roboto Condensed',
+                    fontSize: 16,
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.only(top:8.0),
                   child: Text(
                     AppLocalizations.of(context)!.makeReservation,
                     style: TextStyle(
                       fontFamily: 'Roboto Condensed',
-                      fontSize: 26,
-                      color: Theme.of(context).primaryColor,
+                      fontSize: 28,
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Text(AppLocalizations.of(context)!.attention30Mins
-                    ,
-                    style: TextStyle(
-                      fontFamily: 'Roboto Condensed',
-                      fontSize: 16,
-                    ),
-                    textAlign: TextAlign.center,
+                Container(
+                  width: MediaQuery.of(context).size.width*0.9,
+                  height: 20,
+                  decoration: BoxDecoration(
+                      border: Border(
+                          bottom: BorderSide(
+                              color: Colors.grey.shade600,
+                              width: 2
+                          ),
+                      ),
                   ),
                 ),
-                Card(elevation: 10,
-                  child: Container(
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 5.0, right: 5),
-                          child: Row(children: <Widget>[
-                            Expanded(
-//TEXT SHOWING CHOSEN DATE////////////////////////////////////////////////
-                              child: Text(
-                                _selectedDate == null
-                                    ? AppLocalizations.of(context)!.noDateChosen
-                                    : '${AppLocalizations.of(context)!
-                      .dateChosen}: ${DateFormat.yMd('pt').format(_selectedDate!)}',
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-//BUTTON TO CHOOSE DATE////////////////////////////////////////////////
-                            TextButton(
-                              onPressed: () {
-                                _presentDatePicker();
-                              },
-                              child: Text(AppLocalizations.of(context)!
-                                  .chooseDate,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  )),
-                              style: TextButton.styleFrom(
-                                primary: Theme.of(context).primaryColor,
-                              ),
-                            ),
-                          ]),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 5.0, right: 5),
-                          child: Row(children: <Widget>[
-                            Expanded(
-//TEXT SHOWING CHOSEN TIME ////////////////////////////////////////////////
-                              child: Text(
-                                _timeChosen == null
-                                    ? _warning
-                                    : '${AppLocalizations.of(context)!
-                                    .timeChosen}: ${_timeChosen!.format(context)}',
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-//BUTTON TO CHOOSE TIME ////////////////////////////////////////////////
-                            TextButton(
-                              onPressed: _presentTimePicker,
-                              child: Text(AppLocalizations.of(context)!
-                                  .chooseTime,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  )),
-                              style: TextButton.styleFrom(
-                                primary: Theme.of(context).primaryColor,
-                              ),
-                            ),
-                          ]),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 5.0, right: 5),
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: <Widget>[
-                                Text(
-                                  '${AppLocalizations.of(context)!.duration}:',
-                                  style: TextStyle(
-                                      fontSize: 16, fontWeight: FontWeight.bold),
-                                ),
-                                Container(
-                                  padding:
-                                      const EdgeInsets.only(left: 5.0, right: 5),
-                                  width: 120,
-//DROPDOWN LIST TO CHOOSE DURATION ////////////////////////////////////////////////
-                                  child: DropdownButton<String>(
-                                    hint: Text(AppLocalizations.of(context)!.choose),
-                                    value: _selectedDuration,
-                                    items: <String>['30', '60', '90', '120']
-                                        .map((String value) {
-                                      return DropdownMenuItem<String>(
-                                        value: value,
-                                        child: new Text(value),
-                                      );
-                                    }).toList(),
-                                    onChanged: (newValue) {
-                                      setState(
-                                        () {
-                                          if (_timeChosen != null) {
-                                            setState(() {
-                                              _warning2 = '';
-                                              _reservationValid = false;
-                                              _selectedDuration = newValue;
-                                              _activateListeners();
-                                            });
-                                          }
-                                        },
-                                      );
-                                    },
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20.0),
+                    child: Text(
+                      AppLocalizations.of(context)!.attention30Mins,
+                      style: TextStyle(
+                        fontFamily: 'Roboto Condensed',
+                        fontSize: 14,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ),
+                Container(
+                  margin: const EdgeInsets.only(top: 20.0),
+                  width: MediaQuery.of(context).size.width*0.90,
+                  child: Card(
+                    elevation: 5,
+                    child: Container(
+                      padding: EdgeInsets.only(left: 15, right: 15, top:10),
+                      child: Column(
+                        children: [
+                            Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                              //BUTTON TO CHOOSE DATE////////////////////////////////////////////////
+                              Container(
+                                width: MediaQuery.of(context).size.width*0.3,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    _presentDatePicker();
+                                  },
+                                  child: FittedBox(
+                                    child: Text(AppLocalizations.of(context)!
+                                        .chooseDate,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                            fontSize: 12,
+                                          letterSpacing: 1
+                                        ),
+                                    ),
+                                  ),
+                                  style: TextButton.styleFrom(
+                                    primary: Theme.of(context).primaryColor,
                                   ),
                                 ),
-                                Text(
-                                  AppLocalizations.of(context)!.minutes,
-                                  style: TextStyle(
-                                      fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+/////////////////////////////TEXT SHOWING CHOSEN DATE////////////////////////////////////////////////
+                                Container(
+                                  width: MediaQuery.of(context).size.width*0.42,
+                                  child: Text(
+                                    _selectedDate == null
+                                        ? AppLocalizations.of(context)!.noDateChosen
+                                        : '${DateFormat.yMd('pt').format(_selectedDate!)}',
+                                    style: TextStyle(
+                                        fontSize: 14, fontWeight: FontWeight.bold),
+                                  ),
                                 ),
-                              ]),
-                        ),
-                      ],
+
+                            ]),
+                          Padding(
+                            padding: const EdgeInsets.only(top:8.0),
+                            child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+////////////////////////////////BUTTON TO CHOOSE TIME ////////////////////////////////////////////////
+                                    Container(
+                                      width: MediaQuery.of(context).size.width*0.3,
+                                      child: ElevatedButton(
+                                        onPressed: _presentTimePicker,
+                                        child: FittedBox(
+                                          child: Text(AppLocalizations.of(context)!
+                                              .chooseTime,
+                                              style: const TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white,
+                                                  letterSpacing: 1,
+                                                fontSize: 12
+                                              )),
+                                        ),
+                                        style: TextButton.styleFrom(
+                                          primary: Theme.of(context).primaryColor,
+                                        ),
+                                      ),
+                                    ),
+/////////////////////////////////TEXT SHOWING CHOSEN TIME ////////////////////////////////////////////////
+
+                                 Container(
+                                   width: MediaQuery.of(context).size.width*0.42,
+                                     child: Text(
+                                            _timeChosen == null
+                                                ? _warning
+                                                : '${_timeChosen!.format(context)}',
+                                            style: TextStyle(
+                                                fontSize: 14, fontWeight: FontWeight.bold),
+                                       maxLines: 2,
+                                          ),
+
+                                 ),
+
+
+
+                              ],
+                              ),
+                          ),
+
+                          Padding(
+                            padding: const EdgeInsets.only(left: 5.0, right: 5),
+                            child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: <Widget>[
+                                  Text(
+                                    '${AppLocalizations.of(context)!.duration}:',
+                                    style: TextStyle(
+                                        fontSize: 16, fontWeight: FontWeight.bold),
+                                  ),
+                                  Container(
+                                    padding:
+                                        const EdgeInsets.only(left: 5.0, right: 5),
+                                    width: 120,
+//DROPDOWN LIST TO CHOOSE DURATION ////////////////////////////////////////////////
+                                    child: DropdownButton<String>(
+                                      hint: Text(AppLocalizations.of(context)!.choose),
+                                      value: _selectedDuration,
+                                      items: <String>['30', '60', '90', '120']
+                                          .map((String value) {
+                                        return DropdownMenuItem<String>(
+                                          value: value,
+                                          child: new Text(value),
+                                        );
+                                      }).toList(),
+                                      onChanged: (newValue) {
+                                        setState(
+                                          () {
+                                            if (_timeChosen != null) {
+                                              setState(() {
+                                                _warning2 = '';
+                                                _reservationValid = false;
+                                                _selectedDuration = newValue;
+                                                _activateListeners();
+                                              });
+                                            }
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  Text(
+                                    AppLocalizations.of(context)!.minutes,
+                                    style: TextStyle(
+                                        fontSize: 16, fontWeight: FontWeight.bold),
+                                  ),
+                                ]),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
                 Text(_warning2),
+
+            Container(
+              width: MediaQuery.of(context).size.width*0.9,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
                 Container(
                   padding: const EdgeInsets.only(left: 5.0, right: 5),
                   width: 150,
@@ -431,12 +474,11 @@ print(comparison);
                     ),
                     child: Text(
                       AppLocalizations.of(context)!.reserve,
-                      style: TextStyle(fontSize: 15),
+                      style: TextStyle(
+                          fontSize: 15,
+                          letterSpacing: 1),
                     ),
                     onPressed: () {
-                      print(_reservationValid);
-                      print(_isNotNow);
-                      print(_selectedDuration);
                       if (_reservationValid &&
                           _isNotNow &&
                           _selectedDuration != null) {
@@ -460,58 +502,68 @@ print(comparison);
                   ),
                 ),
 ////////////////// LIST SHOWING RESERVES FOR THIS DAY ////////////////////////////////////////////////
-                if(_selectedDate !=null )Text('${AppLocalizations.of(context)!.reservedSlots}:'),
+                if(_selectedDate !=null )Padding(
+                  padding: const EdgeInsets.only(top:8.0),
+                  child: Text('${AppLocalizations.of(context)!.reservedSlots}:'),
+                ),
                 _selectedDate != null
-                    ? StreamBuilder(
-                        stream:
-                            ReservationStreamPublisher().getReservationStream(),
-                        builder: (context, snapshot) {
-                          final tilesList = <ListTile>[];
-                          if (snapshot.hasData) {
-                            List reservations =
-                                snapshot.data as List<Reservation>;
-                            int i = 0;
-                            do {
-                              if (reservations.isNotEmpty) {
-                                if (reservations[i].day !=
-                                    (DateFormat('dd/MM/yyyy')
-                                        .format(_selectedDate!))) {
-                                  reservations.removeAt(i);
-                                  i = i;
-                                } else
-                                  i++;
-                              }
-                            } while (i < reservations.length);
-                            try {
-                              tilesList
-                                  .addAll(reservations.map((nextReservation) {
-                                return ListTile(
-                                  leading: Icon(Icons.lock_clock),
-                                  title: Text(
-"${AppLocalizations.of(context)!.from} ${nextReservation.hour} ${AppLocalizations.of(context)!.to} ${nextReservation.duration}"),
-                                );
-                              }));
-                            } catch (e) {
-                              return Text(
-                                  AppLocalizations.of(context)!.noReservationsOnDay);
+                    ? Container(
+                  width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height*0.3,
+                      padding: const EdgeInsets.only(top:8.0),
+                      child: StreamBuilder(
+                      stream:
+                      ReservationStreamPublisher().getReservationStream(),
+                      builder: (context, snapshot) {
+                        final tilesList = <ListTile>[];
+                        if (snapshot.hasData) {
+                          List reservations =
+                          snapshot.data as List<Reservation>;
+                          int i = 0;
+                          do {
+                            if (reservations.isNotEmpty) {
+                              if (reservations[i].day !=
+                                  (DateFormat('dd/MM/yyyy')
+                                      .format(_selectedDate!))) {
+                                reservations.removeAt(i);
+                                i = i;
+                              } else
+                                i++;
                             }
+                          } while (i < reservations.length);
+                          try {
+                            tilesList
+                                .addAll(reservations.map((nextReservation) {
+                              return ListTile(
+                                leading: Icon(Icons.lock_clock),
+                                title: Text(
+                                    "${AppLocalizations.of(context)!.from} ${nextReservation.hour} ${AppLocalizations.of(context)!.to} ${nextReservation.duration}"),
+                              );
+                            }));
+                          } catch (e) {
+                            return Text(
+                                AppLocalizations.of(context)!.noReservationsOnDay);
                           }
-                          // }
-                          if (tilesList.isNotEmpty) {
-                            return Expanded(
-                              child: ListView(
-                                children: tilesList,
-                              ),
-                            );
-                          }
-                          return Text(AppLocalizations.of(context)!.noReservationsOnDay);
-                        })
+                        }
+                        // }
+                        if (tilesList.isNotEmpty) {
+                          return Expanded(
+                            child: ListView(
+                              children: tilesList,
+                            ),
+                          );
+                        }
+                        return Text(AppLocalizations.of(context)!.noReservationsOnDay);
+                      }),
+                )
                     : SizedBox(),
+              ],),
+            ),
+
               ],
             ),
           ),
         ),
-      ),
     );
   }
 }

@@ -49,14 +49,22 @@ class IconAndDetail extends StatelessWidget {
 }
 
 class StyledButton extends StatelessWidget {
-  const StyledButton({required this.child, required this.onPressed});
+  const StyledButton({
+    required this.child,
+    required this.onPressed,
+    required this.background,
+    required this.border
+  });
   final Widget child;
   final void Function() onPressed;
+  final Color background;
+  final Color border;
 
   @override
   Widget build(BuildContext context) => OutlinedButton(
         style: OutlinedButton.styleFrom(
-            side: const BorderSide(color: Colors.deepPurple)),
+          backgroundColor: background,
+            side: BorderSide(color: border)),
         onPressed: onPressed,
         child: child,
       );

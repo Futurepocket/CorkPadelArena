@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:cork_padel_arena/apis/multibanco.dart';
+import 'package:cork_padel_arena/apis/webservice.dart';
 import 'package:cork_padel_arena/models/userr.dart';
 import 'package:cork_padel_arena/utils/common_utils.dart';
 import 'package:cork_padel_arena/view/mbway_payment.dart';
@@ -16,6 +18,7 @@ class Checkout extends StatefulWidget {
 class _CheckoutState extends State<Checkout> {
   Future<void>? _launched;
   checkoutValue _check = checkoutValue();
+  var ws = Webservice();
 
   Future<void> _launchInBrowser(String url) async {
     if (await canLaunch(url)) {
@@ -81,6 +84,7 @@ class _CheckoutState extends State<Checkout> {
               children: [
                 Container(
                   height: 50,
+                  width: 150,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
                     color: Theme.of(context).primaryColor,
@@ -89,22 +93,21 @@ class _CheckoutState extends State<Checkout> {
                     icon: Image.asset('assets/images/mb.png'),
                     iconSize: 75,
                     onPressed: () async {
-
-                      if (await canLaunch(
-                          'http:/corkpadel-arena-eb47b.web.app/ifmb.html?ENTIDADE=12375&SUBENTIDADE=610&ID=0000&VALOR=10.00')) {
-                        await launch(
-                          'http:/corkpadel-arena-eb47b.web.app/ifmb.html?ENTIDADE=12375&SUBENTIDADE=610&ID=0000&VALOR=10.00',
-                          forceWebView: false,
-                          //headers: <String, String>{'my_header_key': 'my_header_value'},
-                        );
-                      } else {
-                        throw 'Could not launch the store';
-                      }
+                      ws.post(Multibanco.postRequest(
+                          orderId: 'Arena${Userr().phoneNbr}',
+                          amount: _check.price.toString(),
+                          description: 'Reserva de ${Userr().name} ${Userr().surname}',
+                          clientName: Userr().name,
+                          clientEmail: Userr().email,
+                          clientUsername: Userr().email,
+                          clientPhone: Userr().phoneNbr))
+                          .then((value) => null);//TODO CONTINUAR AQUI
                     },
                   ),
                 ),
                 Container(
                   height: 50,
+                  width: 100,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
                     color: Theme.of(context).primaryColor,

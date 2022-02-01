@@ -43,7 +43,7 @@ class _MbWayPaymentState extends State<MbWayPayment> {
 String emailDetails = '';
   generateEmailDetails(){
     reservationsToCheckOut.forEach((element) {
-      emailDetails += '\nDia: ${element.day}, das ${element.hour} às ${element.duration}.\n';
+      emailDetails += '<p>Dia: ${element.day}, das ${element.hour} às ${element.duration}.</p>';
     });
     reservationsToCheckOut.clear();
   }
@@ -138,6 +138,8 @@ reservationsToCheckOut.forEach((element) async{
   generateEmailDetails();
   _sendClientEmail();
   _sendCompanyEmail();
+  reservationsToCheckOut.clear();
+  _check.reservations = 0;
 });
     }
 

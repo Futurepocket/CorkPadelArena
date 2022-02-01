@@ -1,7 +1,10 @@
+import 'package:cork_padel_arena/models/checkoutValue.dart';
 import 'package:cork_padel_arena/models/userr.dart';
+import 'package:cork_padel_arena/utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'editDetails.dart';
 import 'myReservations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Profile extends StatefulWidget {
   @override
@@ -13,195 +16,214 @@ class _ProfileState extends State<Profile> {
   void initState() {
     super.initState();
   }
+  checkoutValue _check = checkoutValue();
+  settingState(){
+    setState(() {
 
+    });
+  }
   Userr _userr = Userr();
-  static const double _padd = 15.0;
+  static const double _padd = 10.0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-          title: Text("Meu Perfil"),
+          title: Align(
+              alignment: Alignment.centerLeft,
+              child: Text("Cork Padel Arena")),
           backgroundColor: Theme.of(context).primaryColor),
-      body: Center(
-        child: SingleChildScrollView(
-            child: Column(
+      body: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.only(left:20.0, top: 40),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+              Text(
+                AppLocalizations.of(context)!.myProfile,
+                style: TextStyle(
+                  fontFamily: 'Roboto Condensed',
+                  fontSize: 16,
+                ),
+              ),
             Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Image.asset(
-                'assets/images/logo.png',
-                width: 80.0,
-                height: 100.0,
-              ),
-            ),
-            Text(
-              'Meu Perfil',
-              style: TextStyle(
-                fontFamily: 'Roboto Condensed',
-                fontSize: 26,
-                color: Theme.of(context).primaryColor,
-              ),
-            ),
-            Container(
-              padding:
-                  EdgeInsets.only(left: 15, top: 50, right: 15, bottom: 15),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-              ),
-              width: double.infinity,
-              child: Card(elevation: 10,
-                child: Container(
-                  padding: EdgeInsets.all(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            "Nome: ",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 18),
-                          ),
-                          Text(
-                            _userr.name + ' ' + _userr.surname,
-                            style: TextStyle(fontSize: 16),
-                          )
-                        ],
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: _padd),
-                        child: Row(children: [
-                          Text(
-                            "Email: ",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 18),
-                          ),
-                          Text(
-                            _userr.email,
-                            style: TextStyle(fontSize: 16),
-                          )
-                        ]),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: _padd),
-                        child: Row(
-                          children: [
-                            Text(
-                              "Morada: ",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 18),
-                            ),
-                            Container(
-                              child: Text(
-                                _userr.address,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: _padd),
-                        child: Row(children: [
-                          Text(
-                            "Codigo Postal: ",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 18),
-                          ),
-                          Text(
-                            _userr.postCode,
-                            style: TextStyle(fontSize: 16),
-                          )
-                        ]),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: _padd),
-                        child: Row(children: [
-                          Text(
-                            "Localidade: ",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 18),
-                          ),
-                          Text(
-                            _userr.city,
-                            style: TextStyle(fontSize: 16),
-                          )
-                        ]),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: _padd),
-                        child: Row(children: [
-                          Text(
-                            "NIF: ",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 18),
-                          ),
-                          Text(
-                            _userr.nif,
-                            style: TextStyle(fontSize: 16),
-                          )
-                        ]),
-                      ),
-                    ],
-                  ),
+              padding: const EdgeInsets.only(top:8.0),
+              child: Text(
+                AppLocalizations.of(context)!.personalDetails,
+                style: TextStyle(
+                  fontFamily: 'Roboto Condensed',
+                  fontSize: 28,
                 ),
               ),
             ),
-            Container(
-              padding: EdgeInsets.all(15),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Container(
-                    width: 150,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        primary: Theme.of(context).primaryColor,
-                        onPrimary: Colors.white,
-                      ),
-                      child: Text(
-                        "Editar Perfil",
-                        style: TextStyle(fontSize: 15),
-                      ),
-                      onPressed: () {
-                        Navigator.of(
-                          context,
-                        ).push(MaterialPageRoute(builder: (_) {
-                          return EditDetails();
-                        }));
-                      },
+              Container(
+                width: MediaQuery.of(context).size.width*0.9,
+                height: 20,
+                decoration: BoxDecoration(
+                    border: Border(
+                        bottom: BorderSide(
+                            color: Colors.grey.shade600,
+                          width: 2
+              ))),),
+              Container(
+                padding:
+                    EdgeInsets.only(top: 20, right: 15, bottom: 15),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Card(elevation: 5,
+                  child: Container(
+                    padding: EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              "Nome: ",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 18),
+                            ),
+                            Text(
+                              _userr.name + ' ' + _userr.surname,
+                              style: TextStyle(fontSize: 16),
+                            )
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: _padd),
+                          child: Row(children: [
+                            Text(
+                              "Email: ",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 18),
+                            ),
+                            Text(
+                              _userr.email,
+                              style: TextStyle(fontSize: 16),
+                            )
+                          ]),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: _padd),
+                          child: Row(
+                            children: [
+                              Text(
+                                "Morada: ",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 18),
+                              ),
+                              Container(
+                                child: Text(
+                                  _userr.address,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: _padd),
+                          child: Row(children: [
+                            Text(
+                              "Codigo Postal: ",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 18),
+                            ),
+                            Text(
+                              _userr.postCode,
+                              style: TextStyle(fontSize: 16),
+                            )
+                          ]),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: _padd),
+                          child: Row(children: [
+                            Text(
+                              "Localidade: ",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 18),
+                            ),
+                            Text(
+                              _userr.city,
+                              style: TextStyle(fontSize: 16),
+                            )
+                          ]),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: _padd),
+                          child: Row(children: [
+                            Text(
+                              "NIF: ",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 18),
+                            ),
+                            Text(
+                              _userr.nif,
+                              style: TextStyle(fontSize: 16),
+                            )
+                          ]),
+                        ),
+                      ],
                     ),
                   ),
-                  Container(
-                    width: 150,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        primary: Theme.of(context).primaryColor,
-                        onPrimary: Colors.white,
-                      ),
-                      child: Text(
-                        "Minhas Reservas",
-                        style: TextStyle(fontSize: 15),
-                      ),
-                      onPressed: () {
-                        Navigator.of(
-                          context,
-                        ).push(MaterialPageRoute(builder: (_) {
-                          return MyReservations();
-                        }));
-                      },
-                    ),
-                  ),
-                ],
+                ),
               ),
-            )
+              Container(
+                padding: EdgeInsets.only(top: 15, right: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          primary: Theme.of(context).primaryColor,
+                          onPrimary: Colors.white,
+                        ),
+                        child: Text(
+                          "EDITAR PERFIL",
+                          style: TextStyle(fontSize: 15, letterSpacing: 1.2),
+                        ),
+                        onPressed: () {
+                          Navigator.of(
+                            context,
+                          ).push(MaterialPageRoute(builder: (_) {
+                            return EditDetails();
+                          }));
+                        },
+                      ),
+                    ),
+                    Container(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          primary: Theme.of(context).primaryColor,
+                          onPrimary: Colors.white,
+                        ),
+                        child: Text(
+                          "MINHAS RESERVAS",
+                          style: TextStyle(fontSize: 15,),
+                        ),
+                        onPressed: () {
+                          Navigator.of(
+                            context,
+                          ).push(MaterialPageRoute(builder: (_) {
+                            return MyReservations();
+                          }));
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              )
           ],
-        )),
-      ),
+        ),
+            ),
+    ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: shopCart(context, settingState)
     );
   }
 }

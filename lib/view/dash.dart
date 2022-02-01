@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cork_padel_arena/models/checkoutValue.dart';
 import 'package:cork_padel_arena/utils/common_utils.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:intl/intl.dart';
@@ -32,7 +33,7 @@ class _DashState extends State<Dash> {
   UserDetailState _userState = UserDetailState.verified;
   UserDetailState get loginState => _userState;
   DatabaseReference database = FirebaseDatabase.instance.ref();
-
+  checkoutValue _check = checkoutValue();
   var myName;
   Future<void>? _launched;
 
@@ -61,6 +62,13 @@ class _DashState extends State<Dash> {
           if (today.isAfter(dbDay.add(const Duration(minutes: 30))) &&
               value['state'] == 'por completar') {
             keys.add(key);
+            if(value['client_email'] == Userr().email){
+              reservationsToCheckOut.removeWhere((element) => element.id == key);
+              setState(() {
+                _check.reservations = reservationsToCheckOut.length;
+                _check.price = _check.reservations * 10;
+              });
+            }
           }
         });
       }
@@ -72,6 +80,12 @@ class _DashState extends State<Dash> {
       database.child('reservations').child(key).remove();
     }
     keys.clear();
+  }
+
+  settingState(){
+    setState(() {
+
+    });
   }
 
   late Timer timer;
@@ -109,9 +123,10 @@ class _DashState extends State<Dash> {
 
   @override
   Widget build(BuildContext context) {
+    Color _menuColor = Colors.grey.shade800;
     var menus = [
       Pages(
-        Icon(Icons.person, size: 50),
+        Icon(Icons.person, size: 120, color: _menuColor,),
         AppLocalizations.of(context)!.profile,
         Theme.of(context).primaryColor,
             (BuildContext ctx) {
@@ -123,7 +138,7 @@ class _DashState extends State<Dash> {
         },
       ),
       Pages(
-        Icon(Icons.calendar_today, size: 50),
+        Icon(Icons.calendar_today_outlined, size: 120, color: _menuColor),
         AppLocalizations.of(context)!.makeReservation,
         Theme.of(context).primaryColor,
             (BuildContext ctx) {
@@ -135,7 +150,7 @@ class _DashState extends State<Dash> {
         },
       ),
       Pages(
-        Icon(Icons.perm_contact_calendar, size: 50),
+        Icon(Icons.list_alt_rounded, size: 120, color: _menuColor),
         AppLocalizations.of(context)!.myReservations,
         Theme.of(context).primaryColor,
             (BuildContext ctx) {
@@ -148,8 +163,9 @@ class _DashState extends State<Dash> {
       ),
       Pages(
           Icon(
-            Icons.phone,
-            size: 50,
+            Icons.contact_phone,
+            color: _menuColor,
+            size: 120,
           ),
           AppLocalizations.of(context)!.contacts,
           Theme.of(context).primaryColor, (BuildContext ctx) {
@@ -161,8 +177,9 @@ class _DashState extends State<Dash> {
       }),
       Pages(
         Icon(
-          Icons.shopping_basket,
-          size: 50,
+          Icons.shopping_bag_rounded,
+          color: _menuColor,
+          size: 120,
         ),
         AppLocalizations.of(context)!.onlineShop,
         Theme.of(context).primaryColor,
@@ -180,8 +197,9 @@ class _DashState extends State<Dash> {
       ),
       Pages(
           Icon(
-            Icons.logout,
-            size: 50,
+            Icons.exit_to_app_rounded,
+            color: _menuColor,
+            size: 120,
           ),
           AppLocalizations.of(context)!.logout,
           Theme.of(context).primaryColor, (BuildContext ctx) {
@@ -197,7 +215,9 @@ class _DashState extends State<Dash> {
     return Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
-        title: Text("Cork Padel"),
+        title: Align(
+          alignment: Alignment.center,
+            child: Text("Cork Padel Arena")),
     backgroundColor: Theme.of(context).primaryColor,
     ),
     body:
@@ -229,10 +249,12 @@ class _DashState extends State<Dash> {
                             menus.ikon, menus.title, menus.color, menus.fun))
                             .toList(),
                         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent: 200,
+                            maxCrossAxisExtent: 350,
                             childAspectRatio: 3 / 2,
-                            crossAxisSpacing: 20,
-                            mainAxisSpacing: 20),
+                            crossAxisSpacing: 0,
+                            mainAxisSpacing: 0,
+                         mainAxisExtent: 190,
+                        ),
                       ),
                     ),
                     FutureBuilder<void>(future: _launched, builder: _launchStatus)
@@ -242,6 +264,8 @@ class _DashState extends State<Dash> {
     ),
        ),
      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: shopCart(context, settingState),
     );
   }
 
