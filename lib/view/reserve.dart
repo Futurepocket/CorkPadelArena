@@ -303,7 +303,7 @@ print(comparison);
                   ),
                 ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 20.0),
+                    padding: const EdgeInsets.only(top: 20.0, right:10),
                     child: Text(
                       AppLocalizations.of(context)!.attention30Mins,
                       style: TextStyle(
@@ -464,47 +464,45 @@ print(comparison);
                 ),
                 Text(_warning2),
 
-            Container(
-              width: MediaQuery.of(context).size.width*0.9,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                Container(
-                  padding: const EdgeInsets.only(left: 5.0, right: 5),
-                  width: 150,
+                Align(
+                  alignment: Alignment.center,
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 5.0, right: 5),
+                    width: 150,
 ////////////////////// BUTTON TO RESERVE ////////////////////////////////////////////////
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: Theme.of(context).primaryColor,
-                      onPrimary: Colors.white,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Theme.of(context).primaryColor,
+                        onPrimary: Colors.white,
+                      ),
+                      child: Text(
+                        AppLocalizations.of(context)!.reserve,
+                        style: TextStyle(
+                            fontSize: 15,
+                            letterSpacing: 1),
+                      ),
+                      onPressed: () {
+                        if (_reservationValid &&
+                            _isNotNow &&
+                            _selectedDuration != null) {
+                          _reserve();
+                          showToast(context: context);
+                          return;
+                        } else if (!_reservationValid || !_isNotNow) {
+                          _timeChosen = null;
+                          _warning = AppLocalizations.of(context)!.invalidSlot;
+                          setState(() {
+                            _warning2 = AppLocalizations.of(context)!.invalidSlot;
+                          });
+                          return;
+                        } else if (_selectedDuration == null) {
+                          setState(() {
+                            _warning2 = AppLocalizations.of(context)!.chooseDuration;
+                          });
+                          return;
+                        }
+                      },
                     ),
-                    child: Text(
-                      AppLocalizations.of(context)!.reserve,
-                      style: TextStyle(
-                          fontSize: 15,
-                          letterSpacing: 1),
-                    ),
-                    onPressed: () {
-                      if (_reservationValid &&
-                          _isNotNow &&
-                          _selectedDuration != null) {
-                        _reserve();
-                        showToast(context: context);
-                        return;
-                      } else if (!_reservationValid || !_isNotNow) {
-                        _timeChosen = null;
-                        _warning = AppLocalizations.of(context)!.invalidSlot;
-                        setState(() {
-                          _warning2 = AppLocalizations.of(context)!.invalidSlot;
-                        });
-                        return;
-                      } else if (_selectedDuration == null) {
-                        setState(() {
-                          _warning2 = AppLocalizations.of(context)!.chooseDuration;
-                        });
-                        return;
-                      }
-                    },
                   ),
                 ),
 ////////////////// LIST SHOWING RESERVES FOR THIS DAY ////////////////////////////////////////////////
@@ -513,11 +511,7 @@ print(comparison);
                   child: Text('${AppLocalizations.of(context)!.reservedSlots}:'),
                 ),
                 _selectedDate != null
-                    ? Container(
-                  width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height*0.3,
-                      padding: const EdgeInsets.only(top:8.0),
-                      child: StreamBuilder(
+                    ? StreamBuilder(
                       stream:
                       ReservationStreamPublisher().getReservationStream(),
                       builder: (context, snapshot) {
@@ -560,15 +554,12 @@ print(comparison);
                           );
                         }
                         return Text(AppLocalizations.of(context)!.noReservationsOnDay);
-                      }),
-                )
+                      })
                     : SizedBox(),
               ],),
             ),
 
-              ],
-            ),
-          ),
+
         ),
     );
   }
