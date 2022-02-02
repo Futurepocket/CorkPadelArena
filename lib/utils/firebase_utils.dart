@@ -40,11 +40,13 @@ void checkEmail(
   }
 }
 
-Future<void> checkEmailVerified() async {
+Future<bool> checkEmailVerified() async {
   if (fbUser!.emailVerified) {
     emailVerified = true;
+    return true;
   } else {
     emailVerified = false;
+    return false;
   }
 }
 

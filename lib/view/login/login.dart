@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cork_padel_arena/apis/local_auth_api.dart';
 import 'package:cork_padel_arena/utils/common_utils.dart';
 import 'package:cork_padel_arena/utils/firebase_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import '../../models/userr.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class Login extends StatefulWidget {
 
@@ -14,13 +16,152 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  final _storage = const FlutterSecureStorage();
   final _formKey = GlobalKey<FormState>(debugLabel: '_LoginFormState');
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _accountNameController =
+  TextEditingController(text: 'flutter_secure_storage_service');
+  List<_SecItem> _items = [];
+
+  String? _getAccountName() =>
+      _accountNameController.text.isEmpty ? null : _accountNameController.text;
+
+  IOSOptions _getIOSOptions() => IOSOptions(
+    accountName: _getAccountName(),
+  );
+  AndroidOptions _getAndroidOptions() => const AndroidOptions(
+    encryptedSharedPreferences: true,
+  );
+  Future<void> _readAll() async {
+    final all = await _storage.readAll(
+        iOptions: _getIOSOptions(),
+        aOptions: _getAndroidOptions());
+    setState(() {
+      _items = all.entries
+          .map((entry) => _SecItem(entry.key, entry.value))
+          .toList(growable: false);
+    });
+  }
+  Future<void> _deleteAll() async {
+    await _storage.deleteAll(
+        iOptions: _getIOSOptions(), aOptions: _getAndroidOptions());
+    _readAll();
+  }
+  void _addEmail() async {
+    final String key = 'email';
+    final String value = _emailController.text;
+
+    await _storage.write(
+        key: key,
+        value: value,
+        iOptions: _getIOSOptions(),
+        aOptions: _getAndroidOptions());
+    _readAll();
+  }
+  void _addPassword() async {
+    final String key = 'password';
+    final String value = _passwordController.text;
+
+    await _storage.write(
+        key: key,
+        value: value,
+        iOptions: _getIOSOptions(),
+        aOptions: _getAndroidOptions());
+    _readAll();
+  }
+  void _signInBio() async{
+    bool success = await LocalAuthApi.authenticate();
+    if(success == true){
+      signInWithEmailAndPassword(
+          _items[1].value,
+          _items[0].value,
+              (e) =>
+              showErrorDialog(context,
+                  AppLocalizations.of(context)!.loginError,
+                  e))
+          .then((thisFbUser) {
+        if (thisFbUser != null) {
+          fbUser = thisFbUser;
+          if (emailVerified) {
+            final String _email = thisFbUser.email
+                .toString();
+            FirebaseFirestore.instance
+                .collection('users')
+                .doc(_email).get().then((value) {
+              if (value.exists) {
+                Navigator.of(context).pushReplacementNamed(
+                    '/dash');
+              }
+              else {
+                Navigator.of(context).pushReplacementNamed(
+                    '/userDetails');
+              }
+            });
+          } else {
+            Navigator.of(context).pushReplacementNamed(
+                '/emailVerify');
+          }
+        }
+      });
+    }
+  }
+  void _signIn(){
+    signInWithEmailAndPassword(
+        _emailController.text,
+        _passwordController.text,
+            (e) =>
+            showErrorDialog(context,
+                AppLocalizations.of(context)!.loginError,
+                e))
+        .then((thisFbUser) {
+      _deleteAll().then((v) {
+        _addEmail();
+        _addPassword();
+      });
+      if (thisFbUser != null) {
+        fbUser = thisFbUser;
+        if (emailVerified) {
+          final String _email = thisFbUser.email
+              .toString();
+          FirebaseFirestore.instance
+              .collection('users')
+              .doc(_email).get().then((value) {
+            if (value.exists) {
+              Navigator.of(context).pushReplacementNamed(
+                  '/dash');
+            }
+            else {
+              Navigator.of(context).pushReplacementNamed(
+                  '/userDetails');
+            }
+          });
+        } else {
+          Navigator.of(context).pushReplacementNamed(
+              '/emailVerify');
+        }
+      }
+    });
+  }
 
   @override
   void initState() {
+    _accountNameController.addListener(() => _readAll());
+    _readAll().then((v) {
+      if(_items[0].key.isNotEmpty){
+          _signInBio();
+      };
+    });
     super.initState();
+  }
+  @override
+  void didChangeDependencies() {
+    _readAll().then((v) {
+      if(_items[0].key.isNotEmpty){
+        _signInBio();
+      };
+    });
+    super.didChangeDependencies();
   }
   var _isObscure = true;
   @override
@@ -139,32 +280,7 @@ class _LoginState extends State<Login> {
                     ),
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                       signInWithEmailAndPassword(
-                            _emailController.text,
-                            _passwordController.text,
-                                (e) => showErrorDialog(context, AppLocalizations.of(context)!.loginError, e))
-                           .then((thisFbUser) {
-                         if(thisFbUser != null){
-                           print(thisFbUser);
-                           if(emailVerified){
-                             final String _email = thisFbUser.email.toString();
-                             FirebaseFirestore.instance
-                                 .collection('users')
-                                 .doc(_email).get().then((value) {
-                                   if(value.exists){
-                                     Navigator.of(context).pushReplacementNamed('/dash');
-                                   }
-                                   else {
-                                     Navigator.of(context).pushReplacementNamed(
-                                         '/userDetails');
-                                   }
-                             });
-
-                           }else{
-                             Navigator.of(context).pushReplacementNamed('/emailVerify');
-                           }
-                         }
-                       });
+                          _signIn();
                       }
 
                     },
@@ -247,4 +363,11 @@ class _LoginState extends State<Login> {
 
     );
   }
+}
+
+class _SecItem {
+  _SecItem(this.key, this.value);
+
+  final String key;
+  final String value;
 }

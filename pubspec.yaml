@@ -44,6 +44,8 @@ dependencies:
   flutter_email_sender: ^5.0.2
   flutter_launcher_icons: ^0.9.2
   linkwell: ^2.0.6
+  local_auth: ^1.1.10
+  flutter_secure_storage: ^5.0.2
 
 flutter_icons:
   image_path: "assets/images/logo.jpg"

@@ -321,9 +321,9 @@ print(comparison);
                             Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
-                              //BUTTON TO CHOOSE DATE////////////////////////////////////////////////
+/////////////////////////////BUTTON TO CHOOSE DATE////////////////////////////////////////////////
                               Container(
-                                width: MediaQuery.of(context).size.width*0.3,
+                                width: 110,
                                 child: ElevatedButton(
                                   onPressed: () {
                                     _presentDatePicker();
@@ -346,13 +346,14 @@ print(comparison);
                               ),
 /////////////////////////////TEXT SHOWING CHOSEN DATE////////////////////////////////////////////////
                                 Container(
-                                  width: MediaQuery.of(context).size.width*0.42,
+                                  width: 180,
                                   child: Text(
                                     _selectedDate == null
                                         ? AppLocalizations.of(context)!.noDateChosen
                                         : '${DateFormat.yMd('pt').format(_selectedDate!)}',
                                     style: TextStyle(
                                         fontSize: 14, fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.right,
                                   ),
                                 ),
 
@@ -364,7 +365,7 @@ print(comparison);
                                   children: <Widget>[
 ////////////////////////////////BUTTON TO CHOOSE TIME ////////////////////////////////////////////////
                                     Container(
-                                      width: MediaQuery.of(context).size.width*0.3,
+                                      width: 110,
                                       child: ElevatedButton(
                                         onPressed: _presentTimePicker,
                                         child: FittedBox(
@@ -385,7 +386,7 @@ print(comparison);
 /////////////////////////////////TEXT SHOWING CHOSEN TIME ////////////////////////////////////////////////
 
                                  Container(
-                                   width: MediaQuery.of(context).size.width*0.42,
+                                   width: 180,
                                      child: Text(
                                             _timeChosen == null
                                                 ? _warning
@@ -393,6 +394,7 @@ print(comparison);
                                             style: TextStyle(
                                                 fontSize: 14, fontWeight: FontWeight.bold),
                                        maxLines: 2,
+                                       textAlign: TextAlign.right,
                                           ),
 
                                  ),

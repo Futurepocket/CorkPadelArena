@@ -239,12 +239,14 @@ class _RegisterState extends State<Register> {
                                             _passwordController.text,
                                                   (e) => showErrorDialog(context, AppLocalizations.of(context)!.registerError, e)
                                           ).then((value) {
-                                            getUserDetails();
-                                            Userr().name = _displayNameController.text;
-                                            Userr().surname = _displaySurnameController.text;
-                                            Userr().email = _emailController.text;
-                                            fbUser!.sendEmailVerification();
-                                            Navigator.pushReplacementNamed(context, '/splash');
+                                            if(value == true){
+                                              getUserDetails();
+                                              Userr().name = _displayNameController.text;
+                                              Userr().surname = _displaySurnameController.text;
+                                              Userr().email = _emailController.text;
+                                              fbUser!.sendEmailVerification();
+                                              Navigator.pushReplacementNamed(context, '/splash');
+                                            }
                                           });
                                         }
                                       },

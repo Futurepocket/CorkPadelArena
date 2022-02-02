@@ -16,8 +16,9 @@ class _EmailVerifyState extends State<EmailVerify> {
 
   startTimer(){
     Timer.periodic(Duration(seconds: 5), (timer) {
+      print('timing');
     checkEmailVerified().then((value) {
-      if (emailVerified == true) {
+      if (value == true) {
         timer.cancel();
         final String _email = fbUser!.email.toString();
         FirebaseFirestore.instance
