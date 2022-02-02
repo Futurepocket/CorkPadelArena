@@ -23,6 +23,8 @@ class _LoginState extends State<Login> {
   final _passwordController = TextEditingController();
   final _accountNameController =
   TextEditingController(text: 'flutter_secure_storage_service');
+  String? _email;
+  String? _password;
   List<_SecItem> _items = [];
 
   String? _getAccountName() =>
@@ -38,6 +40,15 @@ class _LoginState extends State<Login> {
     final all = await _storage.readAll(
         iOptions: _getIOSOptions(),
         aOptions: _getAndroidOptions());
+     _email = await _storage.read(key: 'email',
+    aOptions: _getAndroidOptions(),
+      iOptions: _getIOSOptions(),
+    );
+     _password = await _storage.read(key: 'password',
+      aOptions: _getAndroidOptions(),
+      iOptions: _getIOSOptions(),
+    );
+
     setState(() {
       _items = all.entries
           .map((entry) => _SecItem(entry.key, entry.value))
@@ -75,8 +86,8 @@ class _LoginState extends State<Login> {
     bool success = await LocalAuthApi.authenticate();
     if(success == true){
       signInWithEmailAndPassword(
-          _items[1].value,
-          _items[0].value,
+          _email!,
+          _password!,
               (e) =>
               showErrorDialog(context,
                   AppLocalizations.of(context)!.loginError,
@@ -152,7 +163,7 @@ class _LoginState extends State<Login> {
       if(_items[0].key.isNotEmpty){
           _signInBio();
           if(kIsWeb){
-            _emailController.text = _items[1].value;
+            _emailController.text = _email!;
           }
       };
     });
@@ -160,14 +171,17 @@ class _LoginState extends State<Login> {
   }
   @override
   void didChangeDependencies() {
-    _readAll().then((v) {
-      if(_items[0].key.isNotEmpty){
-        _signInBio();
-        if(kIsWeb){
-          _emailController.text = _items[1].value;
+    if(fbUser!=null) {
+      _readAll().then((v) {
+        if (_items[0].key.isNotEmpty) {
+          _signInBio();
+          if (kIsWeb) {
+            _emailController.text = _email!;
+          }
         }
-      };
-    });
+        ;
+      });
+    }
     super.didChangeDependencies();
   }
   var _isObscure = true;
