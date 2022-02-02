@@ -75,7 +75,8 @@ class _RegisterState extends State<Register> {
                                     child: Padding(
                                       padding: const EdgeInsets.only(right: 5),
                                       child: TextFormField(
-                                        keyboardType: TextInputType.emailAddress,
+                                        keyboardType: TextInputType.name,
+                                        autofillHints: [AutofillHints.givenName],
                                         textInputAction: TextInputAction.next,
                                         decoration: InputDecoration(
                                           contentPadding: EdgeInsets.all(10),
@@ -106,7 +107,8 @@ class _RegisterState extends State<Register> {
                                     child: Padding(
                                       padding: const EdgeInsets.only(left: 5),
                                       child: TextFormField(
-                                        keyboardType: TextInputType.emailAddress,
+                                        keyboardType: TextInputType.name,
+                                        autofillHints: [AutofillHints.familyName],
                                         textInputAction: TextInputAction.next,
                                         decoration: InputDecoration(
                                           contentPadding: EdgeInsets.all(10),
@@ -140,6 +142,7 @@ class _RegisterState extends State<Register> {
                               padding: const EdgeInsets.all(8.0),
                               child: TextFormField(
                                 keyboardType: TextInputType.emailAddress,
+                                autofillHints: [AutofillHints.email],
                                 textInputAction: TextInputAction.next,
                                 decoration: InputDecoration(
                                   contentPadding: EdgeInsets.all(10),
@@ -171,6 +174,7 @@ class _RegisterState extends State<Register> {
                                 enableSuggestions: false,
                                 autocorrect: false,
                                 obscureText: true,
+                                autofillHints: [AutofillHints.password],
                                 decoration: InputDecoration(
                                   contentPadding: EdgeInsets.all(10),
                                   focusedBorder: OutlineInputBorder(

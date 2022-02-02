@@ -102,6 +102,8 @@ class _UserDetailsWidgetState extends State<UserDetailsWidget> {
                             child: TextFormField(
                               controller: nameController,
                               textInputAction: TextInputAction.next,
+                              keyboardType: TextInputType.name,
+                              autofillHints: [AutofillHints.givenName],
                               decoration: InputDecoration(
                                 contentPadding: EdgeInsets.all(10),
                                 focusedBorder: OutlineInputBorder(
@@ -139,6 +141,8 @@ class _UserDetailsWidgetState extends State<UserDetailsWidget> {
                             child: TextFormField(
                               controller: surnameController,
                               textInputAction: TextInputAction.next,
+                              keyboardType: TextInputType.name,
+                              autofillHints: [AutofillHints.familyName],
                               decoration: InputDecoration(
                                 contentPadding: EdgeInsets.all(10),
                                 focusedBorder: OutlineInputBorder(
@@ -173,6 +177,8 @@ class _UserDetailsWidgetState extends State<UserDetailsWidget> {
                   padding: const EdgeInsets.all(10.0),
                   child: TextFormField(
                     textInputAction: TextInputAction.next,
+                    keyboardType: TextInputType.streetAddress,
+                    autofillHints: [AutofillHints.fullStreetAddress],
                     decoration: InputDecoration(
                       contentPadding: EdgeInsets.all(10),
                       focusedBorder: OutlineInputBorder(
@@ -201,6 +207,7 @@ class _UserDetailsWidgetState extends State<UserDetailsWidget> {
                   padding: const EdgeInsets.all(10.0),
                   child: TextFormField(
                     textInputAction: TextInputAction.next,
+                    autofillHints: [AutofillHints.telephoneNumber],
                     keyboardType:
                     TextInputType.numberWithOptions(decimal: false),
                     decoration: InputDecoration(
@@ -240,6 +247,8 @@ class _UserDetailsWidgetState extends State<UserDetailsWidget> {
                         padding: const EdgeInsets.all(10.0),
                         child: TextFormField(
                           textInputAction: TextInputAction.next,
+                          keyboardType: TextInputType.streetAddress,
+                          autofillHints: [AutofillHints.addressCity],
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.all(10),
                             focusedBorder: OutlineInputBorder(
@@ -274,6 +283,7 @@ class _UserDetailsWidgetState extends State<UserDetailsWidget> {
                         padding: const EdgeInsets.all(10.0),
                         child: TextFormField(
                           textInputAction: TextInputAction.next,
+                          autofillHints: [AutofillHints.postalCode],
                           keyboardType:
                               TextInputType.numberWithOptions(decimal: true),
                           decoration: InputDecoration(
@@ -309,7 +319,7 @@ class _UserDetailsWidgetState extends State<UserDetailsWidget> {
                 Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: TextFormField(
-                    textInputAction: TextInputAction.next,
+                    textInputAction: TextInputAction.done,
                     keyboardType:
                         TextInputType.numberWithOptions(decimal: true),
                     decoration: InputDecoration(

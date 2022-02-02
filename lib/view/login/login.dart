@@ -3,6 +3,7 @@ import 'package:cork_padel_arena/apis/local_auth_api.dart';
 import 'package:cork_padel_arena/utils/common_utils.dart';
 import 'package:cork_padel_arena/utils/firebase_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -150,6 +151,9 @@ class _LoginState extends State<Login> {
     _readAll().then((v) {
       if(_items[0].key.isNotEmpty){
           _signInBio();
+          if(kIsWeb){
+            _emailController.text = _items[1].value;
+          }
       };
     });
     super.initState();
@@ -159,6 +163,9 @@ class _LoginState extends State<Login> {
     _readAll().then((v) {
       if(_items[0].key.isNotEmpty){
         _signInBio();
+        if(kIsWeb){
+          _emailController.text = _items[1].value;
+        }
       };
     });
     super.didChangeDependencies();
@@ -211,6 +218,7 @@ class _LoginState extends State<Login> {
                                 padding: const EdgeInsets.all(8.0),
                                 child: TextFormField(
                                   controller: _emailController,
+                                  autofillHints: [AutofillHints.email],
                                   textInputAction: TextInputAction.next,
                                   keyboardType: TextInputType.emailAddress,
                                   decoration: InputDecoration(
@@ -237,6 +245,7 @@ class _LoginState extends State<Login> {
                                   enableSuggestions: false,
                                   autocorrect: false,
                                   obscureText: _isObscure,
+                                  autofillHints: [AutofillHints.password],
                                   decoration: InputDecoration(
                                     suffixIcon:
                                     GestureDetector(
@@ -253,64 +262,62 @@ class _LoginState extends State<Login> {
                                       borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 1.5),
                                     ),
                                     labelText: AppLocalizations.of(context)!.password,
-                                    // errorText: 'Error Text',
-                  ),
-                  controller: _passwordController,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return AppLocalizations.of(context)!.required;
-                    }
-                    return null;
-                  },
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: Container(
-                  width: 150,
-                  padding: const EdgeInsets.all(10),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: Theme.of(context).primaryColor,
-                      onPrimary: Colors.white,
-                    ),
-                    child: Text(
-                      AppLocalizations.of(context)!.login,
-                      style: TextStyle(fontSize: 15),
-                    ),
-                    onPressed: () async {
-                      if (_formKey.currentState!.validate()) {
-                          _signIn();
-                      }
-
-                    },
-                  ),
-                ),
-              ),
-              RichText(
-                text: TextSpan(
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                    children: <TextSpan>[
-                      TextSpan(text: AppLocalizations.of(context)!.forgotPassword),
-                      TextSpan(
-                          text: AppLocalizations.of(context)!.tapHere,
-                          style: TextStyle(
-                              fontSize: 16,
-                              color: Theme.of(context).primaryColor,
-                              fontWeight: FontWeight.bold),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () async {
-                              try {
-                                await FirebaseAuth.instance
-                                    .sendPasswordResetEmail(
-                                    email: _emailController.text);
-                                showToast(context: context);
-                              } on FirebaseAuthException catch (er) {
-                                showErrorDialog(
-                                    context, AppLocalizations.of(context)!.enterYourEmail, er);
+                                  ),
+                                  controller: _passwordController,
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return AppLocalizations.of(context)!.required;
+                                    }
+                                    return null;
+                                    },
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 10),
+                                child: Container(
+                                  width: 150,
+                                  padding: const EdgeInsets.all(10),
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Theme.of(context).primaryColor,
+                                      onPrimary: Colors.white,
+                                    ),
+                                    child: Text(
+                                      AppLocalizations.of(context)!.login,
+                                      style: TextStyle(fontSize: 15),
+                                    ),
+                                    onPressed: () async {
+                                      if (_formKey.currentState!.validate()) {
+                                        _signIn();
+                                      }
+                                      },
+                                  ),
+                                ),
+                              ),
+                              RichText(
+                                text: TextSpan(
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                    children: <TextSpan>[
+                                      TextSpan(text: AppLocalizations.of(context)!.forgotPassword),
+                                      TextSpan(
+                                          text: AppLocalizations.of(context)!.tapHere,
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              color: Theme.of(context).primaryColor,
+                                              fontWeight: FontWeight.bold),
+                                          recognizer: TapGestureRecognizer()
+                                            ..onTap = () async {
+                                            try {
+                                              await FirebaseAuth.instance
+                                                  .sendPasswordResetEmail(
+                                                  email: _emailController.text);
+                                              showToast(context: context);
+                                            } on FirebaseAuthException catch (er) {
+                                              showErrorDialog(
+                                                  context, AppLocalizations.of(context)!.enterYourEmail, er);
                               }
                             })
                     ]),
