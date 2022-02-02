@@ -26,6 +26,7 @@ class _LoginState extends State<Login> {
   String? _email;
   String? _password;
   List<_SecItem> _items = [];
+  bool _isLoggedIn = false;
 
   String? _getAccountName() =>
       _accountNameController.text.isEmpty ? null : _accountNameController.text;
@@ -95,6 +96,7 @@ class _LoginState extends State<Login> {
           .then((thisFbUser) {
         if (thisFbUser != null) {
           fbUser = thisFbUser;
+          _isLoggedIn = true;
           if (emailVerified) {
             final String _email = thisFbUser.email
                 .toString();
@@ -171,7 +173,7 @@ class _LoginState extends State<Login> {
   }
   @override
   void didChangeDependencies() {
-    if(fbUser!=null) {
+    if(fbUser!=null && _isLoggedIn == false) {
       _readAll().then((v) {
         if (_items[0].key.isNotEmpty) {
           _signInBio();

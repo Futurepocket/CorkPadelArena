@@ -63,6 +63,7 @@ class _DashState extends State<Dash> {
     final formatter = DateFormat('dd/MM/yyyy HH:mm');
     database.child('reservations').onValue.listen((event) {
       if(event.snapshot.value != null){
+        reservationsToCheckOut.clear();
         Map<String, dynamic>.from(event.snapshot.value as dynamic)
             .forEach((key, value){
           final String whenMade = value['dateMade'] + ' ' + value['timeMade'];
@@ -78,6 +79,13 @@ class _DashState extends State<Dash> {
                 _check.price = _check.reservations * 10;
               });
             }
+          }else if(today.isBefore(dbDay.add(const Duration(minutes: 30))) &&
+              value['state'] == 'por completar'){
+            reservationsToCheckOut.add(value);
+            setState(() {
+              _check.reservations = reservationsToCheckOut.length;
+              _check.price = _check.reservations * 10;
+            });
           }
         });
       }
@@ -143,7 +151,7 @@ class _DashState extends State<Dash> {
             ctx,
           ).push(MaterialPageRoute(builder: (_) {
             return Profile();
-          }));
+          })).then((value) => settingState());
         },
       ),
       Pages(
@@ -155,7 +163,7 @@ class _DashState extends State<Dash> {
             ctx,
           ).push(MaterialPageRoute(builder: (_) {
             return Reserve();
-          }));
+          })).then((value) => settingState());
         },
       ),
       Pages(
@@ -167,7 +175,7 @@ class _DashState extends State<Dash> {
             ctx,
           ).push(MaterialPageRoute(builder: (_) {
             return MyReservations();
-          }));
+          })).then((value) => settingState());
         },
       ),
       Pages(
@@ -182,7 +190,7 @@ class _DashState extends State<Dash> {
           ctx,
         ).push(MaterialPageRoute(builder: (_) {
           return Contacts();
-        }));
+        })).then((value) => settingState());
       }),
       Pages(
         Icon(
