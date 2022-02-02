@@ -233,6 +233,8 @@ class _LoginState extends State<Login> {
                                 child: TextFormField(
                                   controller: _emailController,
                                   autofillHints: [AutofillHints.email],
+                                  enableSuggestions: true,
+                                  enableInteractiveSelection: true,
                                   textInputAction: TextInputAction.next,
                                   keyboardType: TextInputType.emailAddress,
                                   decoration: InputDecoration(
@@ -264,7 +266,6 @@ class _LoginState extends State<Login> {
                                     suffixIcon:
                                     GestureDetector(
                                         onTap: () => setState(() {
-                                          print('tapping');
                                           _isObscure = !_isObscure;
                                         }),
                                         child: Icon(_isObscure? Icons.visibility : Icons.visibility_off)),

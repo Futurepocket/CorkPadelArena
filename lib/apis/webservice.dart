@@ -60,12 +60,9 @@ class Webservice {
       body: resource.body
     );
 
-    if (response.statusCode == 200) {
+
       return resource.parse(response);
-    } else {
-      Map<String, dynamic> error = jsonDecode(response.body);
-      throw Exception(error["message"]);
-    }
+
   }
 
   // Future<T> post<T>(Resource<T> resource) async {

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:cork_padel_arena/apis/multibanco.dart';
 import 'package:cork_padel_arena/apis/webservice.dart';
 import 'package:cork_padel_arena/models/userr.dart';
+import 'package:cork_padel_arena/utils/color_loader.dart';
 import 'package:cork_padel_arena/utils/common_utils.dart';
 import 'package:cork_padel_arena/view/mbway_payment.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -16,26 +17,98 @@ class Checkout extends StatefulWidget {
 }
 
 class _CheckoutState extends State<Checkout> {
-  Future<void>? _launched;
+
   checkoutValue _check = checkoutValue();
   var ws = Webservice();
 
-  Future<void> _launchInBrowser(String url) async {
-    if (await canLaunch(url)) {
-      await launch(
-        url,
-      );
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
 
-  Widget _launchStatus(BuildContext context, AsyncSnapshot<void> snapshot) {
-    if (snapshot.hasError) {
-      return Text('Error: ${snapshot.error}');
-    } else {
-      return const Text('');
-    }
+  void _showMb({
+    String Entity = '',
+    String Reference = '',
+    String Amount = '',
+    String ExpiryDate = '',
+    String Error = ''
+  }){
+    showDialog<void>(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return AlertDialog(
+                title: Text('Pagamento Multibanco'),
+                content: SingleChildScrollView(
+                  padding: EdgeInsets.all(8),
+                  child:
+                  Error != ''?
+                  ListBody(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Text(
+                          'Entidade: ${Entity}',
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                        child: Text(
+                          'Referencia: ${Reference}',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                        child: Text(
+                          'Valor: ${Amount}',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                        child: Text(
+                          'Expira em: ${ExpiryDate}',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      )
+                    ],
+                  ):
+                      ListBody(
+                        children: [
+                          Padding(
+                              padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                              child: Text(
+                                'Erro: ${Error}',
+                    style: const TextStyle(fontSize: 16),
+                  ))
+                      ],)
+                ),
+                actions: <Widget>[
+                  OutlinedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text(
+                      "Cancelar",
+                    ),
+                  ),
+                  OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                    ),
+                    onPressed: () {
+                    },
+                    child: Text(
+                      "APROVADO",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  )
+                ],
+              );
+            }
+        );
+      },
+    );
   }
   DatabaseReference database = FirebaseDatabase.instance.ref();
   @override
@@ -101,7 +174,21 @@ class _CheckoutState extends State<Checkout> {
                           clientEmail: Userr().email,
                           clientUsername: Userr().email,
                           clientPhone: Userr().phoneNbr))
-                          .then((value) => null);//TODO CONTINUAR AQUI
+                          .then((value) {
+                            if(value.Status == "0"){
+                              _showMb(
+                                  Reference: value.Reference,
+                                Entity: value.Entity,
+                                Amount: value.Amount,
+                                ExpiryDate: value.ExpiryDate
+                              );
+                            }else{
+                              _showMb(
+                                  Error: value.Message
+                              );
+                            }
+
+                      });
                     },
                   ),
                 ),
@@ -126,7 +213,6 @@ class _CheckoutState extends State<Checkout> {
                 ),
               ],
             ),
-            FutureBuilder<void>(future: _launched, builder: _launchStatus),
           ],
         )),
       ),

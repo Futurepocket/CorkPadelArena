@@ -12,7 +12,7 @@ class Multibanco {
   String OrderId = '';
   String Reference = '';
   String RequestId = '';
-  int Status = 0;
+  String Status ='';
 
   static Resource<Multibanco> postRequest(
       {
@@ -26,12 +26,12 @@ class Multibanco {
       }) {
     const String MBKEY = 'BFZ-560841';
     const String url = 'https://corkpadelarena.com/#/login';
-    const int expiryDays = 1;
+    const String expiryDays = '1';
 
-    var mbway = Resource(
+    var multibanco = Resource(
       //url official url: '/ifthenpay.com/api/multibanco/reference/init'
-        url: '/multibanco/reference/init',
-        body: {
+        url: '/multibanco/reference/sandbox',
+        body: jsonEncode({
           "mbKey": MBKEY,
           "orderId": orderId,
           "amount": amount,
@@ -42,17 +42,16 @@ class Multibanco {
           "clientUsername": clientUsername,
           "clientPhone": clientPhone,
           "expiryDays" : expiryDays
-        },
+        }),
         parse: (response) {
           final result = json.decode(response.body);
 
           var decoded = Multibanco.fromJson(result);
-
           return decoded;
         },
         headers: {});
 
-    return mbway;
+    return multibanco;
   }
 
   static Resource<dynamic> getRequestState(
@@ -85,7 +84,7 @@ class Multibanco {
       this.OrderId = '',
       this.Reference = '',
       this.RequestId = '',
-      this.Status = 0});
+      this.Status = ''});
 
   factory Multibanco.fromJson(Map<String, dynamic> json) => _$MultibancoFromJson(json);
 }

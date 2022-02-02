@@ -14,6 +14,6 @@ Multibanco _$MultibancoFromJson(Map<String, dynamic> json) => Multibanco(
   OrderId: json['OrderId'] as String? ?? '',
   Reference: json['Reference'] as String? ?? '',
   RequestId: json['RequestId'] as String? ?? '',
-  Status: json['MsgDescricao'] as int? ?? 0,
+  Status: json['Status'] as String? ?? '',
 );
 

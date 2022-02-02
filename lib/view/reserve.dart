@@ -47,6 +47,10 @@ class _ReserveState extends State<Reserve> {
   }
   @override
   void initState() {
+    setState(() {
+      _check.reservations = reservationsToCheckOut.length;
+      _check.price = _check.reservations * 10;
+    });
     super.initState();
 
   }
