@@ -2,13 +2,10 @@ import 'dart:convert';
 import 'package:cork_padel_arena/apis/multibanco.dart';
 import 'package:cork_padel_arena/apis/webservice.dart';
 import 'package:cork_padel_arena/models/userr.dart';
-import 'package:cork_padel_arena/utils/color_loader.dart';
-import 'package:cork_padel_arena/utils/common_utils.dart';
 import 'package:cork_padel_arena/view/mbway_payment.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:url_launcher/url_launcher.dart';
 import 'package:cork_padel_arena/models/checkoutValue.dart';
 
 class Checkout extends StatefulWidget {
@@ -23,11 +20,11 @@ class _CheckoutState extends State<Checkout> {
 
 
   void _showMb({
-    String Entity = '',
-    String Reference = '',
-    String Amount = '',
-    String ExpiryDate = '',
-    String Error = ''
+    required String entity,
+    required String reference,
+    required String amount,
+    required String expiryDate,
+    required String error
   }){
     showDialog<void>(
       barrierDismissible: false,
@@ -46,28 +43,28 @@ class _CheckoutState extends State<Checkout> {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 8.0),
                         child: Text(
-                          'Entidade: ${Entity}',
+                          'Entidade: $entity',
                           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
                         child: Text(
-                          'Referencia: ${Reference}',
+                          'Referencia: $reference',
                           style: const TextStyle(fontSize: 16),
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
                         child: Text(
-                          'Valor: ${Amount}',
+                          'Valor: $amount',
                           style: const TextStyle(fontSize: 16),
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
                         child: Text(
-                          'Expira em: ${ExpiryDate}',
+                          'Expira em: $expiryDate',
                           style: const TextStyle(fontSize: 16),
                         ),
                       )
@@ -175,16 +172,21 @@ class _CheckoutState extends State<Checkout> {
                           clientUsername: Userr().email,
                           clientPhone: Userr().phoneNbr))
                           .then((value) {
-                            if(value.Status == "0"){
+                            if(value.Status.toString() == '0'){
                               _showMb(
-                                  Reference: value.Reference,
-                                Entity: value.Entity,
-                                Amount: value.Amount,
-                                ExpiryDate: value.ExpiryDate
+                                  reference: value.Reference,
+                                entity: value.Entity,
+                                amount: value.Amount,
+                                expiryDate: value.ExpiryDate,
+                                error: ''
                               );
                             }else{
                               _showMb(
-                                  Error: value.Message
+                                  reference: '',
+                                  entity: '',
+                                  amount: '',
+                                  expiryDate: '',
+                                  error: value.Message
                               );
                             }
 

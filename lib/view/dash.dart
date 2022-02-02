@@ -48,6 +48,15 @@ class _DashState extends State<Dash> {
       throw 'Could not launch $url';
     }
   }
+
+  @override
+  didChangeDependencies(){
+    setState(() {
+      _check.reservations = reservationsToCheckOut.length;
+      _check.price = _check.reservations * 10;
+    });
+  }
+
   List<String> keys = [];
   void deleteOldReservations() {
     final DateTime today = DateTime.now();
