@@ -3,9 +3,17 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:linkwell/linkwell.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class Contacts extends StatelessWidget {
+import '../utils/common_utils.dart';
+import 'dash.dart';
+
+class Contacts extends StatefulWidget {
   const Contacts({Key? key}) : super(key: key);
 
+  @override
+  State<Contacts> createState() => _ContactsState();
+}
+
+class _ContactsState extends State<Contacts> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -348,7 +356,43 @@ class Contacts extends StatelessWidget {
           ),
         ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: Stack(
+          children: [
+            FloatingActionButton(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              onPressed: () {
+                showShoppingCart(context).then((value) {
+                  setState(() {
 
+                  });
+                });
+              },
+              child: Icon(Icons.shopping_cart, color: Colors.white,),
+            ),
+
+            reservationsToCheckOut.isEmpty?
+            Positioned(
+                top: 1.0,
+                left: 1.0,
+                child: Container())
+                : Positioned(
+              top: 1.0,
+              left: 1.0,
+              child: CircleAvatar(
+                radius: 10,
+                backgroundColor: Colors.red,
+                child: Text(reservationsToCheckOut.length.toString(),
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 11.0,
+                      fontWeight: FontWeight.w500
+                  ),
+                ),
+              ),
+            )
+          ]
+      ),
     );
   }
 }

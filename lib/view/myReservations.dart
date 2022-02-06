@@ -126,12 +126,7 @@ class _MyReservationsState extends State<MyReservations> {
                             if (reservations[i].userEmail != _user.email) {
                               reservations.removeAt(i);
                               i = i;
-                              break;
                             }
-                            final String when = reservations[i].day +
-                                ' ' +
-                                reservations[i].hour;
-                            final DateTime dbDay = formatter.parse(when);
                             if (complete) {
                               if (reservations[i].completed == false) {
                                 reservations.removeAt(i);

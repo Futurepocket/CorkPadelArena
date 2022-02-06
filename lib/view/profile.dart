@@ -2,6 +2,7 @@ import 'package:cork_padel_arena/models/checkoutValue.dart';
 import 'package:cork_padel_arena/models/userr.dart';
 import 'package:cork_padel_arena/utils/common_utils.dart';
 import 'package:flutter/material.dart';
+import 'dash.dart';
 import 'editDetails.dart';
 import 'myReservations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -12,6 +13,7 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+  checkoutValue _check = checkoutValue();
   @override
   void initState() {
     super.initState();
@@ -100,6 +102,20 @@ class _ProfileState extends State<Profile> {
                             ),
                             Text(
                               _userr.email,
+                              style: TextStyle(fontSize: 16),
+                            )
+                          ]),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: _padd),
+                          child: Row(children: [
+                            Text(
+                              "Tel: ",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 18),
+                            ),
+                            Text(
+                              _userr.phoneNbr,
                               style: TextStyle(fontSize: 16),
                             )
                           ]),
@@ -222,7 +238,40 @@ class _ProfileState extends State<Profile> {
             ),
     ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: shopCart(context, settingState)
+      floatingActionButton: Stack(
+          children: [
+            FloatingActionButton(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              onPressed: () {
+                showShoppingCart(context).then((value) {
+                  settingState();
+                });
+              },
+              child: Icon(Icons.shopping_cart, color: Colors.white,),
+            ),
+
+            reservationsToCheckOut.isEmpty?
+            Positioned(
+                top: 1.0,
+                left: 1.0,
+                child: Container())
+                : Positioned(
+              top: 1.0,
+              left: 1.0,
+              child: CircleAvatar(
+                radius: 10,
+                backgroundColor: Colors.red,
+                child: Text(reservationsToCheckOut.length.toString(),
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 11.0,
+                      fontWeight: FontWeight.w500
+                  ),
+                ),
+              ),
+            )
+          ]
+      ),
     );
   }
 }

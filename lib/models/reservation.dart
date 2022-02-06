@@ -40,7 +40,20 @@ class Reservation {
         completed: data['completed'],
         price: data['price'],
         id: data['id'],
-        dateMade: '',
-        timeMade: '');
+        dateMade: data['dateMade'],
+        timeMade: data['timeMade']);
   }
+  static Map<String, dynamic> toMap(Reservation instance) => <String, dynamic>{
+  'client_email': instance.userEmail,
+    'completed' : instance.completed,
+    'dateMade': instance.dateMade,
+    'day': instance.day,
+    'duration': instance.duration,
+    'hour': instance.hour,
+    'id': instance.id,
+    'pin': instance.pin,
+    'price': instance.price,
+    'state': instance.state,
+    'timeMade': instance.timeMade
+  };
 }

@@ -8,6 +8,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:cork_padel_arena/models/checkoutValue.dart';
 import 'package:flutter/material.dart';
 import 'checkout.dart';
+import 'dash.dart';
 
 class ShoppingCart extends StatefulWidget {
 
@@ -69,6 +70,12 @@ setState(() {
                         }
                       } while (i < reservations.length);
                         reservationsToCheckOut = reservations as List<Reservation>;
+                        _check.reservations = reservationsToCheckOut.length;
+                        var price = 0;
+                      reservationsToCheckOut.forEach((element) {
+                        price += int.parse(element.price);
+                      });
+                      _check.price = price;
                       try {
                         tilesList.addAll(reservations.map((nextReservation) {
 
@@ -98,9 +105,6 @@ setState(() {
                       } catch (e) {
                         return Text('O carrinho esta vazio');
                       }
-                    }else{
-                      _check.reservations = 0;
-                      reservationsToCheckOut.clear();
                     }
                     // }
                     if (tilesList.isNotEmpty) {
@@ -224,9 +228,8 @@ setState(() {
                 onPressed: () {
                   _check.price -= int.parse(price);
                   _database.remove();
-                  _check.reservations -= 1;
-
                   reservationsToCheckOut.removeWhere((element) => element.id == id);
+                  _check.reservations = reservationsToCheckOut.length;
                   Navigator.of(context).pop(true);
                 },
                 child: Text(

@@ -51,7 +51,7 @@ class _UserDetailsWidgetState extends State<UserDetailsWidget> {
     _form.currentState!.save();
 
     AddUser(Userr().id, Userr().name, Userr().surname, Userr().address, Userr().city,
-        Userr().postCode, Userr().nif)
+        Userr().phoneNbr, Userr().postCode, Userr().nif)
         .addUser();
 
     //await newUser.addUser();
@@ -203,6 +203,7 @@ class _UserDetailsWidgetState extends State<UserDetailsWidget> {
                     },
                   ),
                 ),
+//---------------------------------------//TLM-------------------------------------------------------------
                 Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: TextFormField(
@@ -387,12 +388,13 @@ class AddUser {
   final String _surname;
   final String _address;
   final String _city;
+  final String _phoneNbr;
   final String _postCode;
   final String _nif;
 
   User? _user;
 
-  AddUser(this._id, this._name, this._surname, this._address, this._city,
+  AddUser(this._id, this._name, this._surname, this._phoneNbr, this._address, this._city,
       this._postCode, this._nif);
 
   CollectionReference users = FirebaseFirestore.instance.collection('users');
@@ -407,6 +409,7 @@ class AddUser {
       'city': _city,
       'email': _user!.email.toString(),
       'first_name': _name,
+      'phoneNbr': _phoneNbr,
       'last_name': _surname,
       'nif': _nif,
       'postal_code': _postCode,

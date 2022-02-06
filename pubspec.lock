@@ -294,6 +294,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.1.1"
+  interval_time_picker:
+    dependency: "direct main"
+    description:
+      name: interval_time_picker
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0+3"
   intl:
     dependency: transitive
     description:

@@ -10,6 +10,8 @@ import '../../models/userr.dart';
 import './reserve.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import 'admin_payments.dart';
+
 class AdminDash extends StatefulWidget {
 
   @override
@@ -65,13 +67,13 @@ class _AdminDashState extends State<AdminDash> {
           Navigator.of(
             ctx,
           ).push(MaterialPageRoute(builder: (_) {
-            return Reserve();
+            return AdminPayments();
           }));
         },
       ),
       Pages(
         Icon(Icons.sensor_door_outlined, size: 120, color: _menuColor),
-        '${AppLocalizations.of(context)!.openDoor}/${AppLocalizations.of(context)!.closeDoor}',
+        '${AppLocalizations.of(context)!.openDoor}',
         Theme.of(context).primaryColor,
             (BuildContext ctx) {
               launch('http://admin:cork2021@161.230.247.85:3333/cgi-bin/accessControl.cgi?action=openDoor&channel=1&UserID=101&Type=Remote');
@@ -83,7 +85,7 @@ class _AdminDashState extends State<AdminDash> {
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Align(
-            alignment: Alignment.center,
+            alignment: Alignment.centerLeft,
             child: Text("Cork Padel Arena")),
         backgroundColor: Theme.of(context).primaryColor,
       ),
@@ -135,7 +137,40 @@ class _AdminDashState extends State<AdminDash> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: shopCart(context, settingState),
+      floatingActionButton: Stack(
+          children: [
+            FloatingActionButton(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              onPressed: () {
+                showShoppingCart(context).then((value) {
+                  settingState();
+                });
+              },
+              child: Icon(Icons.shopping_cart, color: Colors.white,),
+            ),
+
+            _check.reservations == 0?
+            Positioned(
+                top: 1.0,
+                left: 1.0,
+                child: Container())
+                : Positioned(
+              top: 1.0,
+              left: 1.0,
+              child: CircleAvatar(
+                radius: 10,
+                backgroundColor: Colors.red,
+                child: Text(_check.reservations.toString(),
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 11.0,
+                      fontWeight: FontWeight.w500
+                  ),
+                ),
+              ),
+            )
+          ]
+      ),
     );
   }
 

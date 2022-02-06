@@ -1,31 +1,32 @@
-import 'dart:async';
 import 'dart:math';
-import 'package:cork_padel_arena/models/checkoutValue.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:cork_padel_arena/models/ReservationStreamPublisher.dart';
 import 'package:cork_padel_arena/models/reservation.dart';
 import 'package:cork_padel_arena/models/userr.dart';
 import 'package:cork_padel_arena/utils/common_utils.dart';
-import 'package:cork_padel_arena/view/shoppingCart.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:interval_time_picker/interval_time_picker.dart';
 
+import '../models/checkoutValue.dart';
+import 'dash.dart';
 class Reserve extends StatefulWidget {
   @override
   _ReserveState createState() => _ReserveState();
 }
 
 class _ReserveState extends State<Reserve> {
-  checkoutValue _check = checkoutValue();
 
   DatabaseReference database = FirebaseDatabase.instance.ref();
   String? _selectedDuration;
   String _warning = '';
   String _warning2 = '';
-
+  checkoutValue _check = checkoutValue();
   DateTime? _selectedDate;
   TimeOfDay? _timeChosen;
+  TimeOfDay? value;
   bool _reservationValid = false;
   bool _isNotNow = false;
 
@@ -51,10 +52,6 @@ class _ReserveState extends State<Reserve> {
         String selectedDay =
         DateFormat('dd/MM/yyyy').format(_selectedDate!);
         String dbDay = reservation.day;
-        print('dbDay: ${dbDay}');
-        print('dbDay: ${selectedDay}');
-        print('selDay: ${selectedDay}');
-        print('dbDay: ${dbDay}');
         if (selectedDay == dbDay) {
           String maxTimeText = reservation.hour;
           TimeOfDay _startTime = TimeOfDay(
@@ -75,19 +72,22 @@ class _ReserveState extends State<Reserve> {
             double dbEndTime = toDouble(_endTime);
             double pickedStartTime = toDouble(_timeChosen!);
             double pickedEndTime = toDouble(_until);
-
-            if (dbStartTime <= pickedStartTime &&
-                dbEndTime >= pickedStartTime) {
+            print(dbStartTime);
+            print(dbEndTime);
+            print(pickedStartTime);
+            print(pickedEndTime);
+            if (dbStartTime+0.1 <= pickedStartTime &&
+                dbEndTime-0.1 >= pickedStartTime) {
               _reservationValid = false;
               _timeChosen = null;
               _warning = 'Ja existe uma reserva a essa hora!';
-            } else if (dbStartTime <= pickedEndTime &&
-                dbEndTime >= pickedEndTime) {
+            } else if (dbStartTime+0.1 <= pickedEndTime &&
+                dbEndTime-0.1 >= pickedEndTime) {
               _reservationValid = false;
               _timeChosen = null;
               _warning = 'Ja existe uma reserva a essa hora!';
-            } else if (pickedStartTime <= dbStartTime &&
-                dbEndTime <= pickedEndTime) {
+            } else if (pickedStartTime <= dbStartTime+0.1 &&
+                dbEndTime-0.1 <= pickedEndTime) {
               _reservationValid = false;
               _timeChosen = null;
               _warning = 'Ja existe uma reserva a essa hora!';
@@ -127,12 +127,11 @@ class _ReserveState extends State<Reserve> {
     });
   }
 
-  void _presentTimePicker() {
-    _reservationValid = false;
-    var date = DateTime.now();
-    showTimePicker(
+  void _presentTimePicker() async {
+   final TimeOfDay? newTime = await showIntervalTimePicker(
       context: context,
-      initialEntryMode: TimePickerEntryMode.input,
+      interval: 30,
+      visibleStep: VisibleStep.Thirtieths,
       initialTime: TimeOfDay(hour: 8, minute: 00),
       builder: (BuildContext context, Widget? child) {
         return MediaQuery(
@@ -140,40 +139,51 @@ class _ReserveState extends State<Reserve> {
           child: child!,
         );
       },
-    ).then((value) {
-      if (value == null) {
-        return;
-      } else {
-        if (_selectedDate != null) {
-          var pickedTime = DateTime(_selectedDate!.year, _selectedDate!.month,
-              _selectedDate!.day, value.hour, value.minute);
+     ).then((newTime) {
+     if (newTime != null) {
+       setState(() {
+         value = newTime;
+         setTime(value);
+       });
+     }
+   });
+  }
+
+  void setTime(value){
+    _reservationValid = false;
+    var date = DateTime.now();
+    if (value == null) {
+      return;
+    } else {
+      if (_selectedDate != null) {
+        var pickedTime = DateTime(_selectedDate!.year, _selectedDate!.month,
+            _selectedDate!.day, value.hour, value.minute);
 //COMPARING PICKED DATE WITH DATE NOW
-          var comparison = pickedTime.compareTo(date);
-print(comparison);
+        var comparison = pickedTime.compareTo(date);
+        print(comparison);
 // IF DATA CHOSEN IS AFTER NOW
-          if (comparison == 1) {
-            setState(() {
-              _timeChosen = value;
-              _isNotNow = true;
-              if (_selectedDuration != null) _activateListeners();
-            });
+        if (comparison == 1) {
+          setState(() {
+            _timeChosen = value;
+            _isNotNow = true;
+            if (_selectedDuration != null) _activateListeners();
+          });
 //IF DATE CHOSEN IS NOW OR BEFORE
-          } else {
-            setState(() {
-              _timeChosen = null;
-              _warning = 'Nao pode fazer reservas no passado';
-              _isNotNow = true;
-            });
-          }
         } else {
-//IF DAY IS NOT CHOSEN YET
           setState(() {
             _timeChosen = null;
-            _warning = 'Escolha o Dia Primeiro';
+            _warning = 'Nao pode fazer reservas no passado';
+            _isNotNow = true;
           });
         }
+      } else {
+//IF DAY IS NOT CHOSEN YET
+        setState(() {
+          _timeChosen = null;
+          _warning = 'Escolha o Dia Primeiro';
+        });
       }
-    });
+    }
   }
 
   String randomNumbers() {
@@ -233,8 +243,6 @@ print(comparison);
         timeMade: DateFormat('HH:mm').format(DateTime.now()));
     setState(() {
       reservationsToCheckOut.add(_reservation);
-      _check.reservations = reservationsToCheckOut.length;
-      _check.price += int.parse(price!);
     });
     try {
       //await reservations.set(_reservation);
@@ -261,7 +269,40 @@ print(comparison);
 
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: shopCart(context, settingState),
+      floatingActionButton: Stack(
+          children: [
+            FloatingActionButton(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              onPressed: () {
+                showShoppingCart(context).then((value) {
+                  settingState();
+                });
+              },
+              child: Icon(Icons.shopping_cart, color: Colors.white,),
+            ),
+
+            reservationsToCheckOut.isEmpty?
+            Positioned(
+                top: 1.0,
+                left: 1.0,
+                child: Container())
+                : Positioned(
+              top: 1.0,
+              left: 1.0,
+              child: CircleAvatar(
+                radius: 10,
+                backgroundColor: Colors.red,
+                child: Text(reservationsToCheckOut.length.toString(),
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 11.0,
+                      fontWeight: FontWeight.w500
+                  ),
+                ),
+              ),
+            )
+          ]
+      ),
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text("Cork Padel Arena"),
@@ -482,6 +523,7 @@ print(comparison);
                             letterSpacing: 1),
                       ),
                       onPressed: () {
+                        _activateListeners();
                         if (_reservationValid &&
                             _isNotNow &&
                             _selectedDuration != null) {

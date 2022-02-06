@@ -1,8 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cork_padel_arena/models/ReservationStreamPublisher.dart';
+import 'package:cork_padel_arena/models/checkoutValue.dart';
 import 'package:cork_padel_arena/models/reservation.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import '../src/widgets.dart';
 
 class AdminReservations extends StatefulWidget {
   const AdminReservations({Key? key}) : super(key: key);
@@ -12,16 +16,40 @@ class AdminReservations extends StatefulWidget {
 }
 
 class _AdminReservationsState extends State<AdminReservations>with TickerProviderStateMixin{
+  checkoutValue _check = checkoutValue();
   late TabController _tabController;
   late int _index;
   late String filter;
-
+  List<dynamic> _payments = [];
   @override
   void initState() {
+    _getPayments();
     filter = "a aguardar pagamento";
     _index = 0;
     _tabController = new TabController(length: 3, vsync: this);
     super.initState();
+  }
+  void _getPayments(){
+    _payments.clear();
+    FirebaseFirestore.instance
+        .collection('MBPayments')
+        .get()
+        .then((value) {
+          value.docs.forEach((element) {
+            print(element);
+            if(element['confirmado'] == true){
+              _payments.add(element);
+            }
+          });
+    });
+  }
+  ListTile _buildPaymentsRow(BuildContext context, int index){
+    return ListTile(
+      leading: Icon(Icons.payments_outlined),
+      title: _payments[index]['OrderId'],
+      subtitle: Text('Valor: ${_payments[index]['Amount']}'),
+
+    );
   }
   @override
   Widget build(BuildContext context) {
@@ -42,7 +70,17 @@ class _AdminReservationsState extends State<AdminReservations>with TickerProvide
                 controller: _tabController,
                 onTap: (index){
                   setState(() {
-
+                    switch(index){
+                      case 0:
+                        filter = 'a aguardar pagamento';
+                        break;
+                      case 1:
+                        filter = 'por completar';
+                        break;
+                      case 2:
+                        filter = 'pago';
+                        break;
+                    }
                   });
                 },
                 indicatorColor: Colors.white,
@@ -63,46 +101,10 @@ class _AdminReservationsState extends State<AdminReservations>with TickerProvide
                 const BoxConstraints(minWidth: double.infinity, maxHeight: 680),
                 child: Column(
                   children: [
-                    Container(
-                      child: Column(children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 20.0, bottom: 10),
-                          child: Image.asset(
-                            'assets/images/logo.png',
-                            width: 80.0,
-                            height: 100.0,
-                          ),
-                        ),
-                        Text(
-                          AppLocalizations.of(context)!.reservations,
-                          style: TextStyle(
-                            fontFamily: 'Roboto Condensed',
-                            fontSize: 26,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-
-                          ],
-                        ),
-                      ]),
-                    ),
-                    Text(
-                      'Completas',
-                      style: TextStyle(
-                        fontFamily: 'Roboto Condensed',
-                        fontSize: 20,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
                     StreamBuilder(
                         stream: ReservationStreamPublisher().getReservationStream(),
                         builder: (context, snapshot) {
                           final tilesList = <ListTile>[];
-                          final DateTime today = DateTime.now();
-                          final formatter = DateFormat('dd/MM/yyyy hh:mm');
                           if (snapshot.hasData) {
                             List reservations = snapshot.data as List<Reservation>;
                             int i = 0;
@@ -110,8 +112,9 @@ class _AdminReservationsState extends State<AdminReservations>with TickerProvide
                               if (reservations.isNotEmpty) {
                                 if (reservations[i].state != filter) {
                                   reservations.removeAt(i);
-                                  i = i;
-                                  break;
+                                }
+                                else{
+                                  i++;
                                 }
                               }
                             } while (i < reservations.length);
@@ -123,7 +126,13 @@ class _AdminReservationsState extends State<AdminReservations>with TickerProvide
                                         nextReservation.hour +
                                         ' as ' +
                                         nextReservation.duration),
-                                    subtitle: Text('Dia ' + nextReservation.day));
+                                    subtitle: Text('Dia ' + nextReservation.day),
+                                  trailing: IconButton(
+                                    icon: Icon(Icons.delete),
+                                    onPressed: () {
+                                      _deleting(context, nextReservation.id, nextReservation.price);
+                                    },
+                                  ),);
                               }));
                             } catch (e) {
                               return Text('Ainda nao existem reservas');
@@ -137,7 +146,10 @@ class _AdminReservationsState extends State<AdminReservations>with TickerProvide
                               ),
                             );
                           }
-                          return Text('Ainda nao existem reservas');
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 40),
+                            child: Text('Ainda nao existem reservas'),
+                          );
                         }),
                   ],
                 ),
@@ -148,4 +160,59 @@ class _AdminReservationsState extends State<AdminReservations>with TickerProvide
       ),
     );
   }
+  void _deleting(BuildContext context, String id, String price) {
+    final _database =
+    FirebaseDatabase.instance.ref().child('reservations').child(id);
+    showDialog<void>(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+            builder: (context, setState)
+            {
+              return AlertDialog(
+                title: Text(
+                  AppLocalizations.of(context)!.cancel,
+                  style: const TextStyle(fontSize: 24),
+                ),
+                content: SingleChildScrollView(
+                  child: ListBody(
+                    children: <Widget>[
+                      Text(
+                        AppLocalizations.of(context)!.sureToCancelReservation,
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                    ],
+                  ),
+                ),
+                actions: <Widget>[
+                  StyledButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(false);
+                    },
+                    child: Text(
+                      AppLocalizations.of(context)!.doNotCancel,
+                      style: TextStyle(color: Theme.of(context).colorScheme.primary),
+                    ),
+                    background: Colors.white,
+                    border: Theme.of(context).colorScheme.primary,
+                  ),
+                  StyledButton(
+                    onPressed: () {
+                      _database.remove();
+                      Navigator.of(context).pop(true);
+                    },
+                    child: Text(
+                      AppLocalizations.of(context)!.yesCancel,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    background: Colors.red,
+                    border: Colors.red,
+                  ),
+                ],
+              );
+            });
+      },
+    );
+  }
 }
+

@@ -46,6 +46,7 @@ dependencies:
   linkwell: ^2.0.6
   local_auth: ^1.1.10
   flutter_secure_storage: ^5.0.2
+  interval_time_picker: ^1.0.0+3
 
 flutter_icons:
   image_path: "assets/images/logo.jpg"

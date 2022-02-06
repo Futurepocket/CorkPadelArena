@@ -19,7 +19,8 @@ import 'admindash.dart';
 import 'contacts.dart';
 import 'myReservations.dart';
 
-
+List<Reservation> reservationList = [];
+List<Reservation> reservationsToCheckOut = [];
 class Dash extends StatefulWidget {
 
   @override
@@ -30,7 +31,6 @@ class Dash extends StatefulWidget {
 class _DashState extends State<Dash> {
   late bool isToday;
   late bool isIn10Mins;
-  late ScrollController _scrollController;
   DatabaseReference database = FirebaseDatabase.instance.ref();
   checkoutValue _check = checkoutValue();
   var myName;
@@ -63,6 +63,7 @@ class _DashState extends State<Dash> {
   List<String> keys = [];
   void deleteOldReservations() {
     final DateTime today = DateTime.now();
+    print(today);
     final formatter = DateFormat('dd/MM/yyyy HH:mm');
     database.child('reservations').onValue.listen((event) {
       if(event.snapshot.value != null){
@@ -85,16 +86,6 @@ class _DashState extends State<Dash> {
               setState(() {
                 _check.reservations = reservationsToCheckOut.length;
                 _check.price -= int.parse(value["price"]);
-              });
-            }
-          }else if(today.isBefore(made.add(const Duration(minutes: 30))) &&
-              value['state'] == 'por completar'){
-            if(value['client_email'] == Userr().email)
-            {
-              setState(() {
-                reservationsToCheckOut.add(Reservation.fromRTDB(Map<String, dynamic>.from(value)));
-                _check.price += int.parse(value['price']);
-                _check.reservations = reservationsToCheckOut.length;
               });
             }
           }
@@ -144,9 +135,17 @@ class _DashState extends State<Dash> {
                 reservedToday!.duration;
             final DateTime theOneTodayFinishes = formatter.parse(whenMade);
             if(today.isAfter(theOneTodayFinishes.add(const Duration(minutes:  10)))){
-              isIn10Mins = false;
-              isToday = false;
-              reservedToday = null;
+              setState(() {
+                isIn10Mins = false;
+                isToday = false;
+                reservedToday = null;
+              });
+            }else if(today.isAfter(formatter.parse(reservedToday!.day + ' ' + reservedToday!.hour))
+                && today.isBefore(formatter.parse(reservedToday!.day + ' ' + reservedToday!.duration))){
+              setState(() {
+                isIn10Mins = true;
+                isToday = true;
+              });
             }
           }
         });
@@ -178,7 +177,6 @@ class _DashState extends State<Dash> {
         }
   @override
   void initState() {
-    _scrollController = new ScrollController();
     isToday = false;
     isIn10Mins = false;
     getUser();
@@ -292,8 +290,8 @@ class _DashState extends State<Dash> {
           return MyApp();
         }));
       }),
-
-      if(Userr().role == "administrador")
+//TODO REMOVE COMMENTS HERE
+      //if(Userr().role == "administrador")
         Pages(
             Icon(
               Icons.admin_panel_settings_outlined,
@@ -419,7 +417,40 @@ class _DashState extends State<Dash> {
        ),
      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: shopCart(context, settingState),
+      floatingActionButton: Stack(
+          children: [
+            FloatingActionButton(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              onPressed: () {
+                showShoppingCart(context).then((value) {
+                  settingState();
+                });
+              },
+              child: Icon(Icons.shopping_cart, color: Colors.white,),
+            ),
+
+            reservationsToCheckOut.isEmpty?
+            Positioned(
+                top: 1.0,
+                left: 1.0,
+                child: Container())
+                : Positioned(
+              top: 1.0,
+              left: 1.0,
+              child: CircleAvatar(
+                radius: 10,
+                backgroundColor: Colors.red,
+                child: Text(reservationsToCheckOut.length.toString(),
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 11.0,
+                      fontWeight: FontWeight.w500
+                  ),
+                ),
+              ),
+            )
+          ]
+      ),
     );
   }
 

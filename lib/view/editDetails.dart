@@ -50,7 +50,7 @@ class _EditDetailsWidgetState extends State<EditDetailsWidget> {
     }
     _form.currentState!.save();
 
-    AddUser(_userr.id, _userr.name, _userr.surname, _userr.address, _userr.city,
+    AddUser(_userr.id, _userr.name, _userr.surname, _userr.phoneNbr, _userr.address, _userr.city,
             _userr.postCode, _userr.nif, _userr.email)
         .addUser();
 
@@ -63,11 +63,13 @@ class _EditDetailsWidgetState extends State<EditDetailsWidget> {
   final postCodeController = TextEditingController();
   final cityController = TextEditingController();
   final nifController = TextEditingController();
+  final phoneNbrController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     nameController.text = _userr.name;
+    phoneNbrController.text = _userr.phoneNbr;
     surnameController.text = _userr.surname;
     addressController.text = _userr.address;
     postCodeController.text = _userr.postCode;
@@ -284,6 +286,43 @@ class _EditDetailsWidgetState extends State<EditDetailsWidget> {
                     ),
                   ],
                 ),
+//---------------------------------------//TLM-------------------------------------------------------------
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: TextFormField(
+                    controller: phoneNbrController,
+                    textInputAction: TextInputAction.next,
+                    autofillHints: [AutofillHints.telephoneNumber],
+                    keyboardType:
+                    TextInputType.numberWithOptions(decimal: false),
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.all(10),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Theme.of(context).primaryColor, width: 1.5),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Theme.of(context).primaryColor, width: 1.5),
+                      ),
+                      labelText: 'Numero de Telemovel',
+                      // errorText: 'Error Text',
+                    ),
+                    onSaved: (value) {
+                      _userr.phoneNbr = value.toString();
+                    },
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Obrigatorio';
+                      }
+                      if (double.tryParse(value) == null || value.length < 9) {
+                        return 'NIF invalido';
+                      }
+
+                      return null;
+                    },
+                  ),
+                ),
 //---------------------------------------//NIF-------------------------------------------------------------
                 Padding(
                   padding: const EdgeInsets.all(10.0),
@@ -359,6 +398,7 @@ class AddUser {
   final String _name;
   final String _surname;
   final String _address;
+  final String _phoneNbr;
   final String _city;
   final String _postCode;
   final String _nif;
@@ -366,7 +406,7 @@ class AddUser {
 
   User? _user = FirebaseAuth.instance.currentUser;
 
-  AddUser(this._id, this._name, this._surname, this._address, this._city,
+  AddUser(this._id, this._name, this._surname, this._phoneNbr, this._address, this._city,
       this._postCode, this._nif, this._email);
 
   CollectionReference users = FirebaseFirestore.instance.collection('users');
@@ -375,10 +415,11 @@ class AddUser {
     //Call the user's CollectionReference to add a new user
     return users.doc(_email).set({
       'id': _id,
-      'role': 'utilizador',
+      'role': Userr().role,
       'address': _address,
       'city': _city,
       'email': _email,
+      'phoneNbr': _phoneNbr,
       'first_name': _name,
       'last_name': _surname,
       'nif': _nif,

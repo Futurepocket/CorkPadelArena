@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:cork_padel_arena/apis/mbway.dart';
 import 'package:cork_padel_arena/apis/webservice.dart';
 import 'package:cork_padel_arena/models/checkoutValue.dart';
@@ -140,9 +138,9 @@ String emailDetails = '';
       final reservations = database.child('reservations');
 reservationsToCheckOut.forEach((element) async{
   try {
-    await reservations.child(element.id).set({
+    await reservations.child(element.id).update({
       'state': 'pago',
-      'completed': true,
+      'completed': true
     });
   } catch (e) {
     print('There is an error!');

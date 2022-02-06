@@ -1,12 +1,17 @@
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cork_padel_arena/apis/multibanco.dart';
 import 'package:cork_padel_arena/apis/webservice.dart';
 import 'package:cork_padel_arena/models/userr.dart';
+import 'package:cork_padel_arena/view/dash.dart';
 import 'package:cork_padel_arena/view/mbway_payment.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:cork_padel_arena/models/checkoutValue.dart';
+import 'package:intl/intl.dart';
+
+import '../models/reservation.dart';
 
 class Checkout extends StatefulWidget {
   @override
@@ -14,10 +19,18 @@ class Checkout extends StatefulWidget {
 }
 
 class _CheckoutState extends State<Checkout> {
+  String? referencia;
 
-  checkoutValue _check = checkoutValue();
   var ws = Webservice();
-
+  String? _price;
+  void _generateReference(){
+    referencia = 'CKA${DateFormat('ddMMyyHHmmss').format(DateTime.now())}';
+  }
+@override
+  void initState() {
+    _price = checkoutValue().price.toString();
+    super.initState();
+  }
 
   void _showMb({
     required String entity,
@@ -108,6 +121,8 @@ class _CheckoutState extends State<Checkout> {
     );
   }
   DatabaseReference database = FirebaseDatabase.instance.ref();
+
+  CollectionReference mbPayments = FirebaseFirestore.instance.collection('MBPayments');
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -142,7 +157,7 @@ class _CheckoutState extends State<Checkout> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                'Valor total: € ${_check.price.toString()}.00',
+                'Valor total: € ${_price!}.00',
                 style: TextStyle(
                   fontFamily: 'Roboto Condensed',
                   fontSize: 24,
@@ -163,15 +178,16 @@ class _CheckoutState extends State<Checkout> {
                     icon: Image.asset('assets/images/mb.png'),
                     iconSize: 75,
                     onPressed: () async {
+                      _generateReference();
                       ws.post(Multibanco.postRequest(
-                          orderId: 'Arena${Userr().phoneNbr}',
-                          amount: _check.price.toString(),
+                          orderId: referencia!,
+                          amount: _price!,
                           description: 'Reserva de ${Userr().name} ${Userr().surname}',
                           clientName: Userr().name,
                           clientEmail: Userr().email,
                           clientUsername: Userr().email,
                           clientPhone: Userr().phoneNbr))
-                          .then((value) {
+                          .then((value) async{
                             if(value.Status.toString() == '0'){
                               _showMb(
                                   reference: value.Reference,
@@ -180,6 +196,28 @@ class _CheckoutState extends State<Checkout> {
                                 expiryDate: value.ExpiryDate,
                                 error: ''
                               );
+                              List <dynamic>resToSave = [];
+                              final reservations = database.child('reservations');
+                              reservationsToCheckOut.forEach((element) async{
+                                  element.state = 'a aguardar pagamento';
+                                resToSave.add(Reservation.toMap(element));
+                              });
+                              resToSave.forEach((element) async{
+                                try {
+                                  await reservations.child(element['id']).update({'state': element['state']}).then((value) {
+                                  });
+                                } catch (e) {
+                                  print(e);
+                                }
+                              });
+                              mbPayments.doc(referencia!).set({
+                                "confirmado": false,
+                                "Amount": value.Amount,
+                                "OrderId": value.OrderId,
+                                "RequestId": value.RequestId,
+                                "reservations": resToSave,
+                              });
+
                             }else{
                               _showMb(
                                   reference: '',
