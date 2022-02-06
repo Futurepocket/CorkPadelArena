@@ -57,7 +57,7 @@ class _CheckoutState extends State<Checkout> {
                       Padding(
                         padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
                         child: Text(
-                          'Valor: $amount',
+                          'Valor: € $amount.00',
                           style: const TextStyle(fontSize: 16),
                         ),
                       ),
@@ -142,7 +142,7 @@ class _CheckoutState extends State<Checkout> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                'Valor total: €' + _check.price.toString(),
+                'Valor total: € ${_check.price.toString()}.00',
                 style: TextStyle(
                   fontFamily: 'Roboto Condensed',
                   fontSize: 24,

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cork_padel_arena/apis/mbway.dart';
 import 'package:cork_padel_arena/apis/webservice.dart';
 import 'package:cork_padel_arena/models/checkoutValue.dart';
@@ -10,6 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+
+import 'dash.dart';
 
 class MbWayPayment extends StatefulWidget {
   const MbWayPayment({Key? key}) : super(key: key);
@@ -34,6 +38,7 @@ class _MbWayPaymentState extends State<MbWayPayment> {
   String? MsgDescricao;
   String? DataHoraPedidoAtualizado;
   String? idPedido;
+  String? referencia;
 
   @override
   void initState() {
@@ -46,6 +51,10 @@ String emailDetails = '';
       emailDetails += '<p>Dia: ${element.day}, das ${element.hour} às ${element.duration}.</p>';
     });
     reservationsToCheckOut.clear();
+  }
+
+  void _generateReference(){
+    referencia = 'CKA${DateFormat('ddMMyyHHmmss').format(DateTime.now())}';
   }
 
   _sendClientEmail() async {
@@ -103,11 +112,12 @@ String emailDetails = '';
     print('Email done');
   }
   DatabaseReference database = FirebaseDatabase.instance.ref();
+
   @override
   Widget build(BuildContext context) {
 
     _saveAll() async{
-      CollectionReference payments = FirebaseFirestore.instance.collection('payments');
+      CollectionReference payments = FirebaseFirestore.instance.collection('MBWayPayments');
       String _idd = 'Arena${paymentTlm}' + DateFormat('ddMMyyyy HH:mm').format(DateTime.now());
 
 /////////////////////SAVING PAYMENT////////////////////////////////////
@@ -117,21 +127,23 @@ String emailDetails = '';
           MsgDescricao: MsgDescricao!,
           DataHoraPedidoAtualizado: DataHoraPedidoAtualizado!,
           EmailCliente: paymentEmail!,
-          Referencia: 'Arena${paymentTlm}',
+          Referencia: referencia!,
           tlmCliente: paymentTlm!);
       await payments.doc(_idd).set({
       _payment.toMap()
       }).then((value) {
-        print("payment saved");
         ScaffoldMessenger.of(context).showSnackBar(
             newSnackBar(context, Text('Reservas Efetuados')));
       }).catchError((onError) => print("Failed to save payment: $onError"));
 //////////////////////////SAVING RESERVATION////////////////////////////////////
+
       final reservations = database.child('reservations');
 reservationsToCheckOut.forEach((element) async{
   try {
-    await reservations.child(element.id).child("state").set('pago');
-    await reservations.child(element.id).child("completed").set(true);
+    await reservations.child(element.id).set({
+      'state': 'pago',
+      'completed': true,
+    });
   } catch (e) {
     print('There is an error!');
   }
@@ -140,6 +152,7 @@ reservationsToCheckOut.forEach((element) async{
   _sendCompanyEmail();
   reservationsToCheckOut.clear();
   _check.reservations = 0;
+  _check.price = 0;
 });
     }
 
@@ -155,9 +168,9 @@ reservationsToCheckOut.forEach((element) async{
         builder: (context) {
           return StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
-
+              _generateReference();
               ws.get(Mbway.getRequest(
-                  referencia: 'Arena${paymentTlm}',
+                  referencia: referencia!,
                   valor: '0,01',
                   nrtlm: paymentTlm!,
                   email: paymentEmail!,
@@ -237,10 +250,9 @@ reservationsToCheckOut.forEach((element) async{
                             _isAproved = false;
                             _saveAll();
                             Navigator.of(context).pop();
-                            Navigator.of(context).pop();
-                            Navigator.of(context).pop();
-                            Navigator.of(context).pop();
-                            Navigator.of(context).pop();
+                            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_){
+                              return Dash();
+                            }));
                           });
                           await Future.delayed(const Duration(milliseconds: 2000), () {});
                         }else{

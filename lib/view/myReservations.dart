@@ -3,6 +3,7 @@ import 'package:cork_padel_arena/models/reservation.dart';
 import 'package:cork_padel_arena/models/userr.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MyReservations extends StatefulWidget {
   const MyReservations({Key? key}) : super(key: key);
@@ -44,7 +45,7 @@ class _MyReservationsState extends State<MyReservations> {
                       ),
                     ),
                     Text(
-                      'Minhas Reservas',
+                      AppLocalizations.of(context)!.myReservations,
                       style: TextStyle(
                         fontFamily: 'Roboto Condensed',
                         fontSize: 26,

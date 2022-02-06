@@ -82,15 +82,6 @@ Widget shopCart(BuildContext context, Function updateMe){
   );
 }
 
-void showToast({
-  required BuildContext context,
-}) {
-  OverlayEntry overlayEntry;
-
-  overlayEntry = OverlayEntry(builder: (context) => ToastWidget());
-  Overlay.of(context)!.insert(overlayEntry);
-  Timer(Duration(seconds: 4), () => overlayEntry.remove());
-}
 
 SnackBar newSnackBar(BuildContext context, Text content) {
   return SnackBar(

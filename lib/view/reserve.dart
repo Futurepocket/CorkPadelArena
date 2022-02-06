@@ -16,16 +16,6 @@ class Reserve extends StatefulWidget {
   _ReserveState createState() => _ReserveState();
 }
 
-void showToast({
-  required BuildContext context,
-}) {
-  OverlayEntry overlayEntry;
-
-  overlayEntry = OverlayEntry(builder: (context) => ToastWidget());
-  Overlay.of(context)!.insert(overlayEntry);
-  Timer(Duration(seconds: 4), () => overlayEntry.remove());
-}
-
 class _ReserveState extends State<Reserve> {
   checkoutValue _check = checkoutValue();
 
@@ -48,8 +38,7 @@ class _ReserveState extends State<Reserve> {
   @override
   void initState() {
     setState(() {
-      _check.reservations = reservationsToCheckOut.length;
-      _check.price = _check.reservations * 10;
+
     });
     super.initState();
 
@@ -210,7 +199,20 @@ print(comparison);
     String _pin = randomNumbers();
     String _idd = DateFormat('ddMMyyyy').format(_selectedDate!) +
         "${_timeChosen!.format(context)}";
-
+    String? price;
+ switch(_selectedDuration){
+   case "60":
+     price = "24";
+     break;
+   case "90":
+     price = "29";
+     break;
+   case "120":
+     price = "39";
+     break;
+   default:
+     break;
+    }
     final day = reservations.child(_idd);
     String until = _selectedDuration!;
     TimeOfDay _until;
@@ -226,12 +228,13 @@ print(comparison);
         userEmail: Userr().email,
         completed: false,
         id: _idd,
+        price: price!,
         dateMade: DateFormat('dd/MM/yyyy').format(DateTime.now()),
         timeMade: DateFormat('HH:mm').format(DateTime.now()));
     setState(() {
       reservationsToCheckOut.add(_reservation);
       _check.reservations = reservationsToCheckOut.length;
-      _check.price = _check.reservations * 10;
+      _check.price += int.parse(price!);
     });
     try {
       //await reservations.set(_reservation);
@@ -242,6 +245,7 @@ print(comparison);
         'hour': _reservation.hour,
         'duration': _reservation.duration,
         'state': _reservation.state,
+        'price': _reservation.price,
         'client_email': _reservation.userEmail,
         'completed': _reservation.completed,
         'dateMade': _reservation.dateMade,
@@ -400,11 +404,7 @@ print(comparison);
                                        maxLines: 2,
                                        textAlign: TextAlign.right,
                                           ),
-
                                  ),
-
-
-
                               ],
                               ),
                           ),
@@ -427,7 +427,7 @@ print(comparison);
                                     child: DropdownButton<String>(
                                       hint: Text(AppLocalizations.of(context)!.choose),
                                       value: _selectedDuration,
-                                      items: <String>['30', '60', '90', '120']
+                                      items: <String>['60', '90', '120']
                                           .map((String value) {
                                         return DropdownMenuItem<String>(
                                           value: value,
@@ -486,7 +486,10 @@ print(comparison);
                             _isNotNow &&
                             _selectedDuration != null) {
                           _reserve();
-                          showToast(context: context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            newSnackBar(context,
+                                Text(AppLocalizations.of(context)!.reservationAdded))
+                          );
                           return;
                         } else if (!_reservationValid || !_isNotNow) {
                           _timeChosen = null;
@@ -599,7 +602,7 @@ class ToastWidget extends StatelessWidget {
           elevation: 10.0,
           borderRadius: BorderRadius.circular(10),
           child: Padding(
-            padding: const EdgeInsets.all(2.0),
+            padding: const EdgeInsets.all(5.0),
             child: Text(
               'Reserva adicionada ao carrinho',
               style: TextStyle(

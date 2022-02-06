@@ -8,6 +8,7 @@ class Reservation {
   late String day;
   late String hour;
   late String duration;
+  late String price;
   late String state;
 
 
@@ -20,6 +21,7 @@ class Reservation {
       required this.hour,
       required this.duration,
       required this.state,
+        required this.price,
       required this.userEmail,
       required this.completed,
       required this.id,
@@ -36,6 +38,7 @@ class Reservation {
         state: data['state'],
         userEmail: data['client_email'],
         completed: data['completed'],
+        price: data['price'],
         id: data['id'],
         dateMade: '',
         timeMade: '');

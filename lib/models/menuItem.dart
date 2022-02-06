@@ -25,13 +25,15 @@ class MenuItem extends StatelessWidget {
         child: Column(
           children: [
             Flexible(
-              flex: 10,
+              flex: 5,
                 child: ikon),
               Flexible(
-                flex: 2,
-                child: Text(
-                  title,
-                  style: TextStyle(fontSize: 16, color: Colors.grey.shade800),
+                flex: 1,
+                child: FittedBox(
+                  child: Text(
+                    title,
+                    style: TextStyle(fontSize: 16, color: Colors.grey.shade800),
+                  ),
                 ),
               ),
           ],

@@ -331,7 +331,10 @@ class _LoginState extends State<Login> {
                                               await FirebaseAuth.instance
                                                   .sendPasswordResetEmail(
                                                   email: _emailController.text);
-                                              showToast(context: context);
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                  newSnackBar(
+                                                      context, Text(AppLocalizations.of(context)!.recoveryEmailSent),
+                                                  ));
                                             } on FirebaseAuthException catch (er) {
                                               showErrorDialog(
                                                   context, AppLocalizations.of(context)!.enterYourEmail, er);

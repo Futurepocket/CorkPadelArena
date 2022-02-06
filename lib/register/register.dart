@@ -270,35 +270,3 @@ class _RegisterState extends State<Register> {
     );
   }
   }
-
-
-
-
-
-class ToastWidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Positioned(
-      top: 100.0,
-      width: MediaQuery.of(context).size.width - 20,
-      left: 10,
-      child: Padding(
-        padding: const EdgeInsets.all(5.0),
-        child: Material(
-          color: Colors.lime,
-          elevation: 10.0,
-          borderRadius: BorderRadius.circular(10),
-          child: Padding(
-            padding: const EdgeInsets.all(2.0),
-            child: Text(
-              'Email de Recuperacao de Password Enviado',
-              style: TextStyle(
-                fontSize: 16,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}

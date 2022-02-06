@@ -21,6 +21,13 @@ class _ShoppingCartState extends State<ShoppingCart> {
   var number;
   List listForLength = <Card>[];
   DatabaseReference database = FirebaseDatabase.instance.ref();
+
+  @override
+  void didChangeDependencies() {
+setState(() {
+
+});
+  }
   @override
   Widget build(BuildContext context) {
     number = 0;
@@ -61,7 +68,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
                             i++;
                         }
                       } while (i < reservations.length);
-                      reservationsToCheckOut = reservations as List<Reservation>;
+                        reservationsToCheckOut = reservations as List<Reservation>;
                       try {
                         tilesList.addAll(reservations.map((nextReservation) {
 
@@ -79,7 +86,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
                               trailing: IconButton(
                                 icon: Icon(Icons.delete),
                                 onPressed: () {
-                                  _deleting(context, nextReservation.id);
+                                  _deleting(context, nextReservation.id, nextReservation.price);
                                 },
                               ),
                             ),
@@ -91,6 +98,9 @@ class _ShoppingCartState extends State<ShoppingCart> {
                       } catch (e) {
                         return Text('O carrinho esta vazio');
                       }
+                    }else{
+                      _check.reservations = 0;
+                      reservationsToCheckOut.clear();
                     }
                     // }
                     if (tilesList.isNotEmpty) {
@@ -113,7 +123,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
                                 ),
                               ),
                               Text(
-                                '€ ' + _check.price.toString(),
+                                '€ ${_check.price.toString()}.00',
                                 style: TextStyle(
                                   fontFamily: 'Roboto Condensed',
                                   fontSize: 26,
@@ -174,7 +184,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
     );
   }
 
-  void _deleting(BuildContext context, String id) {
+  void _deleting(BuildContext context, String id, String price) {
     final _database =
         FirebaseDatabase.instance.ref().child('reservations').child(id);
     showDialog<void>(
@@ -212,9 +222,10 @@ class _ShoppingCartState extends State<ShoppingCart> {
               ),
               StyledButton(
                 onPressed: () {
+                  _check.price -= int.parse(price);
                   _database.remove();
                   _check.reservations -= 1;
-                  _check.price = _check.reservations * 10;
+
                   reservationsToCheckOut.removeWhere((element) => element.id == id);
                   Navigator.of(context).pop(true);
                 },

@@ -16,7 +16,6 @@ class _ProfileState extends State<Profile> {
   void initState() {
     super.initState();
   }
-  checkoutValue _check = checkoutValue();
   settingState(){
     setState(() {
 
