@@ -5,9 +5,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:cork_padel_arena/models/menuItem.dart';
 import 'package:cork_padel_arena/models/page.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
 import '../../models/userr.dart';
-import './reserve.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'admin_payments.dart';
@@ -75,9 +74,11 @@ class _AdminDashState extends State<AdminDash> {
         Icon(Icons.sensor_door_outlined, size: 120, color: _menuColor),
         '${AppLocalizations.of(context)!.openDoor}',
         Theme.of(context).primaryColor,
-            (BuildContext ctx) {
-              launch('http://admin:cork2021@161.230.247.85:3333/cgi-bin/accessControl.cgi?action=openDoor&channel=1&UserID=101&Type=Remote');
-        },
+        (BuildContext ctx) {
+          http.post(
+              Uri.parse('http://admin:cork2021@161.230.247.85:3333/cgi-bin/accessControl.cgi?action=openDoor&channel=1&UserID=101&Type=Remote'),
+          );
+        }
       ),
     ];
 

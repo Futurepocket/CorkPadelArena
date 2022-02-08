@@ -18,6 +18,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'admindash.dart';
 import 'contacts.dart';
 import 'myReservations.dart';
+import 'package:http/http.dart' as http;
 
 List<Reservation> reservationList = [];
 List<Reservation> reservationsToCheckOut = [];
@@ -350,7 +351,9 @@ class _DashState extends State<Dash> {
                         ),),
                         onPressed: isIn10Mins?
                             (){
-                              launch('http://admin:cork2021@161.230.247.85:3333/cgi-bin/accessControl.cgi?action=openDoor&channel=1&UserID=101&Type=Remote');
+                          http.post(
+                            Uri.parse('http://admin:cork2021@161.230.247.85:3333/cgi-bin/accessControl.cgi?action=openDoor&channel=1&UserID=101&Type=Remote'),
+                          );
                             }
                         :(){},
                         background: isIn10Mins ? Theme.of(context).primaryColor

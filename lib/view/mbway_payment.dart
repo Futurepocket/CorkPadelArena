@@ -152,6 +152,9 @@ reservationsToCheckOut.forEach((element) async{
   _check.reservations = 0;
   _check.price = 0;
 });
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_){
+        return Dash();
+      }));
     }
 
     void _saveForm(BuildContext context) {
@@ -248,9 +251,6 @@ reservationsToCheckOut.forEach((element) async{
                             _isAproved = false;
                             _saveAll();
                             Navigator.of(context).pop();
-                            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_){
-                              return Dash();
-                            }));
                           });
                           await Future.delayed(const Duration(milliseconds: 2000), () {});
                         }else{
