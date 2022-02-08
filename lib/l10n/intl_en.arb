@@ -46,6 +46,7 @@
   "paid": "PAID",
   "password": "Password",
   "passwordsNotMatch": "Passwords do not match",
+  "paymentValidated": "Payment validated",
   "payments": "Payments",
   "pendingPayment": "AWAITING PAYMENT",
   "personalDetails": "Personal Details",
@@ -73,6 +74,7 @@
   "timeChosen":"Time chosen",
   "to": "to",
   "toConfirm": "To Confirm",
+  "validatePayment": "Do you want to confirm this payment?",
   "welcome": "Welcome",
   "welcometoTheApp": "Welcome to the Cork Padel Arena App",
   "yesCancel": "Yes, Cancel"

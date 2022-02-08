@@ -1,3 +1,4 @@
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cork_padel_arena/models/userr.dart';
@@ -26,6 +27,54 @@ Future<void> currentUser() {
     Userr().postCode = value.data()!["postal_code"].toString();
     Userr().role = value.data()!["role"].toString();
   });
+}
+
+Future<bool> simpleConfirmationDialogue(
+    {required BuildContext context,
+      required String warning,
+    }) async{
+  return await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  Text(
+                    warning,
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: Theme.of(context).errorColor)),
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+                child: Text(
+          AppLocalizations.of(context)!.cancel,
+                  style: TextStyle(color: Theme.of(context).errorColor),
+                ),
+              ),
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: Theme.of(context).errorColor)),
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+                child: Text(
+                  'OK',
+                  style: TextStyle(color: Theme.of(context).errorColor),
+                ),
+              ),
+            ],
+          );
+        });
+      }) ?? false;
 }
 
 Future<bool> showShoppingCart(BuildContext ctx) async{

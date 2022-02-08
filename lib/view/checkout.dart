@@ -20,7 +20,7 @@ class Checkout extends StatefulWidget {
 
 class _CheckoutState extends State<Checkout> {
   String? referencia;
-
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
   var ws = Webservice();
   String? _price;
   void _generateReference(){
@@ -57,7 +57,7 @@ class _CheckoutState extends State<Checkout> {
                         padding: const EdgeInsets.only(bottom: 8.0),
                         child: Text(
                           'Entidade: $entity',
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontSize: 18),
                         ),
                       ),
                       Padding(
@@ -79,6 +79,13 @@ class _CheckoutState extends State<Checkout> {
                         child: Text(
                           'Expira em: $expiryDate',
                           style: const TextStyle(fontSize: 16),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                        child: Text(
+                          'Vai receber um email com estes detalhes',
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                         ),
                       )
                     ],
@@ -107,9 +114,13 @@ class _CheckoutState extends State<Checkout> {
                       backgroundColor: Theme.of(context).colorScheme.primary,
                     ),
                     onPressed: () {
+                      Navigator.of(context)
+                          .pushReplacement(MaterialPageRoute(builder: (context){
+                            return Dash();
+                      }));
                     },
                     child: Text(
-                      "APROVADO",
+                      "OK",
                       style: TextStyle(color: Colors.white),
                     ),
                   )
@@ -119,6 +130,79 @@ class _CheckoutState extends State<Checkout> {
         );
       },
     );
+  }
+
+  String emailDetails = '';
+  generateEmailDetails(list){
+    list.forEach((element) {
+      emailDetails += '<p>Dia: ${element['day']}, das ${element['hour']} às ${element['duration']}.</p>';
+    });
+  }
+  _sendClientEmail({
+    required String email,
+    required String name,
+    required String referencia,
+    required String entidade,
+    required String valor,
+  }) async {
+    await(firestore.collection("reservationEmails").add({
+      'to': email,
+      'message': {
+        'subject': "Reserva Pendente",
+        'html': '''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+        
+        <p>Olá, $name,</p>
+        <p>A sua reserva foi está pendente.</p>
+        <p>Por favor efetue pagamento em 24 horas.</p>
+        Detalhes:\n
+        ${emailDetails}
+       
+       <p>Detalhes de Pagamento:</p>
+       <p>Entidade: $entidade</p>
+       <p>Referencia: $entidade</p>
+       <p>Valor: $valor</p>
+       <p>Obrigado,</p>
+
+       A sua equipa Cork Padel Arena
+        
+        </html>''',
+      },
+    },)
+        .then((value) => print("email queued"),
+    )
+    );
+    print('Email done');
+  }
+
+  _sendCompanyEmail(orderId) async {
+    await(firestore.collection("reservationEmails").add({
+      'to': 'david.carvalhan@gmail.com', //TODO ADD corkpadel@corkpadel.com
+      'message': {
+        'subject': "Nova reserva PENDENTE de ${Userr().name} ${Userr().surname} na Arena",
+        'html': '''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+        <p>Reserva de ${Userr().name} ${Userr().surname},</p>
+        <p>Email: ${Userr().email} Tlm: ${Userr().phoneNbr},</p>
+        <p></p>
+        <p>Detalhes:</p>
+        <p>ID do Pagamento:$orderId</p>
+        <p>${emailDetails}</p>
+       <p></p>
+       <p>Valor: € ${_price}</p>
+       <p></p>
+       <p>PRECISA SER CONFIRMADA NA SECÇÃO DE PAGAMENTOS NA DASHBOARD DE ADMINISTRADOR DA APP</p>
+       <p>Obrigado,</p>
+       <p>A sua equipa Cork Padel Arena</p>
+
+        </html>''',
+      },
+    },)
+        .then((value) => print("email queued"),
+    )
+    );
+    print('Email done');
   }
   DatabaseReference database = FirebaseDatabase.instance.ref();
 
@@ -212,11 +296,26 @@ class _CheckoutState extends State<Checkout> {
                               });
                               mbPayments.doc(referencia!).set({
                                 "confirmado": false,
+                                "clientName": '${Userr().name} ${Userr().surname}',
                                 "Amount": value.Amount,
                                 "OrderId": value.OrderId,
                                 "RequestId": value.RequestId,
+                                "data": DateFormat('dd/MM/yy HH:mm').format(DateTime.now()),
                                 "reservations": resToSave,
+                              }).then((_) {
+                                generateEmailDetails(resToSave);
+                                _sendClientEmail(
+                                    name: '${Userr().name} ${Userr().surname}',
+                                    email: Userr().email,
+                                    referencia: value.Reference,
+                                    entidade: value.Entity,
+                                    valor: value.Amount,
+                                    );
+                                _sendCompanyEmail(value.OrderId);
+                                reservationsToCheckOut.clear();
+                                checkoutValue().price = 0;
                               });
+
 
                             }else{
                               _showMb(

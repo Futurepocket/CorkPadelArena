@@ -65,12 +65,12 @@ String emailDetails = '';
         
         <p>Olá, ${Userr().name},</p>
         <p>Obrigado pela sua reserva.</p>
-        Detalhes:\n
+        <p>Detalhes:</p>
         <p>${emailDetails}</p>
-       \n
+       <p></p>
        <p>Valor: € ${_check.price.toString()}</p>
        <p>Obrigado,</p>
-
+       <p></p>
        A sua equipa Cork Padel Arena
         
         </html>''',
@@ -92,12 +92,12 @@ String emailDetails = '';
         
         <p>Reserva de ${Userr().name} ${Userr().surname},</p>
         <p>Email: ${tlmController.text} Tlm: ${emailController.text},</p>
-        \n
-        Detalhes:\n
+        <p></p>
+        <p>Detalhes:</p>
         <p>${emailDetails}</p>
-       \n
+       <p></p>
        <p>Valor: € ${_check.price.toString()}</p> 
-       
+       <p></p>
        <p>Obrigado,</p>
        <p>A sua equipa Cork Padel Arena</p>
         

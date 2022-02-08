@@ -290,8 +290,7 @@ class _DashState extends State<Dash> {
           return MyApp();
         }));
       }),
-//TODO REMOVE COMMENTS HERE
-      //if(Userr().role == "administrador")
+      if(Userr().role == "administrador")
         Pages(
             Icon(
               Icons.admin_panel_settings_outlined,
