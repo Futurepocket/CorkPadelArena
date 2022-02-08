@@ -65,6 +65,7 @@ class _PaymentDetailsState extends State<PaymentDetails> {
             });
             ScaffoldMessenger.of(context).showSnackBar(
                 newSnackBar(context, Text(AppLocalizations.of(context)!.paymentValidated)));
+            generateEmailDetails();
             _sendClientEmail(
                 email: _reservations[0]['client_email'],
                 name: _thisPayment['clientName']);
