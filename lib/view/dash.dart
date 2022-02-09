@@ -33,7 +33,6 @@ class _DashState extends State<Dash> {
   late bool isToday;
   late bool isIn10Mins;
   DatabaseReference database = FirebaseDatabase.instance.ref();
-  checkoutValue _check = checkoutValue();
   var myName;
   Future<void>? _launched;
 
@@ -57,7 +56,7 @@ class _DashState extends State<Dash> {
       _removeFromDB();
     });
     setState(() {
-      _check.reservations = reservationsToCheckOut.length;
+      checkoutValue().reservations = reservationsToCheckOut.length;
     });
   }
 
@@ -69,7 +68,6 @@ class _DashState extends State<Dash> {
     database.child('reservations').onValue.listen((event) {
       if(event.snapshot.value != null){
         //reservationsToCheckOut.clear();
-        _check.price = 0;
         Map<String, dynamic>.from(event.snapshot.value as dynamic)
             .forEach((key, value){
           final String whenMade = value['dateMade'] + ' ' + value['timeMade'];
@@ -85,8 +83,8 @@ class _DashState extends State<Dash> {
             if(value['client_email'] == Userr().email){
               reservationsToCheckOut.removeWhere((element) => element.id == key);
               setState(() {
-                _check.reservations = reservationsToCheckOut.length;
-                _check.price -= int.parse(value["price"]);
+                checkoutValue().reservations = reservationsToCheckOut.length;
+                checkoutValue().price -= int.parse(value["price"]);
               });
             }
           }

@@ -1,10 +1,12 @@
 class checkoutValue {
-  static final checkoutValue _check = checkoutValue._internal();
+  static checkoutValue _check = checkoutValue._internal();
 
-  late int _reservations;
-  late int _price;
+  int _reservations = 0;
+  int _price = 0;
 
-  factory checkoutValue() => _check;
+  factory checkoutValue() {
+    return _check;
+  }
 
   int get reservations => _reservations;
   int get price => _price;
@@ -14,8 +16,5 @@ class checkoutValue {
   void moreReservations() => _reservations++;
   void lessReservations() => _reservations--;
 
-  checkoutValue._internal() {
-    _reservations = 0;
-    _price = 0;
-  }
+  checkoutValue._internal();
 }

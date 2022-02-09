@@ -28,7 +28,8 @@ class _CheckoutState extends State<Checkout> {
   }
 @override
   void initState() {
-    _price = checkoutValue().price.toString();
+   _price = checkoutValue().price.toString();
+    print(_price);
     super.initState();
   }
 

@@ -18,17 +18,11 @@ class ShoppingCart extends StatefulWidget {
 
 class _ShoppingCartState extends State<ShoppingCart> {
   Userr _user = Userr();
-  checkoutValue _check = checkoutValue();
   var number;
   List listForLength = <Card>[];
   DatabaseReference database = FirebaseDatabase.instance.ref();
 
-  @override
-  void didChangeDependencies() {
-setState(() {
 
-});
-  }
   @override
   Widget build(BuildContext context) {
     number = 0;
@@ -70,12 +64,12 @@ setState(() {
                         }
                       } while (i < reservations.length);
                         reservationsToCheckOut = reservations as List<Reservation>;
-                        _check.reservations = reservationsToCheckOut.length;
+                      checkoutValue().reservations = reservationsToCheckOut.length;
                         var price = 0;
                       reservationsToCheckOut.forEach((element) {
                         price += int.parse(element.price);
                       });
-                      _check.price = price;
+                      checkoutValue().price = price;
                       try {
                         tilesList.addAll(reservations.map((nextReservation) {
 
@@ -127,7 +121,7 @@ setState(() {
                                 ),
                               ),
                               Text(
-                                '€ ${_check.price.toString()}.00',
+                                '€ ${checkoutValue().price.toString()}.00',
                                 style: TextStyle(
                                   fontFamily: 'Roboto Condensed',
                                   fontSize: 26,
@@ -157,7 +151,7 @@ setState(() {
                                               await reservations.child(element.id).child("completed").set(true);
                                               Navigator.of(context).pop(true);
                                               reservationsToCheckOut.clear();
-                                              _check.reservations = 0;
+                                              checkoutValue().reservations = 0;
                                               ScaffoldMessenger.of(context).showSnackBar(
                                                   newSnackBar(context, Text('Reservas Efetuadas')));
                                             } catch (e) {
@@ -226,10 +220,10 @@ setState(() {
               ),
               StyledButton(
                 onPressed: () {
-                  _check.price -= int.parse(price);
+                  checkoutValue().price -= int.parse(price);
                   _database.remove();
                   reservationsToCheckOut.removeWhere((element) => element.id == id);
-                  _check.reservations = reservationsToCheckOut.length;
+                  checkoutValue().reservations = reservationsToCheckOut.length;
                   Navigator.of(context).pop(true);
                 },
                 child: Text(

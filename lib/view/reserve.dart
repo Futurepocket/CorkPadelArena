@@ -23,7 +23,6 @@ class _ReserveState extends State<Reserve> {
   String? _selectedDuration;
   String _warning = '';
   String _warning2 = '';
-  checkoutValue _check = checkoutValue();
   DateTime? _selectedDate;
   TimeOfDay? _timeChosen;
   TimeOfDay? value;
@@ -62,11 +61,24 @@ class _ReserveState extends State<Reserve> {
           TimeOfDay _endTime = TimeOfDay(
               hour: int.parse(minTimeText.split(":")[0]),
               minute: int.parse(minTimeText.split(":")[1]));
-
+          String _thisDuration = _selectedDuration!;
+          switch(_selectedDuration){
+            case "01:00":
+              _thisDuration = "60";
+              break;
+            case "01:30":
+              _thisDuration = "90";
+              break;
+            case "02:00":
+              _thisDuration = "120";
+              break;
+            default:
+              break;
+          }
           TimeOfDay _until;
           if (_timeChosen != null) {
             _until =
-                _timeChosen!.plusMinutes(int.parse(_selectedDuration!));
+                _timeChosen!.plusMinutes(int.parse(_thisDuration));
 
             double dbStartTime = toDouble(_startTime);
             double dbEndTime = toDouble(_endTime);
@@ -166,7 +178,6 @@ class _ReserveState extends State<Reserve> {
           setState(() {
             _timeChosen = value;
             _isNotNow = true;
-            if (_selectedDuration != null) _activateListeners();
           });
 //IF DATE CHOSEN IS NOW OR BEFORE
         } else {
@@ -210,7 +221,21 @@ class _ReserveState extends State<Reserve> {
     String _idd = DateFormat('ddMMyyyy').format(_selectedDate!) +
         "${_timeChosen!.format(context)}";
     String? price;
- switch(_selectedDuration){
+    String _thisDuration = _selectedDuration!;
+    switch(_selectedDuration){
+      case "01:00":
+        _thisDuration = "60";
+        break;
+      case "01:30":
+        _thisDuration = "90";
+        break;
+      case "02:00":
+        _thisDuration = "120";
+        break;
+      default:
+        break;
+    }
+ switch(_thisDuration){
    case "60":
      price = "24";
      break;
@@ -224,9 +249,9 @@ class _ReserveState extends State<Reserve> {
      break;
     }
     final day = reservations.child(_idd);
-    String until = _selectedDuration!;
+    String until = _thisDuration;
     TimeOfDay _until;
-    _until = _timeChosen!.plusMinutes(int.parse(_selectedDuration!));
+    _until = _timeChosen!.plusMinutes(int.parse(_thisDuration));
     until = _until.format(context);
 
     Reservation _reservation = Reservation(
@@ -468,7 +493,7 @@ class _ReserveState extends State<Reserve> {
                                     child: DropdownButton<String>(
                                       hint: Text(AppLocalizations.of(context)!.choose),
                                       value: _selectedDuration,
-                                      items: <String>['60', '90', '120']
+                                      items: <String>["01:00", "01:30", "02:00"]
                                           .map((String value) {
                                         return DropdownMenuItem<String>(
                                           value: value,

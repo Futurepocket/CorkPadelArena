@@ -21,7 +21,6 @@ class MbWayPayment extends StatefulWidget {
 }
 
 class _MbWayPaymentState extends State<MbWayPayment> {
-  checkoutValue _check = checkoutValue();
   final tlmController = TextEditingController();
   final emailController = TextEditingController();
   String? paymentTlm;
@@ -68,7 +67,7 @@ String emailDetails = '';
         <p>Detalhes:</p>
         <p>${emailDetails}</p>
        <p></p>
-       <p>Valor: € ${_check.price.toString()}</p>
+       <p>Valor: € ${checkoutValue().price.toString()}</p>
        <p>Obrigado,</p>
        <p></p>
        A sua equipa Cork Padel Arena
@@ -96,7 +95,7 @@ String emailDetails = '';
         <p>Detalhes:</p>
         <p>${emailDetails}</p>
        <p></p>
-       <p>Valor: € ${_check.price.toString()}</p> 
+       <p>Valor: € ${checkoutValue().price.toString()}</p> 
        <p></p>
        <p>Obrigado,</p>
        <p>A sua equipa Cork Padel Arena</p>
@@ -149,8 +148,8 @@ reservationsToCheckOut.forEach((element) async{
   _sendClientEmail();
   _sendCompanyEmail();
   reservationsToCheckOut.clear();
-  _check.reservations = 0;
-  _check.price = 0;
+  checkoutValue().reservations = 0;
+  checkoutValue().price = 0;
 });
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_){
         return Dash();
@@ -322,7 +321,7 @@ reservationsToCheckOut.forEach((element) async{
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: Text(
-                  'Valor total: €' + _check.price.toString(),
+                  'Valor total: € ${checkoutValue().price.toString()}.00',
                   style: TextStyle(
                     fontFamily: 'Roboto Condensed',
                     fontSize: 24,
@@ -426,25 +425,6 @@ reservationsToCheckOut.forEach((element) async{
                     },
                   ),
                 ),
-              Container(
-                width: 150,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: Theme.of(context).primaryColor,
-                    onPrimary: Colors.white,
-                  ),
-                  child: Text(
-                    'TEST EMAIL',
-                    style: TextStyle(fontSize: 15),
-                  ),
-                  onPressed: () {
-
-                    generateEmailDetails();
-                   _sendClientEmail();
-                   _sendCompanyEmail();
-                  },
-                ),
-              ),
             ]
           ),
       ),

@@ -16,9 +16,16 @@ class _PaymentDetailsState extends State<PaymentDetails> {
   DatabaseReference database = FirebaseDatabase.instance.ref();
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   List<dynamic> _reservations = [];
-  late Map<String, dynamic> _thisPayment;
+  Map<String, dynamic> _thisPayment = {};
+  bool isConfirmed = false;
+
   @override
   void initState() {
+    pagamentos.doc(widget.paymentID).get().then((DocumentSnapshot documentSnapshot) {
+      if (documentSnapshot.exists) {
+        isConfirmed = documentSnapshot.get('confirmed');
+      }
+    });
     super.initState();
   }
   settingState(){
@@ -245,7 +252,6 @@ class _PaymentDetailsState extends State<PaymentDetails> {
                                     child: Text("Reservas: ", style: TextStyle(fontWeight: FontWeight.bold),),
                                   ),
                                   Expanded(
-
                                       child: _buildReservationsList()
                                   ),
                                 ],
@@ -264,23 +270,23 @@ class _PaymentDetailsState extends State<PaymentDetails> {
               Align(
                 alignment: Alignment.center,
                 child:
-                    Container(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          primary: Theme.of(context).primaryColor,
-                          onPrimary: Colors.white,
-                        ),
-                        child: Text(
-                          "CONFIRMAR PAGAMENTO",
-                          style: TextStyle(fontSize: 15,),
-                        ),
-                        onPressed: () {
-                         _confirmPayment();
-                        },
-                      ),
+                Container(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Theme.of(context).primaryColor,
+                      onPrimary: Colors.white,
                     ),
+                    child: Text(
+                      "CONFIRMAR PAGAMENTO",
+                      style: TextStyle(fontSize: 15,),
+                    ),
+                    onPressed: () {
+                      _confirmPayment();
+                    },
+                  ),
+                ),
               ) :
-                  Container()
+              Container()
             ],
           ),
         ),
