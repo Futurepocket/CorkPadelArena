@@ -27,6 +27,7 @@ class _LoginState extends State<Login> {
   String? _password;
   List<_SecItem> _items = [];
   bool _isLoggedIn = false;
+  bool _alreadyLoggedIn = false;
 
   String? _getAccountName() =>
       _accountNameController.text.isEmpty ? null : _accountNameController.text;
@@ -86,6 +87,10 @@ class _LoginState extends State<Login> {
   void _signInBio() async{
     bool success = await LocalAuthApi.authenticate();
     if(success == true){
+      setState(() {
+        _emailController.text = _email!;
+        _passwordController.text = _password!;
+      });
       signInWithEmailAndPassword(
           _email!,
           _password!,
@@ -163,6 +168,9 @@ class _LoginState extends State<Login> {
     _accountNameController.addListener(() => _readAll());
     _readAll().then((v) {
       if(_items[0].key.isNotEmpty){
+        setState(() {
+          _alreadyLoggedIn = true;
+        });
           _signInBio();
           if(kIsWeb){
             _emailController.text = _email!;
@@ -171,21 +179,7 @@ class _LoginState extends State<Login> {
     });
     super.initState();
   }
-  @override
-  void didChangeDependencies() {
-    if(fbUser!=null && _isLoggedIn == false) {
-      _readAll().then((v) {
-        if (_items[0].key.isNotEmpty) {
-          _signInBio();
-          if (kIsWeb) {
-            _emailController.text = _email!;
-          }
-        }
-        ;
-      });
-    }
-    super.didChangeDependencies();
-  }
+
   var _isObscure = true;
   @override
   Widget build(BuildContext context) {
@@ -197,7 +191,7 @@ class _LoginState extends State<Login> {
           backgroundColor: Theme.of(context).primaryColor,
         ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.only(top: 80),
+        padding: EdgeInsets.only(top: 40),
           child: Container(
             alignment: Alignment.topCenter,
             margin: EdgeInsets.symmetric(horizontal: 20),
@@ -290,10 +284,9 @@ class _LoginState extends State<Login> {
                                 ),
                               ),
                               Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 10),
+                                padding: const EdgeInsets.only(top: 10),
                                 child: Container(
                                   width: 150,
-                                  padding: const EdgeInsets.all(10),
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
                                       primary: Theme.of(context).primaryColor,
@@ -308,6 +301,31 @@ class _LoginState extends State<Login> {
                                         _signIn();
                                       }
                                       },
+                                  ),
+                                ),
+                              ),
+                              if(kIsWeb == false && _alreadyLoggedIn == true)
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 10),
+                                child: Container(
+                                  width: 180,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Theme.of(context).primaryColor,
+                                      onPrimary: Colors.white,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.fingerprint),
+                                        Text(
+                                          'Login Biometrico',
+                                          style: TextStyle(fontSize: 15),
+                                        ),
+                                      ],
+                                    ),
+                                    onPressed: () {
+                                      _signInBio();
+                                      }
                                   ),
                                 ),
                               ),
