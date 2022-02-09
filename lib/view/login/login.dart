@@ -228,7 +228,7 @@ class _LoginState extends State<Login> {
                                 padding: const EdgeInsets.all(8.0),
                                 child: TextFormField(
                                   controller: _emailController,
-                                  autofillHints: [AutofillHints.email],
+                                  autofillHints: [AutofillHints.username],
                                   enableSuggestions: true,
                                   enableInteractiveSelection: true,
                                   textInputAction: TextInputAction.next,
@@ -329,37 +329,40 @@ class _LoginState extends State<Login> {
                                   ),
                                 ),
                               ),
-                              RichText(
-                                text: TextSpan(
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                    children: <TextSpan>[
-                                      TextSpan(text: AppLocalizations.of(context)!.forgotPassword),
-                                      TextSpan(
-                                          text: AppLocalizations.of(context)!.tapHere,
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              color: Theme.of(context).primaryColor,
-                                              fontWeight: FontWeight.bold),
-                                          recognizer: TapGestureRecognizer()
-                                            ..onTap = () async {
-                                            try {
-                                              await FirebaseAuth.instance
-                                                  .sendPasswordResetEmail(
-                                                  email: _emailController.text);
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                  newSnackBar(
-                                                      context, Text(AppLocalizations.of(context)!.recoveryEmailSent),
-                                                  ));
-                                            } on FirebaseAuthException catch (er) {
-                                              showErrorDialog(
-                                                  context, AppLocalizations.of(context)!.enterYourEmail, er);
-                              }
+                              Padding(
+                                padding: const EdgeInsets.only(top:8.0),
+                                child: RichText(
+                                  text: TextSpan(
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                      children: <TextSpan>[
+                                        TextSpan(text: AppLocalizations.of(context)!.forgotPassword),
+                                        TextSpan(
+                                            text: AppLocalizations.of(context)!.tapHere,
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                color: Theme.of(context).primaryColor,
+                                                fontWeight: FontWeight.bold),
+                                            recognizer: TapGestureRecognizer()
+                                              ..onTap = () async {
+                                              try {
+                                                await FirebaseAuth.instance
+                                                    .sendPasswordResetEmail(
+                                                    email: _emailController.text);
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                    newSnackBar(
+                                                        context, Text(AppLocalizations.of(context)!.recoveryEmailSent),
+                                                    ));
+                                              } on FirebaseAuthException catch (er) {
+                                                showErrorDialog(
+                                                    context, AppLocalizations.of(context)!.enterYourEmail, er);
+                                }
                             })
                     ]),
               ),
+                              ),
                               Padding(
                                 padding: const EdgeInsets.all(20.0),
                                 child: Text(AppLocalizations.of(context)!.or, style: TextStyle(
