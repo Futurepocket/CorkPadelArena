@@ -19,13 +19,19 @@ class _PaymentDetailsState extends State<PaymentDetails> {
   Map<String, dynamic> _thisPayment = {};
   bool isConfirmed = false;
 
-  @override
-  void initState() {
+  _confirmIt(){
     pagamentos.doc(widget.paymentID).get().then((DocumentSnapshot documentSnapshot) {
       if (documentSnapshot.exists) {
-        isConfirmed = documentSnapshot.get('confirmed');
+        setState(() {
+          isConfirmed = documentSnapshot.get('confirmado');
+        });
       }
     });
+  }
+
+  @override
+  void initState() {
+    _confirmIt();
     super.initState();
   }
   settingState(){
@@ -266,7 +272,7 @@ class _PaymentDetailsState extends State<PaymentDetails> {
                   ),
                 ),
               ),
-              _thisPayment['confirmado'] == false?
+              isConfirmed == false?
               Align(
                 alignment: Alignment.center,
                 child:
