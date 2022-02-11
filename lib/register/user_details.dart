@@ -50,8 +50,8 @@ class _UserDetailsWidgetState extends State<UserDetailsWidget> {
     }
     _form.currentState!.save();
 
-    AddUser(Userr().id, Userr().name, Userr().surname, Userr().address, Userr().city,
-        Userr().phoneNbr, Userr().postCode, Userr().nif)
+    AddUser(Userr().id, Userr().name, Userr().surname, Userr().phoneNbr, Userr().address, Userr().city,
+         Userr().postCode, Userr().nif)
         .addUser();
 
     //await newUser.addUser();

@@ -26,7 +26,6 @@ class _LoginState extends State<Login> {
   String? _email;
   String? _password;
   List<_SecItem> _items = [];
-  bool _isLoggedIn = false;
   bool _alreadyLoggedIn = false;
 
   String? _getAccountName() =>
@@ -99,10 +98,49 @@ class _LoginState extends State<Login> {
                   AppLocalizations.of(context)!.loginError,
                   e))
           .then((thisFbUser) {
+        loggedInBefore = true;
         if (thisFbUser != null) {
-          fbUser = thisFbUser;
-          _isLoggedIn = true;
-          if (emailVerified) {
+          checkEmailVerified(thisFbUser).then((value) {
+            if (value == true) {
+              final String _email = thisFbUser.email
+                  .toString();
+              FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(_email).get().then((value) {
+                if (value.exists) {
+                  Navigator.of(context).pushReplacementNamed(
+                      '/dash');
+                }
+                else {
+                  Navigator.of(context).pushReplacementNamed(
+                      '/userDetails');
+                }
+              });
+            } else {
+              Navigator.of(context).pushReplacementNamed(
+                  '/emailVerify');
+            }
+          });
+        }
+      });
+    }
+  }
+  void _signIn(){
+    signInWithEmailAndPassword(
+        _emailController.text,
+        _passwordController.text,
+            (e) =>
+            showErrorDialog(context,
+                AppLocalizations.of(context)!.loginError,
+                e))
+        .then((thisFbUser) {
+          loggedInBefore = true;
+      _deleteAll().then((v) {
+        _addEmail();
+        _addPassword();
+      if (thisFbUser != null) {
+        checkEmailVerified(thisFbUser).then((value) {
+          if (value == true) {
             final String _email = thisFbUser.email
                 .toString();
             FirebaseFirestore.instance
@@ -121,45 +159,9 @@ class _LoginState extends State<Login> {
             Navigator.of(context).pushReplacementNamed(
                 '/emailVerify');
           }
-        }
-      });
-    }
-  }
-  void _signIn(){
-    signInWithEmailAndPassword(
-        _emailController.text,
-        _passwordController.text,
-            (e) =>
-            showErrorDialog(context,
-                AppLocalizations.of(context)!.loginError,
-                e))
-        .then((thisFbUser) {
-      _deleteAll().then((v) {
-        _addEmail();
-        _addPassword();
-      });
-      if (thisFbUser != null) {
-        fbUser = thisFbUser;
-        if (emailVerified) {
-          final String _email = thisFbUser.email
-              .toString();
-          FirebaseFirestore.instance
-              .collection('users')
-              .doc(_email).get().then((value) {
-            if (value.exists) {
-              Navigator.of(context).pushReplacementNamed(
-                  '/dash');
-            }
-            else {
-              Navigator.of(context).pushReplacementNamed(
-                  '/userDetails');
-            }
-          });
-        } else {
-          Navigator.of(context).pushReplacementNamed(
-              '/emailVerify');
-        }
+        });
       }
+      });
     });
   }
 
@@ -171,7 +173,9 @@ class _LoginState extends State<Login> {
         setState(() {
           _alreadyLoggedIn = true;
         });
+        if(loggedInBefore == false){
           _signInBio();
+        }
           if(kIsWeb){
             _emailController.text = _email!;
           }
@@ -370,7 +374,6 @@ class _LoginState extends State<Login> {
                                     color: Theme.of(context).primaryColor,
                                 )),
                               ),
-
                               Container(
                                   width: 150,
                                   padding: const EdgeInsets.only(left: 10, right: 10),
