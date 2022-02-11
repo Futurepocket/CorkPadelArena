@@ -26,34 +26,40 @@ class _MyReservationsState extends State<MyReservations> {
       appBar: AppBar(
           title: Text("Minhas Reservas"),
           backgroundColor: Theme.of(context).primaryColor),
-      body: SafeArea(
-        child: SingleChildScrollView(
+      body: SingleChildScrollView(
           child: Container(
-            constraints:
-            BoxConstraints(minWidth: double.infinity, maxHeight: MediaQuery.of(context).size.height),
+            padding: const EdgeInsets.only(left:20.0, top: 40),
+            height: MediaQuery.of(context).size.height*0.85,
+            width: double.infinity,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  child:
-                  Column(
-                      children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20.0, bottom: 10),
-                      child: Image.asset(
-                        'assets/images/logo.png',
-                        width: 80.0,
-                        height: 100.0,
-                      ),
-                    ),
-                    Text(
-                      AppLocalizations.of(context)!.myReservations,
-                      style: TextStyle(
-                        fontFamily: 'Roboto Condensed',
-                        fontSize: 26,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
+                        Text(
+                          AppLocalizations.of(context)!.reservations,
+                          style: TextStyle(
+                            fontFamily: 'Roboto Condensed',
+                            fontSize: 16,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top:8.0),
+                          child: Text(
+                            AppLocalizations.of(context)!.myReservations,
+                            style: TextStyle(
+                              fontFamily: 'Roboto Condensed',
+                              fontSize: 28,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: MediaQuery.of(context).size.width*0.9,
+                          height: 20,
+                          decoration: BoxDecoration(
+                              border: Border(
+                                  bottom: BorderSide(
+                                      color: Colors.grey.shade600,
+                                      width: 2
+                                  ))),),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -95,8 +101,6 @@ class _MyReservationsState extends State<MyReservations> {
                         )
                       ],
                     ),
-                  ]),
-                ),
                 complete
                     ? Padding(
                       padding: const EdgeInsets.only(top:8.0),
@@ -120,63 +124,65 @@ class _MyReservationsState extends State<MyReservations> {
                           ),
                         ),
                     ),
-          StreamBuilder(
-                          stream: ReservationStreamPublisher().getReservationStream(),
-                          builder: (context, snapshot) {
-                            final tilesList = <ListTile>[];
-                            if (snapshot.hasData) {
-                              List reservations = snapshot.data as List<Reservation>;
-                              int i = 0;
-                              do {
-                                if (reservations.isNotEmpty) {
-                                  if (reservations[i].userEmail != _user.email) {
-                                    reservations.removeAt(i);
-                                    i -= 1;
-                                  }
-                                  if (complete) {
-                                    if (reservations[i].completed == false) {
+                Container(
+                  height: MediaQuery.of(context).size.height*0.55,
+                  child: StreamBuilder(
+                            stream: ReservationStreamPublisher().getReservationStream(),
+                            builder: (context, snapshot) {
+                              final tilesList = <ListTile>[];
+                              if (snapshot.hasData) {
+                                List reservations = snapshot.data as List<Reservation>;
+                                int i = 0;
+                                do {
+                                  if (reservations.isNotEmpty) {
+                                    if (reservations[i].userEmail != _user.email) {
                                       reservations.removeAt(i);
                                       i -= 1;
                                     }
-                                  } else {
-                                    if (reservations[i].completed == true) {
-                                      reservations.removeAt(i);
-                                      i -= 1;
+                                    if (complete) {
+                                      if (reservations[i].completed == false) {
+                                        reservations.removeAt(i);
+                                        i -= 1;
+                                      }
+                                    } else {
+                                      if (reservations[i].completed == true) {
+                                        reservations.removeAt(i);
+                                        i -= 1;
+                                      }
                                     }
                                   }
+                                  i++;
+                                } while (i < reservations.length-1);
+                                try {
+                                  tilesList.addAll(reservations.map((nextReservation) {
+                                    return ListTile(
+                                        leading: Icon(Icons.lock_clock),
+                                        title: Text('Das ' +
+                                            nextReservation.hour +
+                                            ' as ' +
+                                            nextReservation.duration),
+                                        subtitle: Text('Dia ' + nextReservation.day));
+                                  }));
+                                } catch (e) {
+                                  return Text('Ainda nao existem reservas');
                                 }
-                                i++;
-                              } while (i < reservations.length-1);
-                              try {
-                                tilesList.addAll(reservations.map((nextReservation) {
-                                  return ListTile(
-                                      leading: Icon(Icons.lock_clock),
-                                      title: Text('Das ' +
-                                          nextReservation.hour +
-                                          ' as ' +
-                                          nextReservation.duration),
-                                      subtitle: Text('Dia ' + nextReservation.day));
-                                }));
-                              } catch (e) {
-                                return Text('Ainda nao existem reservas');
                               }
+                              // }
+                              if (tilesList.isNotEmpty) {
+                                return Expanded(
+                                  child: ListView(
+                                        children: tilesList,
+                                  ),
+                                );
+                              }
+                              return Text('Ainda nao existem reservas');
                             }
-                            // }
-                            if (tilesList.isNotEmpty) {
-                              return Expanded(
-                                child: ListView(
-                                      children: tilesList,
-                                ),
-                              );
-                            }
-                            return Text('Ainda nao existem reservas');
-                          }
-                          ),
+                            ),
+                ),
               ],
             ),
           ),
         ),
-      ),
     );
   }
 }
