@@ -244,11 +244,14 @@ class _RegisterState extends State<Register> {
                                                   (e) => showErrorDialog(context, AppLocalizations.of(context)!.registerError, e)
                                           ).then((value) {
                                             if(value == true){
-                                              getUserDetails();
-                                              Userr().name = _displayNameController.text;
-                                              Userr().surname = _displaySurnameController.text;
-                                              Userr().email = _emailController.text;
-                                              fbUser!.sendEmailVerification();
+                                              getUserDetails().then((user){
+                                                Userr().id = user!.uid.toString();
+                                                Userr().email = user.email.toString();
+                                                Userr().name = _displayNameController.text;
+                                                Userr().surname = _displaySurnameController.text;
+                                                Userr().email = _emailController.text;
+                                                user.sendEmailVerification();
+                                              });
                                               Navigator.pushReplacementNamed(context, '/splash');
                                             }
                                           });

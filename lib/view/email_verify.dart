@@ -12,30 +12,33 @@ class EmailVerify extends StatefulWidget {
 }
 
 class _EmailVerifyState extends State<EmailVerify> {
-  late Timer timer;
+  Timer? timer;
 
   startTimer(){
-    Timer.periodic(Duration(seconds: 5), (timer) {
-      print('timing');
-    checkEmailVerified().then((value) {
-      if (value == true) {
-        timer.cancel();
-        final String _email = fbUser!.email.toString();
-        FirebaseFirestore.instance
-            .collection('users')
-            .doc(_email).get().then((value) {
-          if(value.exists){
-            Navigator.of(context).pushReplacementNamed('/dash');
-          }
-          else {
-            Navigator.of(context).pushReplacementNamed(
-                '/userDetails');
-          }
-        });
-      }
-    } );
+    timer = Timer.periodic(Duration(seconds: 2), (Timer t) => {checkEmail()});
+  }
 
-  });}
+  void checkEmail(){
+    getUserDetails().then((user) {
+      checkEmailVerified(user!).then((value) {
+        if (value == true) {
+          final String _email = fbUser!.email.toString();
+          FirebaseFirestore.instance
+              .collection('users')
+              .doc(_email).get().then((value) {
+            if(value.exists){
+              Navigator.of(context).pushReplacementNamed('/dash');
+            }
+            else {
+              Navigator.of(context).pushReplacementNamed(
+                  '/userDetails');
+            }
+          });
+          timer!.cancel();
+        }
+      });
+    });
+  }
 
   @override
   void initState() {

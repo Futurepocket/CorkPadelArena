@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
 
 Future<void> init() async {
-
   FirebaseAuth.instance.userChanges().listen((user) {
     if (user != null) {
       //_loginState = ApplicationLoginState.loggedIn;
@@ -18,10 +17,7 @@ Future<void> init() async {
 String? _email;
 String? get email => _email;
 User? fbUser;
-bool emailVerified = false;
-
-
-
+bool? emailVerified;
 void checkEmail(
     String email,
     void Function(FirebaseAuthException e) errorCallback,
@@ -40,8 +36,8 @@ void checkEmail(
   }
 }
 
-Future<bool> checkEmailVerified() async {
-  if (fbUser!.emailVerified) {
+Future<bool> checkEmailVerified(User user) async {
+  if (user.emailVerified) {
     emailVerified = true;
     return true;
   } else {
@@ -59,10 +55,14 @@ Future<User?> signInWithEmailAndPassword(
     await FirebaseAuth.instance.signInWithEmailAndPassword(
       email: email,
       password: password,
-    );
-    fbUser = FirebaseAuth.instance.currentUser;
-    Userr().email = fbUser!.email.toString();
-    checkEmailVerified();
+    ).then((value) {
+      getUserDetails().then((user) {
+        Userr().email = user!.email.toString();
+        Userr().id = user.uid.toString();
+        checkEmailVerified(user);
+        return user;
+      });
+    });
     return fbUser;
   } on FirebaseAuthException catch (e) {
     errorCallback(e);
@@ -78,10 +78,10 @@ Future<User?> signInWithEmailAndPassword(
   });
 }
 
-void getUserDetails() async {
-  fbUser = FirebaseAuth.instance.currentUser;
-  Userr().id = fbUser!.uid.toString();
-  Userr().email = fbUser!.email.toString();
+Future<User?> getUserDetails() async {
+  var user = await FirebaseAuth.instance.currentUser;
+  fbUser = user;
+  return user;
 }
 
 
@@ -93,11 +93,10 @@ Future<bool> registerAccount(String email, String displayName, String password,
     var credential = await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: email, password: password);
     await credential.user!.updateDisplayName(displayName).then((value) {
-      final User? user = credential.user;
-      fbUser = FirebaseAuth.instance.currentUser;
-      fbUser!.sendEmailVerification();
-      Userr().id = user!.uid.toString();
-      Userr().email = user.email.toString();
+      getUserDetails().then((user) {
+        Userr().id = user!.uid.toString();
+        Userr().email = user.email.toString();
+      });
     }
     );
 return true;
