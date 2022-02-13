@@ -13,7 +13,6 @@ class MyReservations extends StatefulWidget {
 
 class _MyReservationsState extends State<MyReservations> {
   bool complete = true;
-  Userr _user = Userr();
 @override
   void initState() {
     super.initState();
@@ -132,26 +131,22 @@ class _MyReservationsState extends State<MyReservations> {
                               if (snapshot.hasData) {
                                 List reservations = snapshot.data as List<Reservation>;
                                 int i = 0;
+                                reservations.removeWhere((element) => element.userEmail != Userr().email);
                                 do {
                                   if (reservations.isNotEmpty) {
-                                    if (reservations[i].userEmail != _user.email) {
-                                      reservations.removeAt(i);
-                                      i -= 1;
-                                    }
                                     if (complete) {
                                       if (reservations[i].completed == false) {
                                         reservations.removeAt(i);
-                                        i -= 1;
-                                      }
+                                        i = i;
+                                      }else{i++;}
                                     } else {
                                       if (reservations[i].completed == true) {
                                         reservations.removeAt(i);
-                                        i -= 1;
-                                      }
+                                        i = i;
+                                      }else{i++;}
                                     }
                                   }
-                                  i++;
-                                } while (i < reservations.length-1);
+                                } while (i < reservations.length);
                                 try {
                                   tilesList.addAll(reservations.map((nextReservation) {
                                     return ListTile(

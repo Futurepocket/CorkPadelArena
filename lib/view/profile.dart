@@ -129,7 +129,8 @@ class _ProfileState extends State<Profile> {
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 18),
                               ),
-                              Container(
+                              SizedBox(
+                                width: 220,
                                 child: Text(
                                   _userr.address,
                                   style: TextStyle(

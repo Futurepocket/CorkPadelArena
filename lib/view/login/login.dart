@@ -99,10 +99,10 @@ class _LoginState extends State<Login> {
                   e))
           .then((thisFbUser) {
         loggedInBefore = true;
-        if (thisFbUser != null) {
-          checkEmailVerified(thisFbUser).then((value) {
+        getUserDetails().then((value) {
+          checkEmailVerified(fbUser!).then((value) {
             if (value == true) {
-              final String _email = thisFbUser.email
+              final String _email = fbUser!.email
                   .toString();
               FirebaseFirestore.instance
                   .collection('users')
@@ -121,7 +121,7 @@ class _LoginState extends State<Login> {
                   '/emailVerify');
             }
           });
-        }
+        });
       });
     }
   }
@@ -139,26 +139,28 @@ class _LoginState extends State<Login> {
         _addEmail();
         _addPassword();
       if (thisFbUser != null) {
-        checkEmailVerified(thisFbUser).then((value) {
-          if (value == true) {
-            final String _email = thisFbUser.email
-                .toString();
-            FirebaseFirestore.instance
-                .collection('users')
-                .doc(_email).get().then((value) {
-              if (value.exists) {
-                Navigator.of(context).pushReplacementNamed(
-                    '/dash');
-              }
-              else {
-                Navigator.of(context).pushReplacementNamed(
-                    '/userDetails');
-              }
-            });
-          } else {
-            Navigator.of(context).pushReplacementNamed(
-                '/emailVerify');
-          }
+        getUserDetails().then((value) {
+          checkEmailVerified(fbUser!).then((value) {
+            if (value == true) {
+              final String _email = fbUser!.email
+                  .toString();
+              FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(_email).get().then((value) {
+                if (value.exists) {
+                  Navigator.of(context).pushReplacementNamed(
+                      '/dash');
+                }
+                else {
+                  Navigator.of(context).pushReplacementNamed(
+                      '/userDetails');
+                }
+              });
+            } else {
+              Navigator.of(context).pushReplacementNamed(
+                  '/emailVerify');
+            }
+          });
         });
       }
       });
