@@ -4,6 +4,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
 
 Future<void> init() async {
+  FirebaseAuth.instance
+      .authStateChanges()
+      .listen((User? user) {
+    if (user == null) {
+      print('User is currently signed out!');
+    } else {
+      print('User is signed in!');
+    }
+  });
   FirebaseAuth.instance.userChanges().listen((user) {
     if (user != null) {
       //_loginState = ApplicationLoginState.loggedIn;
@@ -67,19 +76,11 @@ Future<User?> signInWithEmailAndPassword(
   } on FirebaseAuthException catch (e) {
     errorCallback(e);
   }
-  FirebaseAuth.instance
-      .authStateChanges()
-      .listen((User? user) {
-    if (user == null) {
-      print('User is currently signed out!');
-    } else {
-      print('User is signed in!');
-    }
-  });
 }
 
 Future<User?> getUserDetails() async {
-  var user = await FirebaseAuth.instance.currentUser;
+  FirebaseAuth.instance.currentUser!.reload();
+  var user = FirebaseAuth.instance.currentUser;
   fbUser = user;
   return user;
 }
