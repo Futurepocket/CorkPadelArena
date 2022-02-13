@@ -1,6 +1,7 @@
 import 'package:cork_padel_arena/register/register.dart';
 import 'package:cork_padel_arena/register/user_details.dart';
 import 'package:cork_padel_arena/src/registerSplash.dart';
+import 'package:cork_padel_arena/utils/firebase_utils.dart';
 import 'package:cork_padel_arena/view/dash.dart';
 import 'package:cork_padel_arena/view/email_verify.dart';
 import 'package:flutter/foundation.dart';
@@ -23,6 +24,7 @@ void main() async {
         messagingSenderId: '951659670595',
         projectId: "corkpadel-arena-eb47b")
   ).whenComplete(() => print("Firebase started"));
+  init();
   runApp(
     kIsWeb? Center(
       child: SizedBox(
