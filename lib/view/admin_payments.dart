@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cork_padel_arena/utils/color_loader.dart';
-import 'package:cork_padel_arena/view/payment_details.dart';
+import 'package:cork_padel_arena/view/admin_payment_details.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';

@@ -162,7 +162,7 @@ class _CheckoutState extends State<Checkout> {
        <p>Detalhes de Pagamento:</p>
        <p>Entidade: $entidade</p>
        <p>Referencia: $entidade</p>
-       <p>Valor: $valor</p>
+       <p>Valor: € $valor.00</p>
        <p>Obrigado,</p>
 
        A sua equipa Cork Padel Arena

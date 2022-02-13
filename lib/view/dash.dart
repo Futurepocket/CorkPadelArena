@@ -63,7 +63,6 @@ class _DashState extends State<Dash> {
   List<String> keys = [];
   void deleteOldReservations() {
     final DateTime today = DateTime.now();
-    print(today);
     final formatter = DateFormat('dd/MM/yyyy HH:mm');
     database.child('reservations').onValue.listen((event) {
       if(event.snapshot.value != null){

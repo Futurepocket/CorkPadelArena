@@ -3,6 +3,7 @@ import 'package:cork_padel_arena/utils/common_utils.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:intl/intl.dart';
 
 class PaymentDetails extends StatefulWidget {
   @override
@@ -18,12 +19,21 @@ class _PaymentDetailsState extends State<PaymentDetails> {
   List<dynamic> _reservations = [];
   Map<String, dynamic> _thisPayment = {};
   bool isConfirmed = false;
+  bool isExpired = false;
 
   _confirmIt(){
+    final DateTime today = DateTime.now();
+    final formatter = DateFormat('dd/MM/yy HH:mm');
     pagamentos.doc(widget.paymentID).get().then((DocumentSnapshot documentSnapshot) {
       if (documentSnapshot.exists) {
         setState(() {
           isConfirmed = documentSnapshot.get('confirmado');
+          final DateTime made = formatter.parse(documentSnapshot.get('data'));
+          if(today.isAfter(made.add(const Duration(hours: 24)))){
+            isExpired = true;
+          }else{
+            isExpired = false;
+          }
         });
       }
     });
@@ -273,7 +283,40 @@ class _PaymentDetailsState extends State<PaymentDetails> {
                 ),
               ),
               isConfirmed == false?
-              Align(
+              isExpired == true?
+                  Align(
+                      alignment: Alignment.center,
+                      child: Column(children: [
+                        const Padding(
+                          padding: EdgeInsets.only(top: 3.0),
+                          child: Text(
+                            'Este pagemento expirou!',
+                            style: TextStyle(
+                              fontFamily: 'Roboto Condensed',
+                              fontSize: 14,
+                              color: Colors.red,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.red,
+                              onPrimary: Colors.white,
+                            ),
+                            child: Text(
+                              "REMOVER PAGAMENTO",
+                              style: TextStyle(fontSize: 15,),
+                            ),
+                            onPressed: () {
+                              pagamentos.doc(widget.paymentID).delete();
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ),
+                      ],),
+                  )
+              : Align(
                 alignment: Alignment.center,
                 child:
                 Container(
@@ -291,8 +334,7 @@ class _PaymentDetailsState extends State<PaymentDetails> {
                     },
                   ),
                 ),
-              ) :
-              Container()
+              ):Container()
             ],
           ),
         ),
