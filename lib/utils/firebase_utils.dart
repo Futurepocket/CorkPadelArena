@@ -79,7 +79,8 @@ Future<User?> signInWithEmailAndPassword(
 }
 
 Future<User?> getUserDetails() async {
-  var user = await FirebaseAuth.instance.currentUser;
+  FirebaseAuth.instance.currentUser!.reload();
+  var user = FirebaseAuth.instance.currentUser;
   fbUser = user;
   return user;
 }
