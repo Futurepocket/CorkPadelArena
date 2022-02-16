@@ -1,27 +1,21 @@
+import 'package:flutter/foundation.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:linkwell/linkwell.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../utils/common_utils.dart';
 import 'dash.dart';
 
 class AboutUs extends StatefulWidget {
-  const AboutUs({Key? key}) : super(key: key);
+
+  String src = 'https://www.youtube.com/watch?v=nlom7a-UiLA';
+  final double height = 200;
+  final double width = 600;
 
   @override
   State<AboutUs> createState() => _AboutUsState();
 }
 
 class _AboutUsState extends State<AboutUs> {
-
-  @override
-  void initState() {
-  }
-  List<String> playlist= [
-    'nlom7a-UiLA',
-  ];
-
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +75,7 @@ class _AboutUsState extends State<AboutUs> {
                           fontSize: 16,
                         ),
                       ),
-                      Container(
+                      if(!kIsWeb) Container(
                           padding: const EdgeInsets.only(top:10.0),
                           height: 500,
                           child: const WebView(
