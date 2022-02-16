@@ -59,50 +59,53 @@ class _MyReservationsState extends State<MyReservations> {
                                       color: Colors.grey.shade600,
                                       width: 2
                                   ))),),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Container(
-                          width: 150,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              primary: Theme.of(context).primaryColor,
-                              onPrimary: Colors.white,
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Container(
+                            width: 150,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: Theme.of(context).primaryColor,
+                                onPrimary: Colors.white,
+                              ),
+                              child: Text(
+                                "Completas",
+                                style: TextStyle(fontSize: 15),
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  complete = true;
+                                });
+                              },
                             ),
-                            child: Text(
-                              "Completas",
-                              style: TextStyle(fontSize: 15),
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                complete = true;
-                              });
-                            },
                           ),
-                        ),
-                        Container(
-                          width: 150,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              primary: Theme.of(context).primaryColor,
-                              onPrimary: Colors.white,
+                          Container(
+                            width: 150,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: Theme.of(context).primaryColor,
+                                onPrimary: Colors.white,
+                              ),
+                              child: Text(
+                                "Por Completar",
+                                style: TextStyle(fontSize: 15),
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  complete = false;
+                                });
+                              },
                             ),
-                            child: Text(
-                              "Por Completar",
-                              style: TextStyle(fontSize: 15),
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                complete = false;
-                              });
-                            },
-                          ),
-                        )
-                      ],
+                          )
+                        ],
+                      ),
                     ),
                 complete
                     ? Padding(
-                      padding: const EdgeInsets.only(top:8.0),
+                      padding: const EdgeInsets.only(top:8.0, bottom: 8),
                       child: Text(
                           'Completas',
                           style: TextStyle(
@@ -113,7 +116,7 @@ class _MyReservationsState extends State<MyReservations> {
                         ),
                     )
                     : Padding(
-                      padding: const EdgeInsets.only(top:8.0),
+                      padding: const EdgeInsets.only(top:8.0, bottom: 8),
                       child: Text(
                           'Por Completar',
                           style: TextStyle(
@@ -177,7 +180,6 @@ class _MyReservationsState extends State<MyReservations> {
                               if (tilesList.isNotEmpty) {
                                 return ListView(
                                         children: tilesList,
-
                                 );
                               }
                               return Text('Ainda nao existem reservas');
