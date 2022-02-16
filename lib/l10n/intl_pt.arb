@@ -27,6 +27,7 @@
     "firstName": "Primeiro Nome",
     "from": "Das",
     "forgotPassword": "Esqueceu-se da password? ",
+    "hours": "horas",
     "invalidPhone": "Número de tfluttelemóvel inválido",
     "invalidNif": "Número de Identificação Fiscal inválido",
     "invalidSlot": "Slot inválido!",

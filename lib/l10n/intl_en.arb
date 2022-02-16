@@ -27,6 +27,7 @@
   "firstName": "First Name",
   "forgotPassword": "Forgot your password? ",
   "from": "From",
+  "hours": "hours",
   "invalidNif": "Invalid National Insurance Number",
   "invalidPhone": "Invalid phone number",
   "invalidSlot": "Invalid time slot!",

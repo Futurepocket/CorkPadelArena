@@ -166,7 +166,6 @@ class _MyReservationsState extends State<MyReservations> {
                               if (tilesList.isNotEmpty) {
                                 return ListView(
                                         children: tilesList,
-
                                 );
                               }
                               return Text('Ainda nao existem reservas');
