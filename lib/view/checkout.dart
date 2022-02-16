@@ -161,7 +161,7 @@ class _CheckoutState extends State<Checkout> {
        
        <p>Detalhes de Pagamento:</p>
        <p>Entidade: $entidade</p>
-       <p>Referencia: $entidade</p>
+       <p>Referencia: $referencia</p>
        <p>Valor: € $valor.00</p>
        <p>Obrigado,</p>
 

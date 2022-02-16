@@ -31,6 +31,7 @@
   "invalidNif": "Invalid National Insurance Number",
   "invalidPhone": "Invalid phone number",
   "invalidSlot": "Invalid time slot!",
+  "hours": "hours",
   "login": "Login",
   "loginError": "Login error",
   "logout": "Logout",

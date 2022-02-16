@@ -517,7 +517,7 @@ class _ReserveState extends State<Reserve> {
                                     ),
                                   ),
                                   Text(
-                                    AppLocalizations.of(context)!.minutes,
+                                    AppLocalizations.of(context)!.hours,
                                     style: TextStyle(
                                         fontSize: 16, fontWeight: FontWeight.bold),
                                   ),
