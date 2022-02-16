@@ -1,4 +1,5 @@
 {
+  "about": "About us",
   "address" : "Address",
   "admin": "Administraror",
   "adminAccount": "Administrator Account",
@@ -34,6 +35,7 @@
   "logout": "Logout",
   "makeReservation": "Make Reservation",
   "minutes": "minutes",
+  "moreThanRaquets": "MORE THAN PRODUCING RACKETS, WE CREATE HIGH PERFORMANCE PRODUCTS  THAT WILL CHANGE YOUR GAME!",
   "myProfile": "My Profile",
   "myReservations": "My Reservations",
   "noDateChosen": "No date chosen!",

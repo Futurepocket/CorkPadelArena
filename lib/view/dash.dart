@@ -15,6 +15,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../models/userr.dart';
 import './reserve.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'aboutUs.dart';
 import 'admindash.dart';
 import 'contacts.dart';
 import 'myReservations.dart';
@@ -246,7 +247,8 @@ class _DashState extends State<Dash> {
             size: 120,
           ),
           AppLocalizations.of(context)!.contacts,
-          Theme.of(context).primaryColor, (BuildContext ctx) {
+          Theme.of(context).primaryColor,
+              (BuildContext ctx) {
         Navigator.of(
           ctx,
         ).push(MaterialPageRoute(builder: (_) {
@@ -265,7 +267,7 @@ class _DashState extends State<Dash> {
           if (await canLaunch('https://www.corkpadel.pt/en/store')) {
             await launch(
               'https://www.corkpadel.pt/en/store',
-              forceWebView: false,
+              forceWebView: true,
               //headers: <String, String>{'my_header_key': 'my_header_value'},
             );
           } else {
@@ -274,20 +276,21 @@ class _DashState extends State<Dash> {
         },
       ),
       Pages(
-          Icon(
-            Icons.exit_to_app_rounded,
-            color: _menuColor,
-            size: 120,
-          ),
-          AppLocalizations.of(context)!.logout,
-          Theme.of(context).primaryColor, (BuildContext ctx) {
-        FirebaseAuth.instance.signOut();
-        Navigator.of(
-          ctx,
-        ).pushReplacement(MaterialPageRoute(builder: (ctx) {
-          return MyApp();
-        }));
-      }),
+        Icon(
+          Icons.device_unknown,
+          color: _menuColor,
+          size: 120,
+        ),
+        AppLocalizations.of(context)!.about,
+        Theme.of(context).primaryColor,
+              (BuildContext ctx) {
+            Navigator.of(
+              ctx,
+            ).push(MaterialPageRoute(builder: (_) {
+              return AboutUs();
+            })).then((value) => settingState());
+          }
+      ),
       if(Userr().role == "administrador")
         Pages(
             Icon(
@@ -305,6 +308,21 @@ class _DashState extends State<Dash> {
           }));
         }
         ),
+      Pages(
+          Icon(
+            Icons.exit_to_app_rounded,
+            color: _menuColor,
+            size: 120,
+          ),
+          AppLocalizations.of(context)!.logout,
+          Theme.of(context).primaryColor, (BuildContext ctx) {
+        FirebaseAuth.instance.signOut();
+        Navigator.of(
+          ctx,
+        ).pushReplacement(MaterialPageRoute(builder: (ctx) {
+          return MyApp();
+        }));
+      }),
     ];
 
     return Scaffold(

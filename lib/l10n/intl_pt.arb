@@ -1,4 +1,5 @@
 {
+    "about": "Quem Somos",
     "address" : "Morada",
     "admin": "Administrador",
     "adminAccount": "Conta de Administrador",
@@ -34,6 +35,7 @@
     "logout": "Logout",
     "makeReservation": "Efetuar Reserva",
     "minutes": "minutos",
+    "moreThanRaquets": "MAIS DO QUE FAZER\nRAQUETES, CRIAMOS\nPRODUTOS DE ALTA\nPERFORMANCE QUE IRÃO\nMUDAR O SEU JOGO!",
     "myProfile": "Meu Perfil",
     "myReservations": "Minhas Reservas",
     "noDateChosen": "Nenhuma data escolhida!",
