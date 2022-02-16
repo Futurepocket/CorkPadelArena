@@ -275,22 +275,22 @@ class _DashState extends State<Dash> {
           }
         },
       ),
-      Pages(
-        Icon(
-          Icons.device_unknown,
-          color: _menuColor,
-          size: 120,
-        ),
-        AppLocalizations.of(context)!.about,
-        Theme.of(context).primaryColor,
-              (BuildContext ctx) {
-            Navigator.of(
-              ctx,
-            ).push(MaterialPageRoute(builder: (_) {
-              return AboutUs();
-            })).then((value) => settingState());
-          }
-      ),
+      // Pages(
+      //   Icon(
+      //     Icons.device_unknown,
+      //     color: _menuColor,
+      //     size: 120,
+      //   ),
+      //   AppLocalizations.of(context)!.about,
+      //   Theme.of(context).primaryColor,
+      //         (BuildContext ctx) {
+      //       Navigator.of(
+      //         ctx,
+      //       ).push(MaterialPageRoute(builder: (_) {
+      //         return AboutUs();
+      //       })).then((value) => settingState());
+      //     }
+      // ),
       if(Userr().role == "administrador")
         Pages(
             Icon(

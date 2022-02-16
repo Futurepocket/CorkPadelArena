@@ -44,6 +44,35 @@ class Webservice {
       throw Exception(error["message"]);
     }
   }
+
+  Future<T> getDoor<T>(Resource<T> resource) async {
+    Map<String, String> headers = {
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+      "Accept-Encoding": "gzip, deflate",
+      "Accept-Language": "en-US,en;q=0.9",
+      "Authorization": 'Digest username"="admin", realm="Login to 75fb9cb5fa02c1363cb51defd537db68", nonce="1099556286", uri="/cgi-bin/accessControl.cgi?action=openDoor&channel=1&UserID=101&Type=Remote", response="10dd002676dc13d64a8cd3b6110ca331", opaque="4f135eda3ef76399c88388e7eafbaa479985a12a", qop=auth, nc=00000002, cnonce="a6615ed7d40dde05"',
+      "Cache-Control": "max-age=0",
+      "Connection": "keep-alive",
+      "Cookie": "secure",
+      "Host": "161.230.247.85:3333",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36",
+    };
+    String resourceUrl =
+        "${resource.url}";
+
+    //client.connectionTimeout = const Duration(seconds: 10);
+    final response = await http.get(
+      Uri.parse(resourceUrl),
+      headers: headers,
+    );
+    if (response == 'OK') {
+      // print('Response headers: ${response.headers}');
+      return resource.parse(response);
+    } else {
+      Map<String, dynamic> error = jsonDecode(response.body);
+      throw Exception(error["message"]);
+    }
+  }
   Future<T> post<T>(Resource<T> resource) async {
     Map<String, String> headers = {
       ...defaultHeader,

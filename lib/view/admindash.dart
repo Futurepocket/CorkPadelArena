@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:cork_padel_arena/models/checkoutValue.dart';
 import 'package:cork_padel_arena/utils/common_utils.dart';
 import 'package:cork_padel_arena/view/admin_reservations.dart';
@@ -6,9 +8,11 @@ import 'package:cork_padel_arena/models/menuItem.dart';
 import 'package:cork_padel_arena/models/page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 import '../../models/userr.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../apis/webservice.dart';
 import 'admin_payments.dart';
 
 class AdminDash extends StatefulWidget {
@@ -41,6 +45,25 @@ class _AdminDashState extends State<AdminDash> {
     super.initState();
   }
 
+  var client = http.Client();
+
+  Future _openDoor()async{
+    var filePath = 'http://admin:cork2021@161.230.247.85:3333/cgi-bin/accessControl.cgi?action=openDoor&channel=1&UserID=101&Type=Remote';
+    final Uri uri = Uri.file(filePath);
+
+    // if (await File(uri.toFilePath()).exists()) {
+    //   print('success');
+    // }else{
+    //   print('unseccess');
+    // }
+    try {
+      var response = await client.post(
+          Uri.http(filePath, ''),);
+      print(await client.get(uri));
+    } finally {
+      client.close();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,9 +98,7 @@ class _AdminDashState extends State<AdminDash> {
         '${AppLocalizations.of(context)!.openDoor}',
         Theme.of(context).primaryColor,
         (BuildContext ctx) {
-          http.post(
-              Uri.parse('http://admin:cork2021@161.230.247.85:3333/cgi-bin/accessControl.cgi?action=openDoor&channel=1&UserID=101&Type=Remote'),
-          );
+         _openDoor();
         }
       ),
     ];

@@ -377,9 +377,7 @@ class _EditDetailsWidgetState extends State<EditDetailsWidget> {
                       if (isValid) {
                         Navigator.of(
                           context,
-                        ).pushReplacement(MaterialPageRoute(builder: (_) {
-                          return ProfileUpdatedSplash();
-                        }));
+                        ).pop();
                       }
                     },
                   ),

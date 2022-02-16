@@ -5,7 +5,7 @@ import 'package:cork_padel_arena/models/reservation.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
+import 'package:intl/intl.dart';
 import '../src/widgets.dart';
 
 class AdminReservations extends StatefulWidget {
@@ -104,7 +104,7 @@ class _AdminReservationsState extends State<AdminReservations>with TickerProvide
                     StreamBuilder(
                         stream: ReservationStreamPublisher().getReservationStream(),
                         builder: (context, snapshot) {
-                          final tilesList = <ListTile>[];
+                          final tilesList = <Container>[];
                           if (snapshot.hasData) {
                             List reservations = snapshot.data as List<Reservation>;
                             int i = 0;
@@ -120,19 +120,29 @@ class _AdminReservationsState extends State<AdminReservations>with TickerProvide
                             } while (i < reservations.length);
                             try {
                               tilesList.addAll(reservations.map((nextReservation) {
-                                return ListTile(
-                                    leading: Icon(Icons.lock_clock),
-                                    title: Text('Das ' +
-                                        nextReservation.hour +
-                                        ' as ' +
-                                        nextReservation.duration),
-                                    subtitle: Text('Dia ' + nextReservation.day),
-                                  trailing: IconButton(
-                                    icon: Icon(Icons.delete),
-                                    onPressed: () {
-                                      _deleting(context, nextReservation.id, nextReservation.price);
-                                    },
-                                  ),);
+                                final DateTime today = DateTime.now();
+                                final formatter = DateFormat('dd/MM/yyyy HH:mm');
+                                final String whenStarts = nextReservation.day + ' ' + nextReservation.hour;
+                                final starts = formatter.parse(whenStarts);
+                                return Container(
+                                  decoration: BoxDecoration(
+                                      color:
+                                      today.isAfter(starts)? Color.fromRGBO(255, 0, 0, 0.15)
+                                          :Colors.white),
+                                  child: ListTile(
+                                      leading: Icon(Icons.lock_clock),
+                                      title: Text('Das ' +
+                                          nextReservation.hour +
+                                          ' as ' +
+                                          nextReservation.duration),
+                                      subtitle: Text('Dia ' + nextReservation.day),
+                                    trailing: IconButton(
+                                      icon: Icon(Icons.delete),
+                                      onPressed: () {
+                                        _deleting(context, nextReservation.id, nextReservation.price);
+                                      },
+                                    ),),
+                                );
                               }));
                             } catch (e) {
                               return Text('Ainda nao existem reservas');

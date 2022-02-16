@@ -1,27 +1,21 @@
+import 'package:flutter/foundation.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:linkwell/linkwell.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../utils/common_utils.dart';
 import 'dash.dart';
 
 class AboutUs extends StatefulWidget {
-  const AboutUs({Key? key}) : super(key: key);
+
+  String src = 'https://www.youtube.com/watch?v=nlom7a-UiLA';
+  final double height = 200;
+  final double width = 600;
 
   @override
   State<AboutUs> createState() => _AboutUsState();
 }
 
 class _AboutUsState extends State<AboutUs> {
-
-  @override
-  void initState() {
-  }
-  List<String> playlist= [
-    'nlom7a-UiLA',
-  ];
-
 
   @override
   Widget build(BuildContext context) {
@@ -42,31 +36,46 @@ class _AboutUsState extends State<AboutUs> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  Align(
-                    alignment: Alignment.center,
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 10.0),
-                      child: Image.asset(
-                        'assets/images/logo.png',
-                        width: 80.0,
-                        height: 100.0,
+                  Text(
+                    'Cork Padel',
+                    style: TextStyle(
+                      fontFamily: 'Roboto Condensed',
+                      fontSize: 16,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top:8.0),
+                    child: Text(
+                      AppLocalizations.of(context)!.about,
+                      style: TextStyle(
+                        fontFamily: 'Roboto Condensed',
+                        fontSize: 28,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: MediaQuery.of(context).size.width*0.9,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                            color: Colors.grey.shade600,
+                            width: 2
+                        ),
                       ),
                     ),
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          AppLocalizations.of(context)!.about,
-                          style: TextStyle(
-                            fontSize: 26,
-                            color: Theme.of(context).primaryColor,
-                          ),
+                      Text(
+                        AppLocalizations.of(context)!.moreThanRaquets,
+                        style: TextStyle(
+                          fontFamily: 'Roboto Condensed',
+                          fontSize: 16,
                         ),
                       ),
-                      Container(
+                      if(!kIsWeb) Container(
                           padding: const EdgeInsets.only(top:10.0),
                           height: 500,
                           child: const WebView(
@@ -75,286 +84,14 @@ class _AboutUsState extends State<AboutUs> {
                           )
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Text("Encomendas:", style: TextStyle(
+                        padding: const EdgeInsets.only(top: 20.0),
+                        child: Text(AppLocalizations.of(context)!.allAboutUs, style: TextStyle(
                             decoration: TextDecoration.underline,
-                            fontSize: 18,
-                            color: Theme.of(context).primaryColor,
-                            fontWeight: FontWeight.bold
-                        ),),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: LinkWell(
-                          'encomendas@corkpadel.com',
-                          linkStyle: TextStyle(
-                              fontStyle: FontStyle.italic,
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Text("Comercial:", style: TextStyle(
-                            decoration: TextDecoration.underline,
-                            fontSize: 18,
-                            color: Theme.of(context).primaryColor,
-                            fontWeight: FontWeight.bold
-                        ),),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: LinkWell(
-                          'pedroplantier@corkpadel.com',
-                          linkStyle: TextStyle(
-                              fontStyle: FontStyle.italic,
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Text("Geral:", style: TextStyle(
-                            decoration: TextDecoration.underline,
-                            fontSize: 18,
-                            color: Theme.of(context).primaryColor,
-                            fontWeight: FontWeight.bold
-                        ),),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: LinkWell(
-                          'corkpadel@corkpadel.com',
-                          linkStyle: TextStyle(
-                              fontStyle: FontStyle.italic,
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top:10.0),
-                        child: Text(
-                          "FÁBRICA CORK PADEL",
-                          style: TextStyle(
-                            decoration: TextDecoration.underline,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).primaryColor,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Text("Email:", style: TextStyle(
-                            decoration: TextDecoration.underline,
-                            fontSize: 18,
-                            color: Theme.of(context).primaryColor,
-                            fontWeight: FontWeight.bold
-                        ),),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: LinkWell(
-                          'corkpadel@corkpadel.com',
-                          linkStyle: TextStyle(
-                              fontStyle: FontStyle.italic,
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left:5.0, top:5),
-                        child: Text("Telemóvel:", style: TextStyle(
-                            decoration: TextDecoration.underline,
-                            fontSize: 18,
-                            color: Theme.of(context).primaryColor,
-                            fontWeight: FontWeight.bold
+                            fontSize: 16,
+
                         ),),
                       ),
 
-                      TextButton(
-                        child: Text(
-                          '91 248 23 38',
-                          style: TextStyle(
-                              fontStyle: FontStyle.italic,
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold
-                          ),
-                        ),
-                        onPressed: () async{
-                          await launch('tel://912482338');
-                        },
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left:5.0, top:5),
-                        child: Text("Telefone:", style: TextStyle(
-                            decoration: TextDecoration.underline,
-                            fontSize: 18,
-                            color: Theme.of(context).primaryColor,
-                            fontWeight: FontWeight.bold
-                        ),),
-                      ),
-                      TextButton(
-                        child: Text(
-                          '249 09 60 29',
-                          style: TextStyle(
-                              fontStyle: FontStyle.italic,
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold
-                          ),
-                        ),
-                        onPressed: () async{
-                          await launch('tel://249096029');
-                        },
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left:5.0, top:5),
-                        child: Text("Morada:", style: TextStyle(
-                            decoration: TextDecoration.underline,
-                            fontSize: 18,
-                            color: Theme.of(context).primaryColor,
-                            fontWeight: FontWeight.bold
-                        ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left:5.0, top:5),
-                        child: const Text("Travessa da Charneca do Algar de Água,\n nº111 => "
-                            "2495-405 Fátima",
-                          style: TextStyle(
-                            fontStyle: FontStyle.italic,
-                            fontSize: 16,
-                            color: Colors.black,
-                          ),),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left:5.0, top:5),
-                        child: const Text("(Visitas só autorizadas a Revendedores da CORK!)",
-                          style: TextStyle(
-                            fontStyle: FontStyle.italic,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),),
-                      ),
-                      Align(
-                        alignment: Alignment.center,
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 10.0),
-                          child: Image.asset(
-                            'assets/images/fabrica-cork-iewdv1.jpg',
-                            width: 432.0,
-                            height: 243.0,
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top:10.0),
-                        child: Text(
-                          "ARENA CORK PADEL",
-                          style: TextStyle(
-                            decoration: TextDecoration.underline,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).primaryColor,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top:10.0),
-                        child: Text(
-                          "LOJA & INDOOR PADEL",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).primaryColor,
-                            fontSize: 18,
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Text("Email:", style: TextStyle(
-                            decoration: TextDecoration.underline,
-                            fontSize: 18,
-                            color: Theme.of(context).primaryColor,
-                            fontWeight: FontWeight.bold
-                        ),),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: LinkWell(
-                          'corkpadel@corkpadel.com',
-                          linkStyle: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left:5.0, top:5),
-                        child: Text("Telemóvel:", style: TextStyle(
-                            decoration: TextDecoration.underline,
-                            fontSize: 18,
-                            color: Theme.of(context).primaryColor,
-                            fontWeight: FontWeight.bold
-                        ),),
-                      ),
-
-                      TextButton(
-                        child: Text(
-                          '91 248 23 38',
-                          style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold
-                          ),
-                        ),
-                        onPressed: () async{
-                          await launch('tel://912482338');
-                        },
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left:5.0, top:5),
-                        child: Text("Morada:", style: TextStyle(
-                            decoration: TextDecoration.underline,
-                            fontSize: 18,
-                            color: Theme.of(context).primaryColor,
-                            fontWeight: FontWeight.bold
-                        ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left:5.0, top:5),
-                        child: const Text("Edifício CORK PADEL,\n"
-                            "Parque desportivo da UDS\n"
-                            "2495-143 Santa Catarina da Serra",
-                          style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold
-                          ),),
-                      ),
-                      Align(
-                        alignment: Alignment.center,
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 10.0),
-                          child: Image.asset(
-                            'assets/images/arena.jpg',
-                            width: 432.0,
-                            height: 243.0,
-                          ),
-                        ),
-                      ),
                     ],
                   )
                 ]

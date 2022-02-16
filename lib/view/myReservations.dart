@@ -3,6 +3,7 @@ import 'package:cork_padel_arena/models/reservation.dart';
 import 'package:cork_padel_arena/models/userr.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:intl/intl.dart';
 
 class MyReservations extends StatefulWidget {
   const MyReservations({Key? key}) : super(key: key);
@@ -58,50 +59,53 @@ class _MyReservationsState extends State<MyReservations> {
                                       color: Colors.grey.shade600,
                                       width: 2
                                   ))),),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Container(
-                          width: 150,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              primary: Theme.of(context).primaryColor,
-                              onPrimary: Colors.white,
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Container(
+                            width: 150,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: Theme.of(context).primaryColor,
+                                onPrimary: Colors.white,
+                              ),
+                              child: Text(
+                                "Completas",
+                                style: TextStyle(fontSize: 15),
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  complete = true;
+                                });
+                              },
                             ),
-                            child: Text(
-                              "Completas",
-                              style: TextStyle(fontSize: 15),
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                complete = true;
-                              });
-                            },
                           ),
-                        ),
-                        Container(
-                          width: 150,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              primary: Theme.of(context).primaryColor,
-                              onPrimary: Colors.white,
+                          Container(
+                            width: 150,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: Theme.of(context).primaryColor,
+                                onPrimary: Colors.white,
+                              ),
+                              child: Text(
+                                "Por Completar",
+                                style: TextStyle(fontSize: 15),
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  complete = false;
+                                });
+                              },
                             ),
-                            child: Text(
-                              "Por Completar",
-                              style: TextStyle(fontSize: 15),
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                complete = false;
-                              });
-                            },
-                          ),
-                        )
-                      ],
+                          )
+                        ],
+                      ),
                     ),
                 complete
                     ? Padding(
-                      padding: const EdgeInsets.only(top:8.0),
+                      padding: const EdgeInsets.only(top:8.0, bottom: 8),
                       child: Text(
                           'Completas',
                           style: TextStyle(
@@ -112,7 +116,7 @@ class _MyReservationsState extends State<MyReservations> {
                         ),
                     )
                     : Padding(
-                      padding: const EdgeInsets.only(top:8.0),
+                      padding: const EdgeInsets.only(top:8.0, bottom: 8),
                       child: Text(
                           'Por Completar',
                           style: TextStyle(
@@ -128,7 +132,7 @@ class _MyReservationsState extends State<MyReservations> {
                   child: StreamBuilder(
                             stream: ReservationStreamPublisher().getReservationStream(),
                             builder: (context, snapshot) {
-                              final tilesList = <ListTile>[];
+                              final tilesList = <Container>[];
                               if (snapshot.hasData) {
                                 List reservations = snapshot.data as List<Reservation>;
                                 int i = 0;
@@ -150,13 +154,23 @@ class _MyReservationsState extends State<MyReservations> {
                                 } while (i < reservations.length);
                                 try {
                                   tilesList.addAll(reservations.map((nextReservation) {
-                                    return ListTile(
-                                        leading: Icon(Icons.lock_clock),
-                                        title: Text('Das ' +
-                                            nextReservation.hour +
-                                            ' as ' +
-                                            nextReservation.duration),
-                                        subtitle: Text('Dia ' + nextReservation.day));
+                                    final DateTime today = DateTime.now();
+                                    final formatter = DateFormat('dd/MM/yyyy HH:mm');
+                                    final String whenStarts = nextReservation.day + ' ' + nextReservation.hour;
+                                    final starts = formatter.parse(whenStarts);
+                                    return Container(
+                                      decoration: BoxDecoration(
+                                          color:
+                                          today.isAfter(starts)? Color.fromRGBO(255, 0, 0, 0.15)
+                                              :Colors.white),
+                                      child: ListTile(
+                                          leading: Icon(Icons.lock_clock),
+                                          title: Text('Das ' +
+                                              nextReservation.hour +
+                                              ' as ' +
+                                              nextReservation.duration),
+                                          subtitle: Text('Dia ' + nextReservation.day)),
+                                    );
                                   }));
                                 } catch (e) {
                                   return Text('Ainda nao existem reservas');

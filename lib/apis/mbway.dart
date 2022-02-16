@@ -37,6 +37,22 @@ class Mbway {
     return mbway;
   }
 
+  static Resource<dynamic> openDoor() {
+
+    var mbway = Resource(
+        url: 'http://161.230.247.85:3333/cgi-bin/accessControl.cgi?action=openDoor&channel=1&UserID=101&Type=Remote',
+        parse: (response) {
+          final result = json.decode(response.body);
+
+          return result;
+        },
+        headers: {
+
+        });
+
+    return mbway;
+  }
+
   static Resource<dynamic> getRequestState(
       {
         String MbWayKey = 'PDY-214580',

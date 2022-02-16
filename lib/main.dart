@@ -77,7 +77,7 @@ class _MyAppState extends State<MyApp> {
             iconTheme: IconThemeData(color: Colors.white)),
         visualDensity: VisualDensity.adaptivePlatformDensity,
         primarySwatch: MaterialColor(_colorMap[1000]!.value, _colorMap),
-        fontFamily: GoogleFonts.roboto().fontFamily,
+        fontFamily: 'ApexSans',
       ),
       initialRoute: '/login',
       routes: {

@@ -208,7 +208,11 @@ class _ProfileState extends State<Profile> {
                             context,
                           ).push(MaterialPageRoute(builder: (_) {
                             return EditDetails();
-                          }));
+                          })).then((value) {
+                            settingState();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                newSnackBar(context, Text('Perfil atualizado com sucesso.')));
+                          });
                         },
                       ),
                     ),
