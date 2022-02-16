@@ -47,7 +47,7 @@ dependencies:
   local_auth: ^1.1.10
   flutter_secure_storage: ^5.0.2
   interval_time_picker: ^1.0.0+3
-  youtube_player_iframe: ^2.2.2
+  webview_flutter: ^3.0.0
 
 flutter_icons:
   image_path: "assets/images/logo.jpg"

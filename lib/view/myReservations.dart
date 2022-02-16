@@ -124,6 +124,7 @@ class _MyReservationsState extends State<MyReservations> {
                     ),
                 Container(
                   height: MediaQuery.of(context).size.height*0.55,
+                  width: MediaQuery.of(context).size.width,
                   child: StreamBuilder(
                             stream: ReservationStreamPublisher().getReservationStream(),
                             builder: (context, snapshot) {
@@ -163,10 +164,9 @@ class _MyReservationsState extends State<MyReservations> {
                               }
                               // }
                               if (tilesList.isNotEmpty) {
-                                return Expanded(
-                                  child: ListView(
+                                return ListView(
                                         children: tilesList,
-                                  ),
+
                                 );
                               }
                               return Text('Ainda nao existem reservas');

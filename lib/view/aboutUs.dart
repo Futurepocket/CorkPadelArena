@@ -1,9 +1,8 @@
+import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:linkwell/linkwell.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 import '../utils/common_utils.dart';
 import 'dash.dart';
 
@@ -15,44 +14,17 @@ class AboutUs extends StatefulWidget {
 }
 
 class _AboutUsState extends State<AboutUs> {
-  late YoutubePlayerController _ytbPlayerController;
 
   @override
   void initState() {
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
-      setState(() {
-        _ytbPlayerController = YoutubePlayerController(
-          initialVideoId: 'nlom7a-UiLA',
-          params: YoutubePlayerParams(
-            showFullscreenButton: true,
-            playlist: playlist,
-            autoPlay: false,
-          ),
-        );
-      });
-    });
   }
   List<String> playlist= [
     'nlom7a-UiLA',
-  'K18cpp_-gP8',
-  'iLnmTe5Q2Qw',
-  '_WoCV4c6XOE',
-  'KmzdUe0RSJo',
-  '6jZDSSZZxjQ',
-  'p2lYr3vM_1w',
-  '7QUtEmBT_-w',
-  '34_PXCzGw1M',
   ];
 
 
   @override
   Widget build(BuildContext context) {
-    AspectRatio(
-      aspectRatio: 16 / 9,
-      child: _ytbPlayerController != null
-          ? YoutubePlayerIFrame(controller: _ytbPlayerController)
-          : Center(child: CircularProgressIndicator()),
-    );
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -94,23 +66,13 @@ class _AboutUsState extends State<AboutUs> {
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top:10.0),
-                        child: ListView.builder(
-                            itemCount: playlist.length,
-                            physics: AlwaysScrollableScrollPhysics(),
-                            itemBuilder: (context, index) {
-                              return GestureDetector(
-                                onTap: () {
-                                  final _newCode = playlist[index];
-                                  _ytbPlayerController.load(_newCode);
-                                  _ytbPlayerController.stop();
-                                  },
-                                child: Card(child: Image.asset(
-                                  'assets/images/fabrica-cork-iewdv1.jpg',
-                                  width: 432.0,
-                                  height: 243.0,
-                                ),),);}),
+                      Container(
+                          padding: const EdgeInsets.only(top:10.0),
+                          height: 500,
+                          child: const WebView(
+                            initialUrl: 'https://www.youtube.com/watch?v=nlom7a-UiLA',
+                            javascriptMode: JavascriptMode.unrestricted,
+                          )
                       ),
                       Padding(
                         padding: const EdgeInsets.all(5.0),
