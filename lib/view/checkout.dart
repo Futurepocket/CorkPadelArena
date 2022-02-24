@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cork_padel_arena/apis/multibanco.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:cork_padel_arena/apis/webservice.dart';
 import 'package:cork_padel_arena/models/userr.dart';
 import 'package:cork_padel_arena/view/dash.dart';
@@ -32,6 +33,25 @@ class _CheckoutState extends State<Checkout> {
     print(_price);
     super.initState();
   }
+
+  final DynamicLinkParameters parameters = DynamicLinkParameters(
+    // The Dynamic Link URI domain. You can view created URIs on your Firebase console
+    uriPrefix: 'https://corkpadelarena.page.link',
+    // The deep Link passed to your application which you can use to affect change
+    link: Uri.parse('https://www.example.com/view-to-open'),
+    // Android application details needed for opening correct app on device/Play Store
+    androidParameters: const AndroidParameters(
+      packageName: 'com.corkpadel.arena',
+      minimumVersion: 1,
+    ),
+    // iOS application details needed for opening correct app on device/App Store
+    iosParameters: const IOSParameters(
+      bundleId: 'com.corkpadel.arena',
+      minimumVersion: '2',
+    ),
+  );
+
+  final Uri uri = await dynamicLinks.buildLink(parameters);
 
   void _showMb({
     required String entity,

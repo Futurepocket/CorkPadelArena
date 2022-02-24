@@ -10,39 +10,50 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import 'firebase_options.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'view/login/login.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Firebase.initializeApp(
-    options: const FirebaseOptions(
-        apiKey: "AIzaSyDBxl9RU-wcEOC6FOtYo2BqlYekWfUUPTw",
-        authDomain: "corkpadel-arena-eb47b.web.app.firebaseapp.com",
-        databaseURL: "https://corkpadel-arena-eb47b-default-rtdb.europe-west1.firebasedatabase.app/",
-        storageBucket: "gs://corkpadel-arena-eb47b.appspot.com",
-        appId: "1:951659670595:android:55a5fe8c00e40080adb8f6",
-        messagingSenderId: '951659670595',
-        projectId: "corkpadel-arena-eb47b")
+    options: DefaultFirebaseOptions.currentPlatform
   ).whenComplete(() => print("Firebase started"));
   init();
+  // Get any initial links
+  final PendingDynamicLinkData? initialLink = await FirebaseDynamicLinks.instance.getInitialLink();
+
   runApp(
     kIsWeb? Center(
       child: SizedBox(
       width: 400,
-        child: new MyApp(),
+        child: new MyApp(initialLink),
     ),)
-      : new MyApp());
+      : new MyApp(initialLink));
 }
 
 class MyApp extends StatefulWidget {
+  FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
+  final initialLink;
+  MyApp(this.initialLink);
   @override
   _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  // Future<void> _initSquarePayment() async {
-  //   await InAppPayments.setSquareApplicationId('APPLICATION_ID');
-  // }
+  @override
+  void initState() {
+    if (widget.initialLink != null) {
+      final Uri deepLink = widget.initialLink.link;
+      // Example of using the dynamic link to push the user to a different screen
+      Navigator.pushNamed(context, deepLink.path);
+    }
+    FirebaseDynamicLinks.instance.onLink.listen((dynamicLinkData) {
+      Navigator.pushNamed(context, dynamicLinkData.link.path);
+    }).onError((error) {
+      // Handle errors
+    });
+    super.initState();
+  }
   final Map<int, Color> _colorMap = {
     50: Color.fromRGBO(190, 255, 249, 1),
     100: Color.fromRGBO(190, 255, 229, 1),
