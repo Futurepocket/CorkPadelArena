@@ -130,7 +130,7 @@ class _ContactsState extends State<Contacts> {
                         child: Padding(
                           padding: const EdgeInsets.only(bottom: 10.0),
                           child: Image.asset(
-                            'assets/images/arena.jpg',
+                            'assets/images/arena.jpeg',
                             width: 432.0,
                             height: 243.0,
                           ),

@@ -29,8 +29,7 @@ class Multibanco {
     const String expiryDays = '1';
 
     var multibanco = Resource(
-      //url official url: '/ifthenpay.com/api/multibanco/reference/init'
-        url: '/multibanco/reference/sandbox',
+        url: '/multibanco/reference/init',
         body: jsonEncode({
           "mbKey": MBKEY,
           "orderId": orderId,

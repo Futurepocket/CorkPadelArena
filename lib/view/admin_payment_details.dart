@@ -20,8 +20,9 @@ class _PaymentDetailsState extends State<PaymentDetails> {
   Map<String, dynamic> _thisPayment = {};
   bool isConfirmed = false;
   bool isExpired = false;
+  String _thisEmail = '';
 
-  _confirmIt(){
+  _checkIt(){
     final DateTime today = DateTime.now();
     final formatter = DateFormat('dd/MM/yy HH:mm');
     pagamentos.doc(widget.paymentID).get().then((DocumentSnapshot documentSnapshot) {
@@ -41,7 +42,7 @@ class _PaymentDetailsState extends State<PaymentDetails> {
 
   @override
   void initState() {
-    _confirmIt();
+    _checkIt();
     super.initState();
   }
   settingState(){
@@ -75,7 +76,7 @@ class _PaymentDetailsState extends State<PaymentDetails> {
               element['state'] = 'pago';
               element['completed'] = true;
             });
-            pagamentos.doc(_thisPayment['reservations']).set(_reservations);
+            pagamentos.doc(_thisPayment['OrderId']).update({'reservations': _reservations});
             _reservations.forEach((element) async{
               try {
                 await reservations.child(element['id']).update({
@@ -83,16 +84,18 @@ class _PaymentDetailsState extends State<PaymentDetails> {
                 'completed': element['completed']}).then((value) {
                 });
               } catch (e) {
-                print(e);
+
               }
             });
             ScaffoldMessenger.of(context).showSnackBar(
                 newSnackBar(context, Text(AppLocalizations.of(context)!.paymentValidated)));
             generateEmailDetails();
             _sendClientEmail(
-                email: _reservations[0]['client_email'],
-                name: _thisPayment['clientName']);
-            Navigator.of(context).pop();
+                email: _thisEmail,
+                name: _thisPayment['clientName']).then((value){
+              Navigator.of(context).pop();
+              Navigator.of(context).pop();
+            });
           }
     });
   }
@@ -102,7 +105,7 @@ class _PaymentDetailsState extends State<PaymentDetails> {
       emailDetails += '<p>Dia: ${element['day']}, das ${element['hour']} às ${element['duration']}.</p>';
     });
   }
-  _sendClientEmail({
+  Future<bool> _sendClientEmail({
     required String email,
   required String name}) async {
     await(firestore.collection("reservationEmails").add({
@@ -129,6 +132,7 @@ class _PaymentDetailsState extends State<PaymentDetails> {
     )
     );
     print('Email done');
+    return true;
   }
 
   @override
@@ -203,6 +207,7 @@ class _PaymentDetailsState extends State<PaymentDetails> {
                               Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
                               _thisPayment = data;
                                 _reservations = data['reservations'];
+                              _thisEmail = data['reservations'][0]['client_email'];
                               return Container(
                                   width: MediaQuery.of(context).size.width,
                                   height: MediaQuery.of(context).size.height*0.5,

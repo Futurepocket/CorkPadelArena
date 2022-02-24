@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:cork_padel_arena/models/ReservationStreamPublisher.dart';
 import 'package:cork_padel_arena/models/reservation.dart';
@@ -8,7 +8,7 @@ import 'package:cork_padel_arena/utils/common_utils.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:interval_time_picker/interval_time_picker.dart';
+import 'package:interval_time_picker/interval_time_picker.dart' as tPicker;
 
 import '../models/checkoutValue.dart';
 import 'dash.dart';
@@ -140,10 +140,11 @@ class _ReserveState extends State<Reserve> {
   }
 
   void _presentTimePicker() async {
-   final TimeOfDay? newTime = await showIntervalTimePicker(
+   final TimeOfDay? newTime = await tPicker.showIntervalTimePicker(
       context: context,
       interval: 30,
-      visibleStep: VisibleStep.Thirtieths,
+      visibleStep: tPicker.VisibleStep.Thirtieths,
+      initialEntryMode: kIsWeb? tPicker.TimePickerEntryMode.input :tPicker.TimePickerEntryMode.dial,
       initialTime: TimeOfDay(hour: 8, minute: 00),
       builder: (BuildContext context, Widget? child) {
         return MediaQuery(

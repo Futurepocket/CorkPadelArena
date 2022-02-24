@@ -285,8 +285,6 @@ class _UserDetailsWidgetState extends State<UserDetailsWidget> {
                         child: TextFormField(
                           textInputAction: TextInputAction.next,
                           autofillHints: [AutofillHints.postalCode],
-                          keyboardType:
-                              TextInputType.numberWithOptions(decimal: true),
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.all(10),
                             focusedBorder: OutlineInputBorder(

@@ -146,14 +146,15 @@ class _ShoppingCartState extends State<ShoppingCart> {
                                           final reservations = database.child('reservations');
                                           reservationsToCheckOut.forEach((element) async{
                                             try {
-                                              //await reservations.set(_reservation);
-                                              await reservations.child(element.id).child("state").set('pago');
-                                              await reservations.child(element.id).child("completed").set(true);
-                                              Navigator.of(context).pop(true);
-                                              reservationsToCheckOut.clear();
-                                              checkoutValue().reservations = 0;
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                  newSnackBar(context, Text('Reservas Efetuadas')));
+                                              await reservations.child(element.id).child("state").set('pago').then((value) async{
+                                                await reservations.child(element.id).child("completed").set(true).then((value) {
+                                                  Navigator.of(context).pop(true);
+                                                  reservationsToCheckOut.clear();
+                                                  checkoutValue().reservations = 0;
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                      newSnackBar(context, Text('Reservas Efetuadas')));
+                                                });
+                                              });
                                             } catch (e) {
                                               print('There is an error!');
                                             }

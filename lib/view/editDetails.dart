@@ -255,8 +255,6 @@ class _EditDetailsWidgetState extends State<EditDetailsWidget> {
                         child: TextFormField(
                           controller: postCodeController,
                           textInputAction: TextInputAction.next,
-                          keyboardType:
-                              TextInputType.numberWithOptions(decimal: true),
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.all(10),
                             focusedBorder: OutlineInputBorder(

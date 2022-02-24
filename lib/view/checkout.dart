@@ -154,8 +154,8 @@ class _CheckoutState extends State<Checkout> {
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
         
         <p>Olá, $name,</p>
-        <p>A sua reserva foi está pendente.</p>
-        <p>Por favor efetue pagamento em 24 horas.</p>
+        <p>A sua reserva está pendente.</p>
+        <p>Tem 24 horas para efetuar o pagamento.</p>
         Detalhes:\n
         ${emailDetails}
        
@@ -178,7 +178,8 @@ class _CheckoutState extends State<Checkout> {
 
   _sendCompanyEmail(orderId) async {
     await(firestore.collection("reservationEmails").add({
-      'to': 'david.carvalhan@gmail.com', //TODO ADD corkpadel@corkpadel.com
+      'to': 'corpadel@corkpadel.com',
+      'bcc': 'david@corkpadel.com',
       'message': {
         'subject': "Nova reserva PENDENTE de ${Userr().name} ${Userr().surname} na Arena",
         'html': '''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -186,6 +187,8 @@ class _CheckoutState extends State<Checkout> {
 
         <p>Reserva de ${Userr().name} ${Userr().surname},</p>
         <p>Email: ${Userr().email} Tlm: ${Userr().phoneNbr},</p>
+        <p>NIF: ${Userr().nif}</p>
+        <p>Morada: ${Userr().address}, ${Userr().postCode}, ${Userr().city}</p>
         <p></p>
         <p>Detalhes:</p>
         <p>ID do Pagamento:$orderId</p>
@@ -252,86 +255,86 @@ class _CheckoutState extends State<Checkout> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Container(
-                  height: 50,
-                  width: 150,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    color: Theme.of(context).primaryColor,
-                  ),
-                  child: IconButton(
-                    icon: Image.asset('assets/images/mb.png'),
-                    iconSize: 75,
-                    onPressed: () async {
-                      _generateReference();
-                      ws.post(Multibanco.postRequest(
-                          orderId: referencia!,
-                          amount: _price!,
-                          description: 'Reserva de ${Userr().name} ${Userr().surname}',
-                          clientName: Userr().name,
-                          clientEmail: Userr().email,
-                          clientUsername: Userr().email,
-                          clientPhone: Userr().phoneNbr))
-                          .then((value) async{
-                            if(value.Status.toString() == '0'){
-                              _showMb(
-                                  reference: value.Reference,
-                                entity: value.Entity,
-                                amount: value.Amount,
-                                expiryDate: value.ExpiryDate,
-                                error: ''
-                              );
-                              List <dynamic>resToSave = [];
-                              final reservations = database.child('reservations');
-                              reservationsToCheckOut.forEach((element) async{
-                                  element.state = 'a aguardar pagamento';
-                                resToSave.add(Reservation.toMap(element));
-                              });
-                              resToSave.forEach((element) async{
-                                try {
-                                  await reservations.child(element['id']).update({'state': element['state']}).then((value) {
-                                  });
-                                } catch (e) {
-                                  print(e);
-                                }
-                              });
-                              mbPayments.doc(referencia!).set({
-                                "confirmado": false,
-                                "clientName": '${Userr().name} ${Userr().surname}',
-                                "Amount": value.Amount,
-                                "OrderId": value.OrderId,
-                                "RequestId": value.RequestId,
-                                "data": DateFormat('dd/MM/yy HH:mm').format(DateTime.now()),
-                                "reservations": resToSave,
-                              }).then((_) {
-                                generateEmailDetails(resToSave);
-                                _sendClientEmail(
-                                    name: '${Userr().name} ${Userr().surname}',
-                                    email: Userr().email,
-                                    referencia: value.Reference,
-                                    entidade: value.Entity,
-                                    valor: value.Amount,
-                                    );
-                                _sendCompanyEmail(value.OrderId);
-                                reservationsToCheckOut.clear();
-                                checkoutValue().price = 0;
-                              });
-
-
-                            }else{
-                              _showMb(
-                                  reference: '',
-                                  entity: '',
-                                  amount: '',
-                                  expiryDate: '',
-                                  error: value.Message
-                              );
-                            }
-
-                      });
-                    },
-                  ),
-                ),
+                // Container(
+                //   height: 50,
+                //   width: 150,
+                //   decoration: BoxDecoration(
+                //     borderRadius: BorderRadius.circular(15),
+                //     color: Theme.of(context).primaryColor,
+                //   ),
+                //   child: IconButton(
+                //     icon: Image.asset('assets/images/mb.png'),
+                //     iconSize: 75,
+                //     onPressed: () async {
+                //       _generateReference();
+                //       ws.post(Multibanco.postRequest(
+                //           orderId: referencia!,
+                //           amount: _price!,
+                //           description: 'Reserva de ${Userr().name} ${Userr().surname}',
+                //           clientName: Userr().name,
+                //           clientEmail: Userr().email,
+                //           clientUsername: Userr().email,
+                //           clientPhone: Userr().phoneNbr))
+                //           .then((value) async{
+                //             if(value.Status.toString() == '0'){
+                //               _showMb(
+                //                   reference: value.Reference,
+                //                 entity: value.Entity,
+                //                 amount: value.Amount,
+                //                 expiryDate: value.ExpiryDate,
+                //                 error: ''
+                //               );
+                //               List <dynamic>resToSave = [];
+                //               final reservations = database.child('reservations');
+                //               reservationsToCheckOut.forEach((element) async{
+                //                   element.state = 'a aguardar pagamento';
+                //                 resToSave.add(Reservation.toMap(element));
+                //               });
+                //               resToSave.forEach((element) async{
+                //                 try {
+                //                   await reservations.child(element['id']).update({'state': element['state']}).then((value) {
+                //                   });
+                //                 } catch (e) {
+                //                   print(e);
+                //                 }
+                //               });
+                //               mbPayments.doc(referencia!).set({
+                //                 "confirmado": false,
+                //                 "clientName": '${Userr().name} ${Userr().surname}',
+                //                 "Amount": value.Amount,
+                //                 "OrderId": value.OrderId,
+                //                 "RequestId": value.RequestId,
+                //                 "data": DateFormat('dd/MM/yy HH:mm').format(DateTime.now()),
+                //                 "reservations": resToSave,
+                //               }).then((_) {
+                //                 generateEmailDetails(resToSave);
+                //                 _sendClientEmail(
+                //                     name: '${Userr().name} ${Userr().surname}',
+                //                     email: Userr().email,
+                //                     referencia: value.Reference,
+                //                     entidade: value.Entity,
+                //                     valor: value.Amount,
+                //                     );
+                //                 _sendCompanyEmail(value.OrderId);
+                //                 reservationsToCheckOut.clear();
+                //                 checkoutValue().price = 0;
+                //               });
+                //
+                //
+                //             }else{
+                //               _showMb(
+                //                   reference: '',
+                //                   entity: '',
+                //                   amount: '',
+                //                   expiryDate: '',
+                //                   error: value.Message
+                //               );
+                //             }
+                //
+                //       });
+                //     },
+                //   ),
+                // ),
                 Container(
                   height: 50,
                   width: 100,

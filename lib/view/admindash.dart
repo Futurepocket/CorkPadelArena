@@ -1,5 +1,4 @@
-import 'dart:convert';
-import 'dart:io';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:cork_padel_arena/models/checkoutValue.dart';
 import 'package:cork_padel_arena/utils/common_utils.dart';
 import 'package:cork_padel_arena/view/admin_reservations.dart';
@@ -8,7 +7,6 @@ import 'package:cork_padel_arena/models/menuItem.dart';
 import 'package:cork_padel_arena/models/page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:url_launcher/url_launcher.dart';
 import '../../models/userr.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -47,22 +45,34 @@ class _AdminDashState extends State<AdminDash> {
 
   var client = http.Client();
 
-  Future _openDoor()async{
-    var filePath = 'http://admin:cork2021@161.230.247.85:3333/cgi-bin/accessControl.cgi?action=openDoor&channel=1&UserID=101&Type=Remote';
-    final Uri uri = Uri.file(filePath);
-
-    // if (await File(uri.toFilePath()).exists()) {
-    //   print('success');
-    // }else{
-    //   print('unseccess');
+  //http://admin:cork2021@161.230.247.85:3333/cgi-bin/accessControl.cgi?action=openDoor&channel=1&UserID=101&Type=Remote
+  Future _openDoor() async{
+    launch('http://admin:cork2021@161.230.247.85:3333/cgi-bin/accessControl.cgi?action=openDoor&channel=1&UserID=101&Type=Remote');
+    // var uri = Uri.http('161.230.247.85:3333','/cgi-bin/accessControl.cgi',
+    //     {
+    //       'action':'openDoor',
+    //       'channel':'1',
+    //       'UserID':'101',
+    //     'Type':'Remote',
+    //     });
+    // print(uri);
+    //   var response = await client.get(
+    //       uri, headers: {
+    //     HttpHeaders.authorizationHeader: 'Digest 59182b218225aa9df8aceafbd844b449, password="cork2021", realm="Login to 75fb9cb5fa02c1363cb51defd537db68", nonce="185879478", uri="/cgi-bin/accessControl.cgi?action=openDoor&channel=1&UserID=101&Type=Remote", response="e58778dcddb7bca9059a932b58d61a90", opaque="4f135eda3ef76399c88388e7eafbaa479985a12a", cnonce="f291c102cf6326cc87a8e2e7f130eee7", nc=00000001, qop="auth"',
+    //     'Accept-Language': 'en-GB,en;q=0.9',
+    //   'Accept-Encoding': 'gzip, deflate',
+    //     'Connection':'keep-alive',
+    //     'Upgrade-Insecure-Requests': '1',
+    //   }).timeout(const Duration(seconds: 20));
+    //   print(response.reasonPhrase);
+    //   print(response.statusCode);
+    // if (response.statusCode == 200) {
+    //    print('Success');
+    // } else {
+    //   Map<String, dynamic> error = jsonDecode(response.body);
+    //   throw Exception(error["message"]);
     // }
-    try {
-      var response = await client.post(
-          Uri.http(filePath, ''),);
-      print(await client.get(uri));
-    } finally {
-      client.close();
-    }
+
   }
 
   @override

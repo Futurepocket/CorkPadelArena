@@ -83,7 +83,8 @@ String emailDetails = '';
 
   _sendCompanyEmail() async {
     await(firestore.collection("reservationEmails").add({
-      'to': 'david.carvalhan@gmail.com', //TODO ADD corkpadel@corkpadel.com
+      'to': 'corpadel@corkpadel.com',
+      'bcc': 'david@corkpadel.com',
       'message': {
         'subject': "Nova reserva de ${Userr().name} ${Userr().surname} na Arena",
         'html': '''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -91,6 +92,8 @@ String emailDetails = '';
         
         <p>Reserva de ${Userr().name} ${Userr().surname},</p>
         <p>Email: ${tlmController.text} Tlm: ${emailController.text},</p>
+        <p>NIF: ${Userr().nif}</p>
+        <p>Morada: ${Userr().address}, ${Userr().postCode}, ${Userr().city}</p>
         <p></p>
         <p>Detalhes:</p>
         <p>${emailDetails}</p>
