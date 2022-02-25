@@ -36,10 +36,12 @@ class _MbWayPaymentState extends State<MbWayPayment> {
   String? DataHoraPedidoAtualizado;
   String? idPedido;
   String? referencia;
+  String? price;
 
   @override
   void initState() {
     emailController.text = Userr().email;
+    price = checkoutValue().price.toString();
     super.initState();
   }
 String emailDetails = '';
@@ -47,7 +49,7 @@ String emailDetails = '';
     reservationsToCheckOut.forEach((element) {
       emailDetails += '<p>Dia: ${element.day}, das ${element.hour} às ${element.duration}.</p>';
     });
-    _sendClientEmail();
+
     _sendCompanyEmail();
   }
 
@@ -68,7 +70,7 @@ String emailDetails = '';
         <p>Detalhes:</p>
         <p>${emailDetails}</p>
        <p></p>
-       <p>Valor: € ${checkoutValue().price.toString()}</p>
+       <p>Valor: € $price</p>
        <p>Obrigado,</p>
        <p></p>
        A sua equipa Cork Padel Arena
@@ -99,7 +101,7 @@ String emailDetails = '';
         <p>Detalhes:</p>
         <p>${emailDetails}</p>
        <p></p>
-       <p>Valor: € ${checkoutValue().price.toString()}</p> 
+       <p>Valor: € $price</p> 
        <p></p>
        <p>Obrigado,</p>
        <p>A sua equipa Cork Padel Arena</p>
@@ -113,53 +115,63 @@ String emailDetails = '';
     print('Email done');
   }
   DatabaseReference database = FirebaseDatabase.instance.ref();
-
+@override
+  void dispose() {
+    super.dispose();
+    tlmController.dispose();
+    emailController.dispose();
+  }
   @override
   Widget build(BuildContext context) {
-
-    void _saveAll() async{
-      CollectionReference payments = FirebaseFirestore.instance.collection('MBWayPayments');
-      String _idd = 'Arena${paymentTlm}' + DateFormat('ddMMyyyy HH:mm').format(DateTime.now());
-
-/////////////////////SAVING PAYMENT////////////////////////////////////
-      Payment _payment = Payment(
-          IdPedido: idPedido!,
-          DataHoraPedidoRegistado: DateFormat('ddMMyyyy HH:mm').format(DateTime.now()),
-          EmailCliente: paymentEmail!,
-          Referencia: referencia!,
-          tlmCliente: paymentTlm!);
-      await payments.doc(_idd).set({
-        'IdPedido': _payment.IdPedido,
-        'DataHoraPedidoRegistado': _payment.DataHoraPedidoRegistado,
-        'EmailCliente': _payment.EmailCliente,
-        'Referencia': _payment.Referencia,
-        'tlmCliente': _payment.tlmCliente
-      }).then((value) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            newSnackBar(context, Text('Reservas Efetuados')));
-        final reservations = database.child('reservations');
-        generateEmailDetails();
-        reservationsToCheckOut.forEach((element) async{
-          try {
-            await reservations.child(element.id).update({
-              'state': 'pago',
-              'completed': true
-            });
-          } catch (e) {
-            print('There is an error!');
-          }
-        });
-        checkoutValue().reservations = 0;
-        checkoutValue().price = 0;
-        reservationsToCheckOut.clear();
-        Navigator.of(context).pop();
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_){
-          return Dash();
-        }));
-      }).catchError((onError) => print("Failed to save payment: $onError"));
+    price = checkoutValue().price.toString();
+void _savePayment() async{
+  CollectionReference payments = FirebaseFirestore.instance.collection('MBWayPayments');
+  String _idd = 'Arena${paymentTlm}' + DateFormat('ddMMyyyy HH:mm').format(DateTime.now());
+  /////////////////////SAVING PAYMENT////////////////////////////////////
+  Payment _payment = Payment(
+      IdPedido: idPedido!,
+      DataHoraPedidoRegistado: DateFormat('ddMMyyyy HH:mm').format(DateTime.now()),
+      EmailCliente: paymentEmail!,
+      Referencia: referencia!,
+      tlmCliente: paymentTlm!);
+  await payments.doc(_idd).set({
+    'IdPedido': _payment.IdPedido,
+    'DataHoraPedidoRegistado': _payment.DataHoraPedidoRegistado,
+    'EmailCliente': _payment.EmailCliente,
+    'Referencia': _payment.Referencia,
+    'tlmCliente': _payment.tlmCliente
+  }).then((value) {
+    Navigator.of(context).pop();
+    checkoutValue().reservations = 0;
+    checkoutValue().price = 0;
+    setState(() {
+      price = '0';
+    });
+    reservationsToCheckOut.clear();
+    Navigator.of(context).pop();
+    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_){
+      return Dash();
+    }));
+    ScaffoldMessenger.of(context).showSnackBar(
+        newSnackBar(context, Text('Reservas Efetuados')));
+  }).catchError((onError) => print("Failed to save payment: $onError"));
+}
+    void _saveAll() async {
+      final reservations = database.child('reservations');
+      generateEmailDetails();
+      reservationsToCheckOut.forEach((element) async {
+        try {
+          await reservations.child(element.id).update({
+            'state': 'pago',
+            'completed': true
+          });
+        } catch (e) {
+          print('There is an error!');
+        }
+      });
 
     }
-    void awaitingConfirmation(BuildContext context) {
+    void awaitingConfirmation(BuildContext context) async{
       _showLoading = true;
       _isAproved = false;
       bool _confirmed = false;
@@ -173,14 +185,9 @@ String emailDetails = '';
                   ws.get(Mbway.getRequestState(idPagamento: idPedido!))
                     .then((value) async {
                   if(value['Estado'] == "000"){
-                    _saveAll();
+                    _sendClientEmail();
                     await Future.delayed(const Duration(milliseconds: 2000), () {});
-                    Navigator.of(context).pop();
-                    setState(() {
-                      _resultText = "Pagamento efectuado com sucesso. A confirmar reserva, por favor aguarde.";
-                      _isAproved = true;
-                      _confirmed = true;
-                    });
+                    _savePayment();
                   }else{
                     setState(() {
                       _showLoading = false;
@@ -257,7 +264,7 @@ String emailDetails = '';
                 _generateReference();
                 ws.get(Mbway.getRequest(
                     referencia: referencia!,
-                    valor: checkoutValue().price.toString(),
+                    valor: price!,
                     nrtlm: paymentTlm!,
                     email: paymentEmail!,
                     descricao: 'testdesc')).then((value) async {
@@ -380,7 +387,7 @@ String emailDetails = '';
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: Text(
-                  'Valor total: € ${checkoutValue().price.toString()}.00',
+                  'Valor total: € $price.00',
                   style: TextStyle(
                     fontFamily: 'Roboto Condensed',
                     fontSize: 24,
@@ -476,7 +483,7 @@ String emailDetails = '';
                       style: TextStyle(fontSize: 15),
                     ),
                     onPressed: () {
-                      //_saveForm(context);
+                      _saveAll();
                       final isValid = _form.currentState!.validate();
                       if (isValid) {
                         _saveForm(context);
