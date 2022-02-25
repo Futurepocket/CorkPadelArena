@@ -43,14 +43,6 @@ class _AdminReservationsState extends State<AdminReservations>with TickerProvide
           });
     });
   }
-  ListTile _buildPaymentsRow(BuildContext context, int index){
-    return ListTile(
-      leading: Icon(Icons.payments_outlined),
-      title: _payments[index]['OrderId'],
-      subtitle: Text('Valor: ${_payments[index]['Amount']}'),
-
-    );
-  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -131,11 +123,17 @@ class _AdminReservationsState extends State<AdminReservations>with TickerProvide
                                           :Colors.white),
                                   child: ListTile(
                                       leading: Icon(Icons.lock_clock),
-                                      title: Text('Das ' +
-                                          nextReservation.hour +
-                                          ' as ' +
-                                          nextReservation.duration),
-                                      subtitle: Text('Dia ' + nextReservation.day),
+                                      title: Text(nextReservation.userEmail),
+                                      subtitle: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                  Text('Das ' +
+                                  nextReservation.hour +
+                                  ' as ' +
+                                  nextReservation.duration),
+                                          Text('Dia ' + nextReservation.day),
+                                        ],
+                                      ),
                                     trailing: IconButton(
                                       icon: Icon(Icons.delete),
                                       onPressed: () {

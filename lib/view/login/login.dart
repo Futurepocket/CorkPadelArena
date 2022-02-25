@@ -234,7 +234,7 @@ class _LoginState extends State<Login> {
                                 padding: const EdgeInsets.all(8.0),
                                 child: TextFormField(
                                   controller: _emailController,
-                                  autofillHints: [AutofillHints.username],
+                                  autofillHints: [AutofillHints.email],
                                   enableSuggestions: true,
                                   enableInteractiveSelection: true,
                                   textInputAction: TextInputAction.next,

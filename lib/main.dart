@@ -13,47 +13,32 @@ import 'package:google_fonts/google_fonts.dart';
 import 'firebase_options.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'view/login/login.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  //PendingDynamicLinkData? initialLink;
   Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform
-  ).whenComplete(() => print("Firebase started"));
+  ).whenComplete(() async{
+    //initialLink = await FirebaseDynamicLinks.instance.getInitialLink();
+  });
   init();
   // Get any initial links
-  final PendingDynamicLinkData? initialLink = await FirebaseDynamicLinks.instance.getInitialLink();
-
   runApp(
     kIsWeb? Center(
       child: SizedBox(
       width: 400,
-        child: new MyApp(initialLink),
+        child: new MyApp(),
     ),)
-      : new MyApp(initialLink));
+      : new MyApp());
 }
 
 class MyApp extends StatefulWidget {
-  FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
-  final initialLink;
-  MyApp(this.initialLink);
   @override
   _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  @override
-  void initState() {
-    if (widget.initialLink != null) {
-      final Uri deepLink = widget.initialLink.link;
-      // Example of using the dynamic link to push the user to a different screen
-      Navigator.pushNamed(context, deepLink.path);
-    }
-    FirebaseDynamicLinks.instance.onLink.listen((dynamicLinkData) {
-      Navigator.pushNamed(context, dynamicLinkData.link.path);
-    }).onError((error) {
-      // Handle errors
-    });
-    super.initState();
-  }
   final Map<int, Color> _colorMap = {
     50: Color.fromRGBO(190, 255, 249, 1),
     100: Color.fromRGBO(190, 255, 229, 1),

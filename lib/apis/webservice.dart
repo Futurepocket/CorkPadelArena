@@ -1,10 +1,11 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 const defaultHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
 };
-String MBWAYhost = 'https://mbway.ifthenpay.com';
+String MBWAYhost = 'https://www.ifthenpay.com/mbwayws';
 String MBhost = 'https://ifthenpay.com/api';
 
 class Resource<T> {
@@ -28,7 +29,8 @@ class Webservice {
     };
     // print('skey ${this.skey}');
     // print('GET headers: ${headers}');
-    String resourceUrl =
+    // "http://api.scraperapi.com?api_key=2c6e49f7c3be8c13112d9fd3032d7afe&url=http://httpbin.org/ip"
+    String resourceUrl = //kIsWeb? 'https://thingproxy.freeboard.io/fetch/https://mbway.ifthenpay.com${resource.url}'
         "${MBWAYhost}${resource.url}";
 
     //client.connectionTimeout = const Duration(seconds: 10);
