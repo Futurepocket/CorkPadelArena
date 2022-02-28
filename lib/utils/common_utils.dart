@@ -285,7 +285,7 @@ class _CustomCupertinoTimerPickerState extends State<CustomCupertinoTimerPicker>
     if (widget.mode != CupertinoTimerPickerMode.hm)
       selectedSecond = widget.initialTimerDuration.inSeconds % 60;
 
-    PaintingBinding.instance.systemFonts.addListener(_handleSystemFontsChange);
+    PaintingBinding.instance!.systemFonts.addListener(_handleSystemFontsChange);
   }
 
   void _handleSystemFontsChange() {
@@ -313,7 +313,7 @@ class _CustomCupertinoTimerPickerState extends State<CustomCupertinoTimerPicker>
 
   @override
   void dispose() {
-    PaintingBinding.instance.systemFonts.removeListener(_handleSystemFontsChange);
+    PaintingBinding.instance!.systemFonts.removeListener(_handleSystemFontsChange);
     super.dispose();
   }
 
