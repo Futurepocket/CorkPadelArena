@@ -61,6 +61,7 @@ class _MyAppState extends State<MyApp> {
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
+
       ],
       supportedLocales: [
         Locale('en', ''), // English, no country code

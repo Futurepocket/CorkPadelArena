@@ -63,41 +63,74 @@ class _ShoppingCartState extends State<ShoppingCart> {
                             i++;
                         }
                       } while (i < reservations.length);
+                      if(Userr().role != 'administrador'){
                         reservationsToCheckOut = reservations as List<Reservation>;
+                      }
                       checkoutValue().reservations = reservationsToCheckOut.length;
                         var price = 0;
                       reservationsToCheckOut.forEach((element) {
                         price += int.parse(element.price);
                       });
                       checkoutValue().price = price;
-                      try {
-                        tilesList.addAll(reservations.map((nextReservation) {
-
-                          // if (_user.email == nextReservation.userEmail &&
-                          //     nextReservation.state == 'por completar') {
-                          return Card(
-                            elevation: 5,
-                            child: ListTile(
-                              leading: Icon(Icons.watch),
-                              title: Text('Dia ' + nextReservation.day),
-                              subtitle: Text('Das ' +
-                                  nextReservation.hour +
-                                  ' as ' +
-                                  nextReservation.duration),
-                              trailing: IconButton(
-                                icon: Icon(Icons.delete),
-                                onPressed: () {
-                                  _deleting(context, nextReservation.id, nextReservation.price);
-                                },
+                      if(Userr().role != 'administrador'){
+                        try {
+                          tilesList.addAll(reservations.map((nextReservation) {
+                            // if (_user.email == nextReservation.userEmail &&
+                            //     nextReservation.state == 'por completar') {
+                            return Card(
+                              elevation: 5,
+                              child: ListTile(
+                                leading: Icon(Icons.watch),
+                                title: Text('Dia ' + nextReservation.day),
+                                subtitle: Text('Das ' +
+                                    nextReservation.hour +
+                                    ' as ' +
+                                    nextReservation.duration),
+                                trailing: IconButton(
+                                  icon: Icon(Icons.delete),
+                                  onPressed: () {
+                                    _deleting(context, nextReservation.id, nextReservation.price);
+                                  },
+                                ),
                               ),
-                            ),
-                          );
-                          // } else {
-                          //   throw Exception();
-                          // }
-                        }));
-                      } catch (e) {
-                        return Text('O carrinho esta vazio');
+                            );
+                            // } else {
+                            //   throw Exception();
+                            // }
+                          }));
+
+                        } catch (e) {
+                          return Text('O carrinho esta vazio');
+                        }
+                      }else{
+                        try {
+                          tilesList.addAll(reservationsToCheckOut.map((nextReservation) {
+                            // if (_user.email == nextReservation.userEmail &&
+                            //     nextReservation.state == 'por completar') {
+                            return Card(
+                              elevation: 5,
+                              child: ListTile(
+                                leading: Icon(Icons.watch),
+                                title: Text(nextReservation.userEmail),
+                                subtitle: Text('Dia ' + nextReservation.day + ' Das ' +
+                                    nextReservation.hour +
+                                    ' as ' +
+                                    nextReservation.duration),
+                                trailing: IconButton(
+                                  icon: Icon(Icons.delete),
+                                  onPressed: () {
+                                    _deleting(context, nextReservation.id, nextReservation.price);
+                                  },
+                                ),
+                              ),
+                            );
+                            // } else {
+                            //   throw Exception();
+                            // }
+                          }));
+                        } catch (e) {
+                          return Text('O carrinho esta vazio');
+                        }
                       }
                     }
                     // }
@@ -116,14 +149,12 @@ class _ShoppingCartState extends State<ShoppingCart> {
                               Text(
                                 'Total:',
                                 style: TextStyle(
-                                  fontFamily: 'Roboto Condensed',
                                   fontSize: 26,
                                 ),
                               ),
                               Text(
                                 '€ ${checkoutValue().price.toString()}.00',
                                 style: TextStyle(
-                                  fontFamily: 'Roboto Condensed',
                                   fontSize: 26,
                                 ),
                               ),
@@ -153,6 +184,13 @@ class _ShoppingCartState extends State<ShoppingCart> {
                                                   checkoutValue().reservations = 0;
                                                   ScaffoldMessenger.of(context).showSnackBar(
                                                       newSnackBar(context, Text('Reservas Efetuadas')));
+                                                  Navigator.of(
+                                                    context,
+                                                  ).push(
+                                                    MaterialPageRoute(builder: (_) {
+                                                      return Dash();
+                                                    }),
+                                                  );
                                                 });
                                               });
                                             } catch (e) {
@@ -221,10 +259,10 @@ class _ShoppingCartState extends State<ShoppingCart> {
               ),
               StyledButton(
                 onPressed: () {
-                  checkoutValue().price -= int.parse(price);
-                  _database.remove();
-                  reservationsToCheckOut.removeWhere((element) => element.id == id);
-                  checkoutValue().reservations = reservationsToCheckOut.length;
+                    checkoutValue().price -= int.parse(price);
+                    _database.remove();
+                    reservationsToCheckOut.removeWhere((element) => element.id == id);
+                    checkoutValue().reservations = reservationsToCheckOut.length;
                   Navigator.of(context).pop(true);
                 },
                 child: Text(

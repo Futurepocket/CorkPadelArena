@@ -28,6 +28,8 @@ class _ReserveState extends State<Reserve> {
   TimeOfDay? value;
   bool _reservationValid = false;
   bool _isNotNow = false;
+  bool _asAnother = false;
+  final _emailController = TextEditingController();
 
   @override
   void didChangeDependencies() {
@@ -84,10 +86,13 @@ class _ReserveState extends State<Reserve> {
             double dbEndTime = toDouble(_endTime);
             double pickedStartTime = toDouble(_timeChosen!);
             double pickedEndTime = toDouble(_until);
-            print(dbStartTime);
-            print(dbEndTime);
-            print(pickedStartTime);
-            print(pickedEndTime);
+            if(dbEndTime == 0.0){
+              dbEndTime = 24.0;
+            }
+            if(dbEndTime == 0.5){
+              dbEndTime = 24.5;
+            }
+
             if (dbStartTime+0.1 <= pickedStartTime &&
                 dbEndTime-0.1 >= pickedStartTime) {
               _reservationValid = false;
@@ -173,7 +178,7 @@ class _ReserveState extends State<Reserve> {
             _selectedDate!.day, value.hour, value.minute);
 //COMPARING PICKED DATE WITH DATE NOW
         var comparison = pickedTime.compareTo(date);
-        print(comparison);
+        print('When $comparison');
 // IF DATA CHOSEN IS AFTER NOW
         if (comparison == 1) {
           setState(() {
@@ -261,7 +266,8 @@ class _ReserveState extends State<Reserve> {
         hour: _timeChosen!.format(context),
         duration: until,
         state: 'por completar',
-        userEmail: Userr().email,
+        userEmail: (_emailController.text.isEmpty || !_asAnother)? Userr().email
+        : _emailController.text,
         completed: false,
         id: _idd,
         price: price!,
@@ -337,7 +343,7 @@ class _ReserveState extends State<Reserve> {
       body: SingleChildScrollView(
           child: Container(
             alignment: Alignment.topCenter,
-            margin: EdgeInsets.only(top: 40, left: 20),
+            margin: EdgeInsets.only(top: 20, left: 20),
             constraints: BoxConstraints(
                 minHeight: 600, minWidth: double.infinity, maxHeight: 650),
             child: Column(
@@ -347,7 +353,6 @@ class _ReserveState extends State<Reserve> {
                 Text(
                   AppLocalizations.of(context)!.reservations,
                   style: TextStyle(
-                    fontFamily: 'Roboto Condensed',
                     fontSize: 16,
                   ),
                 ),
@@ -356,7 +361,6 @@ class _ReserveState extends State<Reserve> {
                   child: Text(
                     AppLocalizations.of(context)!.makeReservation,
                     style: TextStyle(
-                      fontFamily: 'Roboto Condensed',
                       fontSize: 28,
                     ),
                   ),
@@ -378,7 +382,6 @@ class _ReserveState extends State<Reserve> {
                     child: Text(
                       AppLocalizations.of(context)!.attention30Mins,
                       style: TextStyle(
-                        fontFamily: 'Roboto Condensed',
                         fontSize: 14,
                         color: Colors.red,
                       ),
@@ -465,7 +468,7 @@ class _ReserveState extends State<Reserve> {
                                      child: Text(
                                             _timeChosen == null
                                                 ? _warning
-                                                : '${_timeChosen!.format(context)}',
+                                                : TimeOfDay(hour: _timeChosen!.hour, minute: _timeChosen!.minute).format(context),
                                             style: TextStyle(
                                                 fontSize: 14, fontWeight: FontWeight.bold),
                                        maxLines: 2,
@@ -530,7 +533,43 @@ class _ReserveState extends State<Reserve> {
                   ),
                 ),
                 Text(_warning2),
-
+                if(Userr().role == "administrador")
+                Row(
+                  children: [
+                    Text(AppLocalizations.of(context)!.reserveAsAnother,
+                      style: TextStyle(
+                      fontSize: 16,
+                    ),),
+                    Switch(
+                        value: _asAnother,
+                        onChanged: (_) => setState(() {
+                          _asAnother = !_asAnother;
+                          _emailController.text = '';
+                        }))
+                  ],
+                ),
+                _asAnother?
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    controller: _emailController,
+                    autofillHints: [AutofillHints.email],
+                    enableSuggestions: true,
+                    enableInteractiveSelection: true,
+                    textInputAction: TextInputAction.next,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.all(10),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 1.5),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 1.5),
+                      ),
+                      labelText: 'Email',
+                    ),
+                  ),
+                ): Container(),
                 Align(
                   alignment: Alignment.center,
                   child: Container(

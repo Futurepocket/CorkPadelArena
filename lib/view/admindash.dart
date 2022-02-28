@@ -1,3 +1,4 @@
+import 'package:cork_padel_arena/view/users.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cork_padel_arena/models/checkoutValue.dart';
 import 'package:cork_padel_arena/utils/common_utils.dart';
@@ -79,6 +80,18 @@ class _AdminDashState extends State<AdminDash> {
   Widget build(BuildContext context) {
     Color _menuColor = Colors.grey.shade800;
     var menus = [
+      Pages(
+        Icon(Icons.supervised_user_circle_outlined, size: 120, color: _menuColor,),
+        AppLocalizations.of(context)!.users,
+        Theme.of(context).primaryColor,
+            (BuildContext ctx) {
+          Navigator.of(
+            ctx,
+          ).push(MaterialPageRoute(builder: (_) {
+            return Users();
+          }));
+        },
+      ),
       Pages(
         Icon(Icons.list_alt_rounded, size: 120, color: _menuColor,),
         AppLocalizations.of(context)!.reservations,
