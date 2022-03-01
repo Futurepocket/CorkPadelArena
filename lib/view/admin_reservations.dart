@@ -26,7 +26,7 @@ class _AdminReservationsState extends State<AdminReservations>with TickerProvide
     _getPayments();
     filter = "a aguardar pagamento";
     _index = 0;
-    _tabController = new TabController(length: 3, vsync: this);
+    _tabController = new TabController(length: 2, vsync: this);
     super.initState();
   }
   void _getPayments(){
@@ -64,12 +64,9 @@ class _AdminReservationsState extends State<AdminReservations>with TickerProvide
                   setState(() {
                     switch(index){
                       case 0:
-                        filter = 'a aguardar pagamento';
-                        break;
-                      case 1:
                         filter = 'por completar';
                         break;
-                      case 2:
+                      case 1:
                         filter = 'pago';
                         break;
                     }
@@ -78,7 +75,6 @@ class _AdminReservationsState extends State<AdminReservations>with TickerProvide
                 indicatorColor: Colors.white,
                 isScrollable: true,
                 tabs: [
-                  Tab(text: AppLocalizations.of(context)!.pendingPayment,),
                   Tab(text: AppLocalizations.of(context)!.awaitingCompletion,),
                   Tab(text: AppLocalizations.of(context)!.paid,),
                 ],

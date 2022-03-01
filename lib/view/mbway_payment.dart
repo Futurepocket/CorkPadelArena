@@ -133,13 +133,16 @@ void _savePayment() async{
       DataHoraPedidoRegistado: DateFormat('ddMMyyyy HH:mm').format(DateTime.now()),
       EmailCliente: paymentEmail!,
       Referencia: referencia!,
-      tlmCliente: paymentTlm!);
+      tlmCliente: paymentTlm!,
+      amount: price!
+  );
   await payments.doc(_idd).set({
     'IdPedido': _payment.IdPedido,
     'DataHoraPedidoRegistado': _payment.DataHoraPedidoRegistado,
     'EmailCliente': _payment.EmailCliente,
     'Referencia': _payment.Referencia,
-    'tlmCliente': _payment.tlmCliente
+    'tlmCliente': _payment.tlmCliente,
+    'amount': _payment.amount,
   }).then((value) {
     Navigator.of(context).pop();
     checkoutValue().reservations = 0;
@@ -304,7 +307,7 @@ void _savePayment() async{
                             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                         ),
-                        _showLoading ?
+                        _showLoading?
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: ColorLoader(),

@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:cork_padel_arena/models/ReservationStreamPublisher.dart';
@@ -29,7 +30,10 @@ class _ReserveState extends State<Reserve> {
   bool _reservationValid = false;
   bool _isNotNow = false;
   bool _asAnother = false;
-  final _emailController = TextEditingController();
+  String? chosenClient;
+  String? chosenName;
+  List<String> clientsEmail = [];
+  List<String> clientsName = [];
 
   @override
   void didChangeDependencies() {
@@ -39,12 +43,20 @@ class _ReserveState extends State<Reserve> {
   }
   @override
   void initState() {
-    setState(() {
-
-    });
+    getClients();
     super.initState();
-
   }
+  void getClients(){
+    FirebaseFirestore.instance.collection('users').orderBy('first_name').get().then((users){
+      users.docs.forEach((element) {
+        setState(() {
+          clientsEmail.add(element['email']);
+          clientsName.add('${element['first_name']} ${element['last_name']} => ${element['email']}');
+        });
+      });
+  });
+  }
+
   //List<Reservation> reservationList = [];
 
   void _activateListeners(){
@@ -266,8 +278,8 @@ class _ReserveState extends State<Reserve> {
         hour: _timeChosen!.format(context),
         duration: until,
         state: 'por completar',
-        userEmail: (_emailController.text.isEmpty || !_asAnother)? Userr().email
-        : _emailController.text,
+        userEmail: (chosenClient!.isEmpty || !_asAnother)? Userr().email
+        : chosenClient!,
         completed: false,
         id: _idd,
         price: price!,
@@ -535,6 +547,7 @@ class _ReserveState extends State<Reserve> {
                 Text(_warning2),
                 if(Userr().role == "administrador")
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Text(AppLocalizations.of(context)!.reserveAsAnother,
                       style: TextStyle(
@@ -544,32 +557,32 @@ class _ReserveState extends State<Reserve> {
                         value: _asAnother,
                         onChanged: (_) => setState(() {
                           _asAnother = !_asAnother;
-                          _emailController.text = '';
                         }))
                   ],
                 ),
                 _asAnother?
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextFormField(
-                    controller: _emailController,
-                    autofillHints: [AutofillHints.email],
-                    enableSuggestions: true,
-                    enableInteractiveSelection: true,
-                    textInputAction: TextInputAction.next,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.all(10),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 1.5),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 1.5),
-                      ),
-                      labelText: 'Email',
+                Align(
+                  alignment: Alignment.center,
+                  child: DropdownButton<String>(
+                      hint: Text('Escolha o Cliente'),
+                      value: chosenName,
+                      items: clientsName.map((String name) {
+                        return DropdownMenuItem<String>(
+                          value: name,
+                          child: Text(name, style: TextStyle(fontSize: 14),),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        int index = clientsName.indexOf(value!);
+                        setState(() {
+                          chosenName = clientsName[index];
+                          chosenClient = clientsEmail[index];
+                          print(chosenClient);
+                        });
+                      },
                     ),
-                  ),
-                ): Container(),
+                )
+                    : Container(),
                 Align(
                   alignment: Alignment.center,
                   child: Container(

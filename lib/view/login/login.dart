@@ -72,6 +72,12 @@ class _LoginState extends State<Login> {
         aOptions: _getAndroidOptions());
     _readAll();
   }
+  @override
+  void dispose() {
+    super.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+  }
   void _addPassword() async {
     final String key = 'password';
     final String value = _passwordController.text;
