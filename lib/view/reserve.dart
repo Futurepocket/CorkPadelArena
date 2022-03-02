@@ -278,7 +278,7 @@ class _ReserveState extends State<Reserve> {
         hour: _timeChosen!.format(context),
         duration: until,
         state: 'por completar',
-        userEmail: (chosenClient!.isEmpty || !_asAnother)? Userr().email
+        userEmail: (chosenClient==null || !_asAnother)? Userr().email
         : chosenClient!,
         completed: false,
         id: _idd,
@@ -356,8 +356,7 @@ class _ReserveState extends State<Reserve> {
           child: Container(
             alignment: Alignment.topCenter,
             margin: EdgeInsets.only(top: 20, left: 20),
-            constraints: BoxConstraints(
-                minHeight: 600, minWidth: double.infinity, maxHeight: 650),
+           height: MediaQuery.of(context).size.height*0.87,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               //mainAxisAlignment: MainAxisAlignment.spaceAround,
