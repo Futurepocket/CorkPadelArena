@@ -10,8 +10,6 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:interval_time_picker/interval_time_picker.dart' as tPicker;
-
-import '../models/checkoutValue.dart';
 import 'dash.dart';
 class Reserve extends StatefulWidget {
   @override
