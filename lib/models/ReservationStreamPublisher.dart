@@ -9,7 +9,7 @@ class ReservationStreamPublisher {
 
   Stream<List<Reservation>> getReservationStream() {
     DatabaseReference database = data.ref();
-    final stream = database.child('reservations').onValue;
+    final stream = database.child('reservations').orderByChild('day').onValue;
     final streamToPublish = stream
         .map((event) {
           final reservationMap = Map<String, dynamic>.from(event.snapshot.value as dynamic);

@@ -71,8 +71,20 @@ class _DashState extends State<Dash> {
         Map<String, dynamic>.from(event.snapshot.value as dynamic)
             .forEach((key, value){
           final String whenMade = value['dateMade'] + ' ' + value['timeMade'];
-          final String whenStarts = value['day'] + ' ' + value['hour'];
-          final String whenEnds = value['day'] + ' ' + value['duration'];
+          String whenStarts = value['day'] + ' ' + value['hour'];
+          String whenEnds = value['day'] + ' ' + value['duration'];
+          if(whenEnds == '00:00'){
+            whenEnds = '24:00';
+          }
+          if(whenStarts == '00:00'){
+            whenStarts = '24:00';
+          }
+          if(whenEnds == '00:30'){
+            whenEnds = '24:30';
+          }
+          if(whenStarts == '00:30'){
+            whenStarts = '24:30';
+          }
           final DateTime made = formatter.parse(whenMade);
           final starts = formatter.parse(whenStarts);
           final ends = formatter.parse(whenEnds);

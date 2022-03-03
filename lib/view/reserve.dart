@@ -57,7 +57,7 @@ class _ReserveState extends State<Reserve> {
 
   //List<Reservation> reservationList = [];
 
-  void _activateListeners(){
+  Future<void> _activateListeners() async{
     if(reservationList.isNotEmpty){
       for (var reservation in reservationList) {
         String selectedDay =
@@ -89,9 +89,8 @@ class _ReserveState extends State<Reserve> {
           }
           TimeOfDay _until;
           if (_timeChosen != null) {
-            _until =
-                _timeChosen!.plusMinutes(int.parse(_thisDuration));
-
+            _until = _timeChosen!.plusMinutes(int.parse(_thisDuration));
+            print(_until);
             double dbStartTime = toDouble(_startTime);
             double dbEndTime = toDouble(_endTime);
             double pickedStartTime = toDouble(_timeChosen!);
@@ -107,17 +106,20 @@ class _ReserveState extends State<Reserve> {
                 dbEndTime-0.1 >= pickedStartTime) {
               _reservationValid = false;
               _timeChosen = null;
+
               _warning = 'Ja existe uma reserva a essa hora!';
             } else if (dbStartTime+0.1 <= pickedEndTime &&
                 dbEndTime-0.1 >= pickedEndTime) {
               _reservationValid = false;
               _timeChosen = null;
               _warning = 'Ja existe uma reserva a essa hora!';
+
             } else if (pickedStartTime <= dbStartTime+0.1 &&
                 dbEndTime-0.1 <= pickedEndTime) {
               _reservationValid = false;
               _timeChosen = null;
               _warning = 'Ja existe uma reserva a essa hora!';
+
             } else {
               _reservationValid = true;
             }
@@ -192,6 +194,7 @@ class _ReserveState extends State<Reserve> {
 // IF DATA CHOSEN IS AFTER NOW
         if (comparison == 1) {
           setState(() {
+            print(value);
             _timeChosen = value;
             _isNotNow = true;
           });
@@ -597,30 +600,32 @@ class _ReserveState extends State<Reserve> {
                             fontSize: 15,
                             letterSpacing: 1),
                       ),
-                      onPressed: () {
-                        _activateListeners();
-                        if (_reservationValid &&
-                            _isNotNow &&
-                            _selectedDuration != null) {
-                          _reserve();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            newSnackBar(context,
-                                Text(AppLocalizations.of(context)!.reservationAdded))
-                          );
-                          return;
-                        } else if (!_reservationValid || !_isNotNow) {
-                          _timeChosen = null;
-                          _warning = AppLocalizations.of(context)!.invalidSlot;
-                          setState(() {
-                            _warning2 = AppLocalizations.of(context)!.invalidSlot;
-                          });
-                          return;
-                        } else if (_selectedDuration == null) {
-                          setState(() {
-                            _warning2 = AppLocalizations.of(context)!.chooseDuration;
-                          });
-                          return;
-                        }
+                      onPressed: () async{
+                        _activateListeners().then((_){
+                          if (_reservationValid &&
+                              _isNotNow &&
+                              _selectedDuration != null) {
+                            _reserve();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                newSnackBar(context,
+                                    Text(AppLocalizations.of(context)!.reservationAdded))
+                            );
+                            return;
+                          } else if (!_reservationValid || !_isNotNow) {
+                            _timeChosen = null;
+                            _warning = AppLocalizations.of(context)!.invalidSlot;
+                            setState(() {
+                              _warning2 = AppLocalizations.of(context)!.invalidSlot;
+                            });
+                            return;
+                          } else if (_selectedDuration == null) {
+                            setState(() {
+                              _warning2 = AppLocalizations.of(context)!.chooseDuration;
+                            });
+                            return;
+                          }
+                        });
+
                       },
                     ),
                   ),
