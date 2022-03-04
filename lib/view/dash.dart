@@ -76,14 +76,8 @@ class _DashState extends State<Dash> {
           if(whenEnds == '00:00'){
             whenEnds = '24:00';
           }
-          if(whenStarts == '00:00'){
-            whenStarts = '24:00';
-          }
           if(whenEnds == '00:30'){
             whenEnds = '24:30';
-          }
-          if(whenStarts == '00:30'){
-            whenStarts = '24:30';
           }
           final DateTime made = formatter.parse(whenMade);
           final starts = formatter.parse(whenStarts);
