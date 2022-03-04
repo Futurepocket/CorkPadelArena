@@ -1,4 +1,5 @@
 import 'package:cork_padel_arena/view/users.dart';
+import 'package:flutter/foundation.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cork_padel_arena/models/checkoutValue.dart';
 import 'package:cork_padel_arena/utils/common_utils.dart';
@@ -92,7 +93,12 @@ class _AdminDashState extends State<AdminDash> {
         '${AppLocalizations.of(context)!.openDoor}',
         Theme.of(context).primaryColor,
         (BuildContext ctx) {
-         showWebView(context);
+          if(kIsWeb){
+            launch('http://admin:cork2021@161.230.247.85:3333/cgi-bin/accessControl.cgi?action=openDoor&channel=1&UserID=101&Type=Remote');
+          }else{
+            showWebView(context);
+          }
+
         }
       ),
     ];

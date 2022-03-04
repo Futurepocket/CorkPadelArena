@@ -99,6 +99,7 @@ SnackBar newSnackBar(BuildContext context, Text content) {
       content: content);
 }
 void showWebView(BuildContext context) {
+  Completer<WebViewController> _controller = Completer<WebViewController>();
   showDialog<void>(
     context: context,
     builder: (context) {
@@ -112,6 +113,10 @@ void showWebView(BuildContext context) {
           height: 100,
           child: WebView(
             initialUrl: 'http://admin:cork2021@161.230.247.85:3333/cgi-bin/accessControl.cgi?action=openDoor&channel=1&UserID=101&Type=Remote',
+            onWebViewCreated: (WebViewController webViewController) {
+              _controller.complete(webViewController);
+            },
+            javascriptMode: JavascriptMode.unrestricted,
           ),
         ),
         actions: <Widget>[
