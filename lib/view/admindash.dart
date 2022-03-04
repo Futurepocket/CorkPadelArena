@@ -8,6 +8,7 @@ import 'package:cork_padel_arena/models/menuItem.dart';
 import 'package:cork_padel_arena/models/page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:webview_flutter/webview_flutter.dart';
 import '../../models/userr.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -45,36 +46,6 @@ class _AdminDashState extends State<AdminDash> {
   }
 
   var client = http.Client();
-
-  //http://admin:cork2021@161.230.247.85:3333/cgi-bin/accessControl.cgi?action=openDoor&channel=1&UserID=101&Type=Remote
-  Future _openDoor() async{
-    launch('http://admin:cork2021@161.230.247.85:3333/cgi-bin/accessControl.cgi?action=openDoor&channel=1&UserID=101&Type=Remote');
-    // var uri = Uri.http('161.230.247.85:3333','/cgi-bin/accessControl.cgi',
-    //     {
-    //       'action':'openDoor',
-    //       'channel':'1',
-    //       'UserID':'101',
-    //     'Type':'Remote',
-    //     });
-    // print(uri);
-    //   var response = await client.get(
-    //       uri, headers: {
-    //     HttpHeaders.authorizationHeader: 'Digest 59182b218225aa9df8aceafbd844b449, password="cork2021", realm="Login to 75fb9cb5fa02c1363cb51defd537db68", nonce="185879478", uri="/cgi-bin/accessControl.cgi?action=openDoor&channel=1&UserID=101&Type=Remote", response="e58778dcddb7bca9059a932b58d61a90", opaque="4f135eda3ef76399c88388e7eafbaa479985a12a", cnonce="f291c102cf6326cc87a8e2e7f130eee7", nc=00000001, qop="auth"',
-    //     'Accept-Language': 'en-GB,en;q=0.9',
-    //   'Accept-Encoding': 'gzip, deflate',
-    //     'Connection':'keep-alive',
-    //     'Upgrade-Insecure-Requests': '1',
-    //   }).timeout(const Duration(seconds: 20));
-    //   print(response.reasonPhrase);
-    //   print(response.statusCode);
-    // if (response.statusCode == 200) {
-    //    print('Success');
-    // } else {
-    //   Map<String, dynamic> error = jsonDecode(response.body);
-    //   throw Exception(error["message"]);
-    // }
-
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -121,7 +92,7 @@ class _AdminDashState extends State<AdminDash> {
         '${AppLocalizations.of(context)!.openDoor}',
         Theme.of(context).primaryColor,
         (BuildContext ctx) {
-         _openDoor();
+         showWebView(context);
         }
       ),
     ];

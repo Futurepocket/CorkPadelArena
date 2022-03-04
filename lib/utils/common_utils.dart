@@ -7,6 +7,7 @@ import 'package:cork_padel_arena/view/shoppingCart.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 bool loggedInBefore = false;
 
@@ -96,6 +97,39 @@ SnackBar newSnackBar(BuildContext context, Text content) {
       backgroundColor: Theme.of(context).colorScheme.primary,
       elevation: 6.0,
       content: content);
+}
+void showWebView(BuildContext context) {
+  showDialog<void>(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: Text(
+          'Porta Aberta',
+          style: const TextStyle(fontSize: 24),
+        ),
+        content: Container(
+          width: 100,
+          height: 100,
+          child: WebView(
+            initialUrl: 'http://admin:cork2021@161.230.247.85:3333/cgi-bin/accessControl.cgi?action=openDoor&channel=1&UserID=101&Type=Remote',
+          ),
+        ),
+        actions: <Widget>[
+          StyledButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child:  Text(
+              'OK',
+              style: TextStyle(color: Colors.white),
+            ),
+            background: Colors.red,
+            border: Colors.red,
+          ),
+        ],
+      );
+    },
+  );
 }
 
 void showErrorDialog(BuildContext context, String title, Exception e) {
