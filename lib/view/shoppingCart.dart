@@ -22,7 +22,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
   List listForLength = <Card>[];
   DatabaseReference database = FirebaseDatabase.instance.ref();
 
-
   @override
   Widget build(BuildContext context) {
     number = 0;

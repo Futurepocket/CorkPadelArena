@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cork_padel_arena/view/shoppingCart.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:cork_padel_arena/models/ReservationStreamPublisher.dart';
@@ -319,6 +320,7 @@ class _ReserveState extends State<Reserve> {
             FloatingActionButton(
               backgroundColor: Theme.of(context).colorScheme.primary,
               onPressed: () {
+                ShoppingCart().createState().build(context);
                 showShoppingCart(context).then((value) {
                   settingState();
                 });

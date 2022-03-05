@@ -20,7 +20,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'admindash.dart';
 import 'contacts.dart';
 import 'myReservations.dart';
-import 'package:http/http.dart' as http;
+import 'new_my_reservations.dart';
 
 List<Reservation> reservationList = [];
 List<Reservation> reservationsToCheckOut = [];
@@ -243,7 +243,7 @@ class _DashState extends State<Dash> {
           Navigator.of(
             ctx,
           ).push(MaterialPageRoute(builder: (_) {
-            return MyReservations();
+            return NewMyReservations();
           })).then((value) => settingState());
         },
       ),

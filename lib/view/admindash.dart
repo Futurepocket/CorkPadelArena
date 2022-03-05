@@ -3,18 +3,15 @@ import 'package:flutter/foundation.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cork_padel_arena/models/checkoutValue.dart';
 import 'package:cork_padel_arena/utils/common_utils.dart';
-import 'package:cork_padel_arena/view/admin_reservations.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:cork_padel_arena/models/menuItem.dart';
 import 'package:cork_padel_arena/models/page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:webview_flutter/webview_flutter.dart';
 import '../../models/userr.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
-import '../apis/webservice.dart';
 import 'admin_payments.dart';
+import 'new_admin_reservations.dart';
 
 class AdminDash extends StatefulWidget {
 
@@ -72,7 +69,7 @@ class _AdminDashState extends State<AdminDash> {
           Navigator.of(
             ctx,
           ).push(MaterialPageRoute(builder: (_) {
-            return AdminReservations();
+            return NewAdminReservations();
           }));
         },
       ),
