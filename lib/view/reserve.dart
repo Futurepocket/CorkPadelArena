@@ -237,9 +237,11 @@ class _ReserveState extends State<Reserve> {
 
   void _reserve() async {
     final reservations = database.child('reservations');
+
     String _pin = randomNumbers();
     String _idd = DateFormat('ddMMyyyy').format(_selectedDate!) +
-        "${_timeChosen!.format(context)}";
+        "$_timeChosen";
+
     String? price;
     String _thisDuration = _selectedDuration!;
     switch(_selectedDuration){
@@ -272,12 +274,12 @@ class _ReserveState extends State<Reserve> {
     String until = _thisDuration;
     TimeOfDay _until;
     _until = _timeChosen!.plusMinutes(int.parse(_thisDuration));
-    until = _until.format(context);
+    until = '${_until.hour.toString().padLeft(2, "0")}:${_until.minute.toString().padLeft(2, "0")}';
 
     Reservation _reservation = Reservation(
         pin: _pin,
         day: DateFormat('dd/MM/yyyy').format(_selectedDate!),
-        hour: _timeChosen!.format(context),
+        hour: '${_timeChosen!.hour.toString().padLeft(2, "0")}:${_timeChosen!.minute.toString().padLeft(2, "0")}',
         duration: until,
         state: 'por completar',
         userEmail: (chosenClient==null || !_asAnother)? Userr().email
