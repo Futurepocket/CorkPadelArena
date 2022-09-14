@@ -17,10 +17,8 @@ class LocalAuthApi{
     if(!isAvailable) return false;
     try {
       return await _auth.authenticate(
-          biometricOnly: true,
           localizedReason: 'Use your biometrics to Auhenticate',
-          useErrorDialogs: true,
-          stickyAuth: true
+        
       );
     } on PlatformException catch (e) {
       return false;

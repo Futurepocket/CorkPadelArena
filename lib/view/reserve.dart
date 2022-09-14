@@ -161,9 +161,9 @@ class _ReserveState extends State<Reserve> {
    final TimeOfDay? newTime = await tPicker.showIntervalTimePicker(
       context: context,
       interval: 30,
-      visibleStep: tPicker.VisibleStep.Thirtieths,
+      visibleStep: tPicker.VisibleStep.thirtieths,
       initialEntryMode: kIsWeb? tPicker.TimePickerEntryMode.input :tPicker.TimePickerEntryMode.dial,
-      initialTime: TimeOfDay(hour: 8, minute: 00),
+      initialTime: const TimeOfDay(hour: 8, minute: 00),
       builder: (BuildContext context, Widget? child) {
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),

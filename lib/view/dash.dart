@@ -16,15 +16,15 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../models/userr.dart';
 import './reserve.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
 import 'admindash.dart';
 import 'contacts.dart';
-import 'myReservations.dart';
 import 'new_my_reservations.dart';
 
 List<Reservation> reservationList = [];
 List<Reservation> reservationsToCheckOut = [];
 class Dash extends StatefulWidget {
+  const Dash({Key? key}) : super(key: key);
+
 
   @override
   _DashState createState() => _DashState();
@@ -35,15 +35,15 @@ class _DashState extends State<Dash> {
   late bool isToday;
   late bool isIn10Mins;
   DatabaseReference database = FirebaseDatabase.instance.ref();
-  var myName;
+  String? myName;
   Future<void>? _launched;
 
   final _url = 'https://www.corkpadel.pt/en/store';
 
   Future<void> _launchInBrowser(String url) async {
-    if (await canLaunch(url)) {
-      await launch(
-        url,
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(
+        Uri.parse(url),
       );
     } else {
       throw 'Could not launch $url';
@@ -52,8 +52,9 @@ class _DashState extends State<Dash> {
 
   @override
   didChangeDependencies(){
+    super.didChangeDependencies();
     timer.cancel();
-    timer = Timer.periodic(Duration(seconds: 5), (timer) {
+    timer = Timer.periodic(const Duration(seconds: 5), (timer) {
       deleteOldReservations();
       _removeFromDB();
     });
@@ -120,8 +121,7 @@ class _DashState extends State<Dash> {
               && today.isBefore(ends.add(const Duration(minutes: 10)))) &&
               value['state'] == 'pago' && value['client_email'] == Userr().email
               && reservedToday != null){
-            final String whenMade = reservedToday!.day + ' ' +
-                reservedToday!.hour;
+            final String whenMade = '${reservedToday!.day} ${reservedToday!.hour}';
             final DateTime theOneToday = formatter.parse(whenMade);
             if (starts.isBefore(theOneToday)){
               setState(() {
@@ -137,8 +137,7 @@ class _DashState extends State<Dash> {
               });
             }
           }else if(reservedToday != null){
-            final String whenMade = reservedToday!.day + ' ' +
-                reservedToday!.duration;
+            final String whenMade = '${reservedToday!.day} ${reservedToday!.duration}';
             final DateTime theOneTodayFinishes = formatter.parse(whenMade);
             if(today.isAfter(theOneTodayFinishes.add(const Duration(minutes:  10)))){
               setState(() {
@@ -146,8 +145,8 @@ class _DashState extends State<Dash> {
                 isToday = false;
                 reservedToday = null;
               });
-            }else if(today.isAfter(formatter.parse(reservedToday!.day + ' ' + reservedToday!.hour))
-                && today.isBefore(formatter.parse(reservedToday!.day + ' ' + reservedToday!.duration))){
+            }else if(today.isAfter(formatter.parse('${reservedToday!.day} ${reservedToday!.hour}'))
+                && today.isBefore(formatter.parse('${reservedToday!.day} ${reservedToday!.duration}'))){
               setState(() {
                 isIn10Mins = true;
                 isToday = true;
@@ -160,7 +159,6 @@ class _DashState extends State<Dash> {
   }
   _removeFromDB(){
     for(String key in keys){
-      print(key);
       database.child('reservations').child(key).remove();
     }
     keys.clear();
@@ -186,7 +184,7 @@ class _DashState extends State<Dash> {
     isToday = false;
     isIn10Mins = false;
     getUser();
-    timer = Timer.periodic(Duration(seconds: 5), (timer) {
+    timer = Timer.periodic(const Duration(seconds: 5), (timer) {
       deleteOldReservations();
       _removeFromDB();
     });
@@ -209,10 +207,10 @@ class _DashState extends State<Dash> {
 
   @override
   Widget build(BuildContext context) {
-    Color _menuColor = Colors.grey.shade800;
+    Color menuColor = Colors.grey.shade800;
     var menus = [
       Pages(
-        Icon(Icons.person, size: 120, color: _menuColor,),
+        Icon(Icons.person, size: 120, color: menuColor,),
         AppLocalizations.of(context)!.profile,
         Theme.of(context).primaryColor,
             (BuildContext ctx) {
@@ -224,7 +222,7 @@ class _DashState extends State<Dash> {
         },
       ),
       Pages(
-        Icon(Icons.calendar_today_outlined, size: 120, color: _menuColor),
+        Icon(Icons.calendar_today_outlined, size: 120, color: menuColor),
         AppLocalizations.of(context)!.makeReservation,
         Theme.of(context).primaryColor,
             (BuildContext ctx) {
@@ -236,7 +234,7 @@ class _DashState extends State<Dash> {
         },
       ),
       Pages(
-        Icon(Icons.list_alt_rounded, size: 120, color: _menuColor),
+        Icon(Icons.list_alt_rounded, size: 120, color: menuColor),
         AppLocalizations.of(context)!.myReservations,
         Theme.of(context).primaryColor,
             (BuildContext ctx) {
@@ -250,7 +248,7 @@ class _DashState extends State<Dash> {
       Pages(
           Icon(
             Icons.contact_phone,
-            color: _menuColor,
+            color: menuColor,
             size: 120,
           ),
           AppLocalizations.of(context)!.contacts,
@@ -259,23 +257,21 @@ class _DashState extends State<Dash> {
         Navigator.of(
           ctx,
         ).push(MaterialPageRoute(builder: (_) {
-          return Contacts();
+          return const Contacts();
         })).then((value) => settingState());
       }),
       Pages(
         Icon(
           Icons.shopping_bag_rounded,
-          color: _menuColor,
+          color: menuColor,
           size: 120,
         ),
         AppLocalizations.of(context)!.onlineShop,
         Theme.of(context).primaryColor,
             (BuildContext ctx) async {
-          if (await canLaunch('https://www.corkpadel.pt/en/store')) {
-            await launch(
-              'https://www.corkpadel.pt/en/store',
-              forceWebView: true,
-              //headers: <String, String>{'my_header_key': 'my_header_value'},
+          if (await canLaunchUrl(Uri.parse('https://www.corkpadel.pt/en/store'))) {
+            await launchUrl(
+              Uri.parse('https://www.corkpadel.pt/en/store'),
             );
           } else {
             throw 'Could not launch the store';
@@ -302,7 +298,7 @@ class _DashState extends State<Dash> {
         Pages(
             Icon(
               Icons.admin_panel_settings_outlined,
-              color: _menuColor,
+              color: menuColor,
               size: 120,
             ),
             AppLocalizations.of(context)!.admin,
@@ -318,7 +314,7 @@ class _DashState extends State<Dash> {
       Pages(
           Icon(
             Icons.exit_to_app_rounded,
-            color: _menuColor,
+            color: menuColor,
             size: 120,
           ),
           AppLocalizations.of(context)!.logout,
@@ -335,7 +331,7 @@ class _DashState extends State<Dash> {
     return Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
-        title: Align(
+        title: const Align(
           alignment: Alignment.center,
             child: Text("Cork Padel Arena")),
     backgroundColor: Theme.of(context).primaryColor,
@@ -367,14 +363,10 @@ class _DashState extends State<Dash> {
                   Padding(
                     padding: const EdgeInsets.only(right:10.0),
                     child: StyledButton(
-                        child: Text('${AppLocalizations.of(context)!.openDoor}',
-                        style: TextStyle(color: isIn10Mins? Colors.white
-                        : Colors.red
-                        ),),
                         onPressed: isIn10Mins?
                             (){
                               if(kIsWeb){
-                                launch('http://admin:cork2021@161.230.247.85:3333/cgi-bin/accessControl.cgi?action=openDoor&channel=1&UserID=101&Type=Remote');
+                                launchUrl(Uri.parse('http://admin:cork2021@161.230.247.85:3333/cgi-bin/accessControl.cgi?action=openDoor&channel=1&UserID=101&Type=Remote'));
                               }else{
                                 showWebView(context);
                               }
@@ -383,13 +375,17 @@ class _DashState extends State<Dash> {
                         background: isIn10Mins ? Theme.of(context).primaryColor
                         : Colors.grey,
                         border: isIn10Mins ? Theme.of(context).primaryColor
-                            : Colors.grey),
+                            : Colors.grey,
+                        child: Text(AppLocalizations.of(context)!.openDoor,
+                        style: TextStyle(color: isIn10Mins? Colors.white
+                        : Colors.red
+                        ),)),
                   )
                 ],
               ),
             ): Container(),
             Container(
-                margin: EdgeInsets.symmetric(vertical:15, horizontal: 10),
+                margin: const EdgeInsets.symmetric(vertical:15, horizontal: 10),
                 width: double.infinity,
                 height: MediaQuery.of(context).size.height*0.85,
                 child: Column(
@@ -397,7 +393,7 @@ class _DashState extends State<Dash> {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),
                       child: Text(
-                        '${AppLocalizations.of(context)!.welcome} ${myName}',
+                        '${AppLocalizations.of(context)!.welcome} $myName',
                         style: TextStyle(
                           fontSize: 26,
                           color: Theme.of(context).primaryColor,
@@ -408,8 +404,8 @@ class _DashState extends State<Dash> {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),
                       child: Text(
-                        '${AppLocalizations.of(context)!.adminAccount}',
-                        style: TextStyle(
+                        AppLocalizations.of(context)!.adminAccount,
+                        style: const TextStyle(
                           fontSize: 18,
                           color: Colors.red,
                         ),
@@ -421,17 +417,17 @@ class _DashState extends State<Dash> {
                         child: GridView(
 
                           padding: const EdgeInsets.all(5),
-                          children: menus
-                              .map((menus) => MenuItem(
-                              menus.ikon, menus.title, menus.color, menus.fun))
-                              .toList(),
-                          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                               maxCrossAxisExtent: 350,
                               childAspectRatio: 0.5,
                               crossAxisSpacing: 0,
                               mainAxisSpacing: 0,
                            mainAxisExtent: 180,
                           ),
+                          children: menus
+                              .map((menus) => MenuItem(
+                              menus.ikon, menus.title, menus.color, menus.fun))
+                              .toList(),
                         ),
                       ),
                     ),
@@ -452,7 +448,7 @@ class _DashState extends State<Dash> {
                   settingState();
                 });
               },
-              child: Icon(Icons.shopping_cart, color: Colors.white,),
+              child: const Icon(Icons.shopping_cart, color: Colors.white,),
             ),
 
             reservationsToCheckOut.isEmpty?

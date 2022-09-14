@@ -44,16 +44,19 @@ class _MbWayPaymentState extends State<MbWayPayment> {
     price = checkoutValue().price.toString();
     super.initState();
   }
-String emailDetails = '';
-  generateEmailDetails(){
+
+  String emailDetails = '';
+
+  generateEmailDetails() {
     reservationsToCheckOut.forEach((element) {
-      emailDetails += '<p>Dia: ${element.day}, das ${element.hour} às ${element.duration}.</p>';
+      emailDetails +=
+      '<p>Dia: ${element.day}, das ${element.hour} às ${element.duration}.</p>';
     });
 
     _sendCompanyEmail();
   }
 
-  void _generateReference(){
+  void _generateReference() {
     referencia = 'CKA${DateFormat('ddMMyyHHmmss').format(DateTime.now())}';
   }
 
@@ -78,7 +81,7 @@ String emailDetails = '';
         </html>''',
       },
     },)
-    .then((value) => print("email queued"),
+        .then((value) => print("email queued"),
     )
     );
     print('Email done');
@@ -89,7 +92,8 @@ String emailDetails = '';
       'to': 'corkpadel@corkpadel.com',
       'bcc': 'david@corkpadel.com',
       'message': {
-        'subject': "Nova reserva de ${Userr().name} ${Userr().surname} na Arena",
+        'subject': "Nova reserva de ${Userr().name} ${Userr()
+            .surname} na Arena",
         'html': '''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
         
@@ -114,51 +118,57 @@ String emailDetails = '';
     );
     print('Email done');
   }
+
   DatabaseReference database = FirebaseDatabase.instance.ref();
-@override
+
+  @override
   void dispose() {
     super.dispose();
     tlmController.dispose();
     emailController.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     price = checkoutValue().price.toString();
-void _savePayment() async{
-  CollectionReference payments = FirebaseFirestore.instance.collection('MBWayPayments');
-  String _idd = 'Arena${paymentTlm}' + DateFormat('ddMMyyyy HH:mm').format(DateTime.now());
-  /////////////////////SAVING PAYMENT////////////////////////////////////
-  Payment _payment = Payment(
-      IdPedido: idPedido!,
-      DataHoraPedidoRegistado: DateFormat('ddMMyyyy HH:mm').format(DateTime.now()),
-      EmailCliente: paymentEmail!,
-      Referencia: referencia!,
-      tlmCliente: paymentTlm!,
-      amount: price!
-  );
-  await payments.doc(_idd).set({
-    'IdPedido': _payment.IdPedido,
-    'DataHoraPedidoRegistado': _payment.DataHoraPedidoRegistado,
-    'EmailCliente': _payment.EmailCliente,
-    'Referencia': _payment.Referencia,
-    'tlmCliente': _payment.tlmCliente,
-    'amount': _payment.amount,
-  }).then((value) {
-    Navigator.of(context).pop();
-    checkoutValue().reservations = 0;
-    checkoutValue().price = 0;
-    setState(() {
-      price = '0';
-    });
-    reservationsToCheckOut.clear();
-    Navigator.of(context).pop();
-    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_){
-      return Dash();
-    }));
-    ScaffoldMessenger.of(context).showSnackBar(
-        newSnackBar(context, Text('Reservas Efetuados')));
-  }).catchError((onError) => print("Failed to save payment: $onError"));
-}
+    void _savePayment() async {
+      CollectionReference payments = FirebaseFirestore.instance.collection(
+          'MBWayPayments');
+      String _idd = 'Arena${paymentTlm}' +
+          DateFormat('ddMMyyyy HH:mm').format(DateTime.now());
+      /////////////////////SAVING PAYMENT////////////////////////////////////
+      Payment _payment = Payment(
+          IdPedido: idPedido!,
+          DataHoraPedidoRegistado: DateFormat('ddMMyyyy HH:mm').format(
+              DateTime.now()),
+          EmailCliente: paymentEmail!,
+          Referencia: referencia!,
+          tlmCliente: paymentTlm!,
+          amount: price!
+      );
+      await payments.doc(_idd).set({
+        'IdPedido': _payment.IdPedido,
+        'DataHoraPedidoRegistado': _payment.DataHoraPedidoRegistado,
+        'EmailCliente': _payment.EmailCliente,
+        'Referencia': _payment.Referencia,
+        'tlmCliente': _payment.tlmCliente,
+        'amount': _payment.amount,
+      }).then((value) {
+        Navigator.of(context).pop();
+        checkoutValue().reservations = 0;
+        checkoutValue().price = 0;
+        setState(() {
+          price = '0';
+        });
+        reservationsToCheckOut.clear();
+        Navigator.of(context).pop();
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) {
+          return Dash();
+        }));
+        ScaffoldMessenger.of(context).showSnackBar(
+            newSnackBar(context, Text('Reservas Efetuados')));
+      }).catchError((onError) => print("Failed to save payment: $onError"));
+    }
     void _saveAll() async {
       final reservations = database.child('reservations');
       generateEmailDetails();
@@ -172,9 +182,8 @@ void _savePayment() async{
           print('There is an error!');
         }
       });
-
     }
-    void awaitingConfirmation(BuildContext context) async{
+    void awaitingConfirmation(BuildContext context) async {
       _showLoading = true;
       _isAproved = false;
       bool _confirmed = false;
@@ -184,21 +193,23 @@ void _savePayment() async{
         builder: (context) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
-                if(!_confirmed){
+                if (!_confirmed) {
                   ws.get(Mbway.getRequestState(idPagamento: idPedido!))
-                    .then((value) async {
-                  if(value['Estado'] == "000"){
-                    _sendClientEmail();
-                    await Future.delayed(const Duration(milliseconds: 2000), () {});
-                    _savePayment();
-                  }else{
-                    setState(() {
-                      _showLoading = false;
-                      _isAproved = false;
-                      _resultText = 'Por favor confirme o pagamento na app.';
-                    });
-                  }
-                });}
+                      .then((value) async {
+                    if (value['Estado'] == "000") {
+                      _sendClientEmail();
+                      await Future.delayed(
+                          const Duration(milliseconds: 2000), () {});
+                      _savePayment();
+                    } else {
+                      setState(() {
+                        _showLoading = false;
+                        _isAproved = false;
+                        _resultText = 'Por favor confirme o pagamento na app.';
+                      });
+                    }
+                  });
+                }
                 return AlertDialog(
                   content: SingleChildScrollView(
                     padding: EdgeInsets.all(8),
@@ -208,7 +219,8 @@ void _savePayment() async{
                           padding: const EdgeInsets.only(bottom: 8.0),
                           child: Text(
                             'A aguardar pagamento',
-                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                         ),
                         _showLoading ?
@@ -228,7 +240,7 @@ void _savePayment() async{
                     ),
                   ),
                   actions: <Widget>[
-                    _isAproved?
+                    _isAproved ?
                     Container(
                     )
                         : OutlinedButton(
@@ -262,39 +274,39 @@ void _savePayment() async{
         context: context,
         builder: (context) {
           return StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-              if(!requested) {
-                _generateReference();
-                ws.get(Mbway.getRequest(
-                    referencia: referencia!,
-                    valor: price!,
-                    nrtlm: paymentTlm!,
-                    email: paymentEmail!,
-                    descricao: 'testdesc')).then((value) async {
-                  await Future.delayed(
-                      const Duration(milliseconds: 2000), () {});
-                  if (value.Estado == "000") {
-                    requested = true;
-                    setState(() {
-                      _showLoading = false;
-                      _isAproved = true;
-                      _resultText =
-                      "Por favor aprove o pagamento na sua app MBWay";
-                      idPedido = value.IdPedido;
-                    });
-                    Navigator.of(context).pop();
-                    awaitingConfirmation(context);
-                  }
-                  else {
-                    setState(() {
-                      _showLoading = false;
-                      _isAproved = false;
-                      _resultText = 'Estado: ${value.Estado}\n'
-                          '${value.MsgDescricao}';
-                    });
-                  }
-                });
-              }
+              builder: (BuildContext context, StateSetter setState) {
+                if (!requested) {
+                  _generateReference();
+                  ws.get(Mbway.getRequest(
+                      referencia: referencia!,
+                      valor: price!,
+                      nrtlm: paymentTlm!,
+                      email: paymentEmail!,
+                      descricao: 'testdesc')).then((value) async {
+                    await Future.delayed(
+                        const Duration(milliseconds: 2000), () {});
+                    if (value.Estado == "000") {
+                      requested = true;
+                      setState(() {
+                        _showLoading = false;
+                        _isAproved = true;
+                        _resultText =
+                        "Por favor aprove o pagamento na sua app MBWay";
+                        idPedido = value.IdPedido;
+                      });
+                      Navigator.of(context).pop();
+                      awaitingConfirmation(context);
+                    }
+                    else {
+                      setState(() {
+                        _showLoading = false;
+                        _isAproved = false;
+                        _resultText = 'Estado: ${value.Estado}\n'
+                            '${value.MsgDescricao}';
+                      });
+                    }
+                  });
+                }
                 return AlertDialog(
                   content: SingleChildScrollView(
                     padding: EdgeInsets.all(8),
@@ -304,10 +316,11 @@ void _savePayment() async{
                           padding: const EdgeInsets.only(bottom: 8.0),
                           child: Text(
                             'A processar pagamento',
-                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                         ),
-                        _showLoading?
+                        _showLoading ?
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: ColorLoader(),
@@ -324,7 +337,7 @@ void _savePayment() async{
                     ),
                   ),
                   actions: <Widget>[
-                    _isAproved?
+                    _isAproved ?
                     OutlinedButton(
                       onPressed: () {
                         Navigator.of(context).pop();
@@ -333,11 +346,11 @@ void _savePayment() async{
                         "Cancelar",
                       ),
                     )
-                        :Container(),
-                    _isAproved == true?
+                        : Container(),
+                    _isAproved == true ?
                     Container(
                     )
-                        : _showLoading == false? OutlinedButton(
+                        : _showLoading == false ? OutlinedButton(
                       style: OutlinedButton.styleFrom(
                         backgroundColor: Colors.red,
                       ),
@@ -348,7 +361,7 @@ void _savePayment() async{
                         "OK",
                         style: TextStyle(color: Colors.white),
                       ),
-                    ): Container(),
+                    ) : Container(),
                   ],
                 );
               }
@@ -361,54 +374,58 @@ void _savePayment() async{
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
           title: Text("Pagamento"),
-          backgroundColor: Theme.of(context).primaryColor),
+          backgroundColor: Theme
+              .of(context)
+              .primaryColor),
       body: SingleChildScrollView(
-    child: Padding(
-      padding: const EdgeInsets.all(35.0),
-      child: Form(
-          key: _form,
-        child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Image.asset(
-                  'assets/images/logo.png',
-                  width: 80.0,
-                  height: 100.0,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10.0),
-                child: Image.asset(
-                  'assets/images/Logo_MBWay.png',
-                  width: 80.0,
-                  height: 100.0,
-                ),
-              ),
+        child: Padding(
+          padding: const EdgeInsets.all(35.0),
+          child: Form(
+            key: _form,
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Image.asset(
+                      'assets/images/logo.png',
+                      width: 80.0,
+                      height: 100.0,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: Image.asset(
+                      'assets/images/Logo_MBWay.png',
+                      width: 80.0,
+                      height: 100.0,
+                    ),
+                  ),
 
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: Text(
-                  'Valor total: € $price.00',
-                  style: TextStyle(
-                    fontFamily: 'Roboto Condensed',
-                    fontSize: 24,
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Text(
+                      'Valor total: € $price.00',
+                      style: TextStyle(
+                        fontFamily: 'Roboto Condensed',
+                        fontSize: 24,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'Pagamento',
-                  style: TextStyle(
-                    fontFamily: 'Roboto Condensed',
-                    fontSize: 26,
-                    color: Theme.of(context).primaryColor,
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'Pagamento',
+                      style: TextStyle(
+                        fontFamily: 'Roboto Condensed',
+                        fontSize: 26,
+                        color: Theme
+                            .of(context)
+                            .primaryColor,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            Padding(
+                  Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: TextFormField(
                       controller: tlmController,
@@ -419,19 +436,23 @@ void _savePayment() async{
                         contentPadding: EdgeInsets.all(10),
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(
-                              color: Theme.of(context).primaryColor,
+                              color: Theme
+                                  .of(context)
+                                  .primaryColor,
                               width: 1.5),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
-                              color: Theme.of(context).primaryColor,
+                              color: Theme
+                                  .of(context)
+                                  .primaryColor,
                               width: 1.5),
                         ),
                         labelText: 'Numero de Telemovel',
                         // errorText: 'Error Text',
                       ),
                       onSaved: (value) {
-                       paymentTlm = value.toString();
+                        paymentTlm = value.toString();
                       },
                       validator: (value) {
                         if (value!.isEmpty) {
@@ -443,64 +464,70 @@ void _savePayment() async{
                   ),
 
 //---------------------------------------//EMAIL-------------------------------------------------------------
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: TextFormField(
-                    textInputAction: TextInputAction.next,
-                    keyboardType: TextInputType.emailAddress,
-                    controller: emailController,
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.all(10),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Theme.of(context).primaryColor, width: 1.5),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: TextFormField(
+                      textInputAction: TextInputAction.next,
+                      keyboardType: TextInputType.emailAddress,
+                      controller: emailController,
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.all(10),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Theme
+                                  .of(context)
+                                  .primaryColor, width: 1.5),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Theme
+                                  .of(context)
+                                  .primaryColor, width: 1.5),
+                        ),
+                        labelText: "Email",
+                        // errorText: 'Error Text',
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Theme.of(context).primaryColor, width: 1.5),
-                      ),
-                      labelText: "Email",
-                      // errorText: 'Error Text',
+                      onSaved: (value) {
+                        paymentEmail = value.toString();
+                      },
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return AppLocalizations.of(context)!.required;
+                        }
+                        return null;
+                      },
                     ),
-                    onSaved: (value) {
-                      paymentEmail = value.toString();
-                    },
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return AppLocalizations.of(context)!.required;
-                      }
-                      return null;
-                    },
                   ),
-                ),
 //---------------------------------------//BOTAO-------------------------------------------------------------
-                Container(
-                  width: 150,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: Theme.of(context).primaryColor,
-                      onPrimary: Colors.white,
+                  Container(
+                    width: 150,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Theme
+                            .of(context)
+                            .primaryColor,
+                        onPrimary: Colors.white,
+                      ),
+                      child: Text(
+                        AppLocalizations.of(context)!.submit,
+                        style: TextStyle(fontSize: 15),
+                      ),
+                      onPressed: () {
+                        _saveAll();
+                        final isValid = _form.currentState!.validate();
+                        if (isValid) {
+                          _saveForm(context);
+                        }
+                      },
                     ),
-                    child: Text(
-                      AppLocalizations.of(context)!.submit,
-                      style: TextStyle(fontSize: 15),
-                    ),
-                    onPressed: () {
-                      _saveAll();
-                      final isValid = _form.currentState!.validate();
-                      if (isValid) {
-                        _saveForm(context);
-                      }
-                    },
                   ),
-                ),
-            ]
+                ]
+            ),
           ),
+        ),
+
+
       ),
-    ),
-
-
-    ),
     );
   }
 }
