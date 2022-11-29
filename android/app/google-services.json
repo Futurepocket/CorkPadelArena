@@ -23,6 +23,22 @@
           }
         },
         {
+          "client_id": "951659670595-d3alls468v16hje1s9f25afp2pg8gll6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.corkpadel.arena",
+            "certificate_hash": "2cfb1047a246af538e736fe33934dbd25e2f3b6b"
+          }
+        },
+        {
+          "client_id": "951659670595-ejiadd16ufu565cd3l86ia2p0vu5b5dm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.corkpadel.arena",
+            "certificate_hash": "f0c5b70040a809e46821f17a6446a14b162ba66c"
+          }
+        },
+        {
           "client_id": "951659670595-ck2k5d51mpm958s2nvsmpr6urp923074.apps.googleusercontent.com",
           "client_type": 3
         }
