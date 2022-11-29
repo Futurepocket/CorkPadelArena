@@ -96,7 +96,7 @@ class _AdminDashState extends State<AdminDash> {
           AppLocalizations.of(context)!.openDoor,
           Theme.of(context).primaryColor, (BuildContext ctx) async {
         if (kIsWeb) {
-          launchUrlString(openDoorUrl);
+          launchUrlString(openDoorFullUrl);
         } else {
           var client = DigestAuthClient("admin", "cork2021");
           await client.get(Uri.parse(openDoorUrl)).then((response) {

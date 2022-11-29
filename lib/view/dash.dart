@@ -28,6 +28,7 @@ import 'new_my_reservations.dart';
 List<Reservation> reservationList = [];
 List<Reservation> reservationsToCheckOut = [];
 String openDoorUrl = '';
+String openDoorFullUrl = '';
 class Dash extends StatefulWidget {
   const Dash({Key? key}) : super(key: key);
 
@@ -191,11 +192,12 @@ class _DashState extends State<Dash> {
   void initState() {
     isToday = false;
     isIn10Mins = false;
-    FirebaseFirestore.instance
-        .collection('constants')
-        .doc('openDoorUrlID').get().then((value) {
+    final instance = FirebaseFirestore.instance
+        .collection('constants');
+    instance.doc('openDoorUrlID').get().then((value) {
       openDoorUrl = value.data()!['url'];
     });
+    instance.doc("openDoorFullUrl").get().then((value) => openDoorFullUrl = value.data()!["url"]);
     getUser();
     timer = Timer.periodic(const Duration(seconds: 5), (timer) {
       deleteOldReservations();
@@ -381,7 +383,7 @@ class _DashState extends State<Dash> {
                         onPressed: isIn10Mins?
                             () async {
                               if(kIsWeb){
-                                launchUrl(Uri.parse(openDoorUrl));
+                                launchUrl(Uri.parse(openDoorFullUrl));
                               }else{
                                 var client = DigestAuthClient("admin", "cork2021");
                                 await client.get(Uri.parse(openDoorUrl)).then((response) {
