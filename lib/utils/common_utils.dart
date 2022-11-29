@@ -1,3 +1,4 @@
+import 'package:cork_padel_arena/view/dash.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -99,24 +100,17 @@ SnackBar newSnackBar(BuildContext context, Text content) {
       content: content);
 }
 void showWebView(BuildContext context) {
-  Completer<WebViewController> _controller = Completer<WebViewController>();
+  Completer<WebViewController>();
   showDialog<void>(
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: Text(
-          'Porta Aberta',
-          style: const TextStyle(fontSize: 24),
-        ),
         content: Container(
           width: 100,
           height: 100,
-          child: WebView(
-            initialUrl: 'http://admin:cork2021@161.230.247.85:3333/cgi-bin/accessControl.cgi?action=openDoor&channel=1&UserID=101&Type=Remote',
-            onWebViewCreated: (WebViewController webViewController) {
-              _controller.complete(webViewController);
-            },
-            javascriptMode: JavascriptMode.unrestricted,
+          child:  const Text(
+            'Porta Aberta',
+            style: TextStyle(fontSize: 24),
           ),
         ),
         actions: <Widget>[
@@ -124,12 +118,12 @@ void showWebView(BuildContext context) {
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child:  Text(
+            background: Colors.red,
+            border: Colors.red,
+            child:  const Text(
               'OK',
               style: TextStyle(color: Colors.white),
             ),
-            background: Colors.red,
-            border: Colors.red,
           ),
         ],
       );

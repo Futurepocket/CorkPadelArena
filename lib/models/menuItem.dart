@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class MenuItem extends StatelessWidget {
+class Menu_Item extends StatelessWidget {
   final Icon ikon;
   final String title;
   final Color color;
   final Function(BuildContext ctx) fun;
 
-  MenuItem(this.ikon, this.title, this.color, this.fun);
+  const Menu_Item(this.ikon, this.title, this.color, this.fun);
 
   // void selectMenu(BuildContext ctx) {
   //   // Navigator.of(ctx).push(MaterialPageRoute(builder: (_) {

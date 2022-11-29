@@ -62,7 +62,7 @@ class _LoginState extends State<Login> {
     _readAll();
   }
   void _addEmail() async {
-    final String key = 'email';
+    const String key = 'email';
     final String value = _emailController.text;
 
     await _storage.write(
@@ -79,7 +79,7 @@ class _LoginState extends State<Login> {
     _passwordController.dispose();
   }
   void _addPassword() async {
-    final String key = 'password';
+    const String key = 'password';
     final String value = _passwordController.text;
 
     await _storage.write(
@@ -327,7 +327,7 @@ class _LoginState extends State<Login> {
                                       onPrimary: Colors.white,
                                     ),
                                     child: Row(
-                                      children: [
+                                      children: const [
                                         Icon(Icons.fingerprint),
                                         Text(
                                           'Login Biometrico',

@@ -31,7 +31,7 @@ class _ProfileState extends State<Profile> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-          title: Align(
+          title: const Align(
               alignment: Alignment.centerLeft,
               child: Text("Cork Padel Arena")),
           backgroundColor: Theme.of(context).primaryColor),
@@ -43,7 +43,7 @@ class _ProfileState extends State<Profile> {
           children: [
               Text(
                 AppLocalizations.of(context)!.myProfile,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'Roboto Condensed',
                   fontSize: 16,
                 ),
@@ -52,7 +52,7 @@ class _ProfileState extends State<Profile> {
               padding: const EdgeInsets.only(top:8.0),
               child: Text(
                 AppLocalizations.of(context)!.personalDetails,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'Roboto Condensed',
                   fontSize: 28,
                 ),
@@ -69,47 +69,47 @@ class _ProfileState extends State<Profile> {
               ))),),
               Container(
                 padding:
-                    EdgeInsets.only(top: 20, right: 15, bottom: 15),
+                    const EdgeInsets.only(top: 20, right: 15, bottom: 15),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Card(elevation: 5,
                   child: Container(
-                    padding: EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Row(
                           children: [
-                            Text(
+                            const Text(
                               "Nome: ",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 18),
                             ),
                             Text(
-                              _userr.name + ' ' + _userr.surname,
-                              style: TextStyle(fontSize: 16),
+                              '${_userr.name} ${_userr.surname}',
+                              style: const TextStyle(fontSize: 16),
                             )
                           ],
                         ),
                         Padding(
                           padding: const EdgeInsets.only(top: _padd),
                           child: Row(children: [
-                            Text(
+                            const Text(
                               "Email: ",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 18),
                             ),
                             Text(
                               _userr.email,
-                              style: TextStyle(fontSize: 16),
+                              style: const TextStyle(fontSize: 16),
                             )
                           ]),
                         ),
                         Padding(
                           padding: const EdgeInsets.only(top: _padd),
                           child: Row(children: [
-                            Text(
+                            const Text(
                               "Tel: ",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 18),
@@ -124,7 +124,7 @@ class _ProfileState extends State<Profile> {
                           padding: const EdgeInsets.only(top: _padd),
                           child: Row(
                             children: [
-                              Text(
+                              const Text(
                                 "Morada: ",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 18),

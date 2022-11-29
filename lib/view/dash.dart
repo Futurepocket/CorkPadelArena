@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cork_padel_arena/models/checkoutValue.dart';
 import 'package:cork_padel_arena/models/reservation.dart';
 import 'package:cork_padel_arena/src/widgets.dart';
 import 'package:cork_padel_arena/utils/common_utils.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
+import 'package:http_auth/http_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:cork_padel_arena/main.dart';
 import 'package:cork_padel_arena/models/menuItem.dart';
@@ -13,15 +15,19 @@ import 'package:cork_padel_arena/view/profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import '../../models/userr.dart';
 import './reserve.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'admindash.dart';
 import 'contacts.dart';
+import 'myReservations.dart';
 import 'new_my_reservations.dart';
 
 List<Reservation> reservationList = [];
 List<Reservation> reservationsToCheckOut = [];
+String openDoorUrl = '';
 class Dash extends StatefulWidget {
   const Dash({Key? key}) : super(key: key);
 
@@ -35,9 +41,8 @@ class _DashState extends State<Dash> {
   late bool isToday;
   late bool isIn10Mins;
   DatabaseReference database = FirebaseDatabase.instance.ref();
-  String? myName;
+  var myName;
   Future<void>? _launched;
-
   final _url = 'https://www.corkpadel.pt/en/store';
 
   Future<void> _launchInBrowser(String url) async {
@@ -54,7 +59,7 @@ class _DashState extends State<Dash> {
   didChangeDependencies(){
     super.didChangeDependencies();
     timer.cancel();
-    timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+    timer = Timer.periodic(Duration(seconds: 5), (timer) {
       deleteOldReservations();
       _removeFromDB();
     });
@@ -121,7 +126,8 @@ class _DashState extends State<Dash> {
               && today.isBefore(ends.add(const Duration(minutes: 10)))) &&
               value['state'] == 'pago' && value['client_email'] == Userr().email
               && reservedToday != null){
-            final String whenMade = '${reservedToday!.day} ${reservedToday!.hour}';
+            final String whenMade = reservedToday!.day + ' ' +
+                reservedToday!.hour;
             final DateTime theOneToday = formatter.parse(whenMade);
             if (starts.isBefore(theOneToday)){
               setState(() {
@@ -137,7 +143,8 @@ class _DashState extends State<Dash> {
               });
             }
           }else if(reservedToday != null){
-            final String whenMade = '${reservedToday!.day} ${reservedToday!.duration}';
+            final String whenMade = reservedToday!.day + ' ' +
+                reservedToday!.duration;
             final DateTime theOneTodayFinishes = formatter.parse(whenMade);
             if(today.isAfter(theOneTodayFinishes.add(const Duration(minutes:  10)))){
               setState(() {
@@ -145,8 +152,8 @@ class _DashState extends State<Dash> {
                 isToday = false;
                 reservedToday = null;
               });
-            }else if(today.isAfter(formatter.parse('${reservedToday!.day} ${reservedToday!.hour}'))
-                && today.isBefore(formatter.parse('${reservedToday!.day} ${reservedToday!.duration}'))){
+            }else if(today.isAfter(formatter.parse(reservedToday!.day + ' ' + reservedToday!.hour))
+                && today.isBefore(formatter.parse(reservedToday!.day + ' ' + reservedToday!.duration))){
               setState(() {
                 isIn10Mins = true;
                 isToday = true;
@@ -159,6 +166,7 @@ class _DashState extends State<Dash> {
   }
   _removeFromDB(){
     for(String key in keys){
+      print(key);
       database.child('reservations').child(key).remove();
     }
     keys.clear();
@@ -183,6 +191,11 @@ class _DashState extends State<Dash> {
   void initState() {
     isToday = false;
     isIn10Mins = false;
+    FirebaseFirestore.instance
+        .collection('constants')
+        .doc('openDoorUrlID').get().then((value) {
+      openDoorUrl = value.data()!['url'];
+    });
     getUser();
     timer = Timer.periodic(const Duration(seconds: 5), (timer) {
       deleteOldReservations();
@@ -207,10 +220,10 @@ class _DashState extends State<Dash> {
 
   @override
   Widget build(BuildContext context) {
-    Color menuColor = Colors.grey.shade800;
+    Color _menuColor = Colors.grey.shade800;
     var menus = [
       Pages(
-        Icon(Icons.person, size: 120, color: menuColor,),
+        Icon(Icons.person, size: 120, color: _menuColor,),
         AppLocalizations.of(context)!.profile,
         Theme.of(context).primaryColor,
             (BuildContext ctx) {
@@ -222,7 +235,7 @@ class _DashState extends State<Dash> {
         },
       ),
       Pages(
-        Icon(Icons.calendar_today_outlined, size: 120, color: menuColor),
+        Icon(Icons.calendar_today_outlined, size: 120, color: _menuColor),
         AppLocalizations.of(context)!.makeReservation,
         Theme.of(context).primaryColor,
             (BuildContext ctx) {
@@ -234,7 +247,7 @@ class _DashState extends State<Dash> {
         },
       ),
       Pages(
-        Icon(Icons.list_alt_rounded, size: 120, color: menuColor),
+        Icon(Icons.list_alt_rounded, size: 120, color: _menuColor),
         AppLocalizations.of(context)!.myReservations,
         Theme.of(context).primaryColor,
             (BuildContext ctx) {
@@ -248,7 +261,7 @@ class _DashState extends State<Dash> {
       Pages(
           Icon(
             Icons.contact_phone,
-            color: menuColor,
+            color: _menuColor,
             size: 120,
           ),
           AppLocalizations.of(context)!.contacts,
@@ -257,13 +270,13 @@ class _DashState extends State<Dash> {
         Navigator.of(
           ctx,
         ).push(MaterialPageRoute(builder: (_) {
-          return const Contacts();
+          return Contacts();
         })).then((value) => settingState());
       }),
       Pages(
         Icon(
           Icons.shopping_bag_rounded,
-          color: menuColor,
+          color: _menuColor,
           size: 120,
         ),
         AppLocalizations.of(context)!.onlineShop,
@@ -272,6 +285,8 @@ class _DashState extends State<Dash> {
           if (await canLaunchUrl(Uri.parse('https://www.corkpadel.pt/en/store'))) {
             await launchUrl(
               Uri.parse('https://www.corkpadel.pt/en/store'),
+              mode: LaunchMode.platformDefault,
+              //headers: <String, String>{'my_header_key': 'my_header_value'},
             );
           } else {
             throw 'Could not launch the store';
@@ -298,7 +313,7 @@ class _DashState extends State<Dash> {
         Pages(
             Icon(
               Icons.admin_panel_settings_outlined,
-              color: menuColor,
+              color: _menuColor,
               size: 120,
             ),
             AppLocalizations.of(context)!.admin,
@@ -314,7 +329,7 @@ class _DashState extends State<Dash> {
       Pages(
           Icon(
             Icons.exit_to_app_rounded,
-            color: menuColor,
+            color: _menuColor,
             size: 120,
           ),
           AppLocalizations.of(context)!.logout,
@@ -331,7 +346,7 @@ class _DashState extends State<Dash> {
     return Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
-        title: const Align(
+        title: Align(
           alignment: Alignment.center,
             child: Text("Cork Padel Arena")),
     backgroundColor: Theme.of(context).primaryColor,
@@ -364,11 +379,16 @@ class _DashState extends State<Dash> {
                     padding: const EdgeInsets.only(right:10.0),
                     child: StyledButton(
                         onPressed: isIn10Mins?
-                            (){
+                            () async {
                               if(kIsWeb){
-                                launchUrl(Uri.parse('http://admin:cork2021@161.230.247.85:3333/cgi-bin/accessControl.cgi?action=openDoor&channel=1&UserID=101&Type=Remote'));
+                                launchUrl(Uri.parse(openDoorUrl));
                               }else{
-                                showWebView(context);
+                                var client = DigestAuthClient("admin", "cork2021");
+                                await client.get(Uri.parse(openDoorUrl)).then((response) {
+                                  if(response.statusCode == 200){
+                                    showWebView(context);
+                                  }
+                                });
                               }
                             }
                         :(){},
@@ -385,7 +405,7 @@ class _DashState extends State<Dash> {
               ),
             ): Container(),
             Container(
-                margin: const EdgeInsets.symmetric(vertical:15, horizontal: 10),
+                margin: EdgeInsets.symmetric(vertical:15, horizontal: 10),
                 width: double.infinity,
                 height: MediaQuery.of(context).size.height*0.85,
                 child: Column(
@@ -393,7 +413,7 @@ class _DashState extends State<Dash> {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),
                       child: Text(
-                        '${AppLocalizations.of(context)!.welcome} $myName',
+                        '${AppLocalizations.of(context)!.welcome} ${myName}',
                         style: TextStyle(
                           fontSize: 26,
                           color: Theme.of(context).primaryColor,
@@ -404,8 +424,8 @@ class _DashState extends State<Dash> {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),
                       child: Text(
-                        AppLocalizations.of(context)!.adminAccount,
-                        style: const TextStyle(
+                        '${AppLocalizations.of(context)!.adminAccount}',
+                        style: TextStyle(
                           fontSize: 18,
                           color: Colors.red,
                         ),
@@ -417,6 +437,10 @@ class _DashState extends State<Dash> {
                         child: GridView(
 
                           padding: const EdgeInsets.all(5),
+                          children: menus
+                              .map((menus) => Menu_Item(
+                              menus.ikon, menus.title, menus.color, menus.fun))
+                              .toList(),
                           gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                               maxCrossAxisExtent: 350,
                               childAspectRatio: 0.5,
@@ -424,10 +448,6 @@ class _DashState extends State<Dash> {
                               mainAxisSpacing: 0,
                            mainAxisExtent: 180,
                           ),
-                          children: menus
-                              .map((menus) => MenuItem(
-                              menus.ikon, menus.title, menus.color, menus.fun))
-                              .toList(),
                         ),
                       ),
                     ),
@@ -448,7 +468,7 @@ class _DashState extends State<Dash> {
                   settingState();
                 });
               },
-              child: const Icon(Icons.shopping_cart, color: Colors.white,),
+              child: Icon(Icons.shopping_cart, color: Colors.white,),
             ),
 
             reservationsToCheckOut.isEmpty?

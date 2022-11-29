@@ -18,7 +18,6 @@ class LocalAuthApi{
     try {
       return await _auth.authenticate(
           localizedReason: 'Use your biometrics to Auhenticate',
-        
       );
     } on PlatformException catch (e) {
       return false;
