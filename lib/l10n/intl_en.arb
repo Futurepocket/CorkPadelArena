@@ -53,6 +53,7 @@
   "paymentValidated": "Payment validated",
   "payments": "Payments",
   "pendingPayment": "AWAITING PAYMENT",
+  "adminReservation": "Block Arena",
   "personalDetails": "Personal Details",
   "phone": "Phone Number",
   "pleaseVisitMailBox": "Please check your email box",
@@ -83,6 +84,7 @@
   "userReservations": "User Reservations",
   "users": "Users",
   "validatePayment": "Do you want to confirm this payment?",
+  "weekDay": "Week day",
   "welcome": "Welcome",
   "yesCancel": "Yes, Cancel"
 }

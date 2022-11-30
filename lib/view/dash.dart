@@ -15,14 +15,11 @@ import 'package:cork_padel_arena/view/profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 import '../../models/userr.dart';
 import './reserve.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
 import 'admindash.dart';
 import 'contacts.dart';
-import 'myReservations.dart';
 import 'new_my_reservations.dart';
 
 List<Reservation> reservationList = [];
@@ -237,7 +234,7 @@ class _DashState extends State<Dash> {
         },
       ),
       Pages(
-        Icon(Icons.calendar_today_outlined, size: 120, color: _menuColor),
+        Icon(Icons.edit_calendar_outlined, size: 120, color: _menuColor),
         AppLocalizations.of(context)!.makeReservation,
         Theme.of(context).primaryColor,
             (BuildContext ctx) {
@@ -249,7 +246,7 @@ class _DashState extends State<Dash> {
         },
       ),
       Pages(
-        Icon(Icons.list_alt_rounded, size: 120, color: _menuColor),
+        Icon(Icons.calendar_month_outlined, size: 120, color: _menuColor),
         AppLocalizations.of(context)!.myReservations,
         Theme.of(context).primaryColor,
             (BuildContext ctx) {

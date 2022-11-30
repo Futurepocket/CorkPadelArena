@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cork_padel_arena/utils/color_loader.dart';
 import 'package:cork_padel_arena/view/shoppingCart.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -33,13 +34,15 @@ class _ReserveState extends State<Reserve> {
   String? chosenName;
   List<String> clientsEmail = [];
   List<String> clientsName = [];
+  List<dynamic> adminReservations = [];
+  bool today = false;
 
   @override
   void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
     _warning = AppLocalizations.of(context)!.noTimeChosen;
     super.didChangeDependencies();
   }
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
   @override
   void initState() {
     getClients();
@@ -47,16 +50,76 @@ class _ReserveState extends State<Reserve> {
   }
   void getClients(){
     FirebaseFirestore.instance.collection('users').orderBy('first_name').get().then((users){
-      users.docs.forEach((element) {
+      for (var element in users.docs) {
         setState(() {
           clientsEmail.add(element['email']);
           clientsName.add('${element['first_name']} ${element['last_name']} => ${element['email']}');
         });
-      });
+      }
   });
   }
 
   //List<Reservation> reservationList = [];
+
+  void validateTime({required String hour, required String duration}){
+    String maxTimeText = hour;
+    TimeOfDay _startTime = TimeOfDay(
+        hour: int.parse(maxTimeText.split(":")[0]),
+        minute: int.parse(maxTimeText.split(":")[1]));
+
+    String minTimeText = duration;
+    TimeOfDay _endTime = TimeOfDay(
+        hour: int.parse(minTimeText.split(":")[0]),
+        minute: int.parse(minTimeText.split(":")[1]));
+    String _thisDuration = _selectedDuration!;
+    switch(_selectedDuration){
+      case "01:00":
+        _thisDuration = "60";
+        break;
+      case "01:30":
+        _thisDuration = "90";
+        break;
+      case "02:00":
+        _thisDuration = "120";
+        break;
+    }
+    TimeOfDay _until;
+    if (_timeChosen != null) {
+      _until = _timeChosen!.plusMinutes(int.parse(_thisDuration));
+      double dbStartTime = toDouble(_startTime);
+      double dbEndTime = toDouble(_endTime);
+      double pickedStartTime = toDouble(_timeChosen!);
+      double pickedEndTime = toDouble(_until);
+      if(dbEndTime == 0.0){
+        dbEndTime = 24.0;
+      }
+      if(dbEndTime == 0.5){
+        dbEndTime = 24.5;
+      }
+
+      if (dbStartTime+0.1 <= pickedStartTime &&
+          dbEndTime-0.1 >= pickedStartTime) {
+        _reservationValid = false;
+        _timeChosen = null;
+        _warning = 'Ja existe uma reserva a essa hora!';
+        return;
+      } else if (dbStartTime+0.1 <= pickedEndTime &&
+          dbEndTime-0.1 >= pickedEndTime) {
+        _reservationValid = false;
+        _timeChosen = null;
+        _warning = 'Ja existe uma reserva a essa hora!';
+        return;
+      } else if (pickedStartTime <= dbStartTime+0.1 &&
+          dbEndTime-0.1 <= pickedEndTime) {
+        _reservationValid = false;
+        _timeChosen = null;
+        _warning = 'Ja existe uma reserva a essa hora!';
+        return;
+      } else {
+        _reservationValid = true;
+      }
+    }
+  }
 
   Future<void> _activateListeners() async{
     if(reservationList.isNotEmpty){
@@ -65,66 +128,7 @@ class _ReserveState extends State<Reserve> {
         DateFormat('dd/MM/yyyy').format(_selectedDate!);
         String dbDay = reservation.day;
         if (selectedDay == dbDay) {
-          String maxTimeText = reservation.hour;
-          TimeOfDay _startTime = TimeOfDay(
-              hour: int.parse(maxTimeText.split(":")[0]),
-              minute: int.parse(maxTimeText.split(":")[1]));
-
-          String minTimeText = reservation.duration;
-          TimeOfDay _endTime = TimeOfDay(
-              hour: int.parse(minTimeText.split(":")[0]),
-              minute: int.parse(minTimeText.split(":")[1]));
-          String _thisDuration = _selectedDuration!;
-          switch(_selectedDuration){
-            case "01:00":
-              _thisDuration = "60";
-              break;
-            case "01:30":
-              _thisDuration = "90";
-              break;
-            case "02:00":
-              _thisDuration = "120";
-              break;
-            default:
-              break;
-          }
-          TimeOfDay _until;
-          if (_timeChosen != null) {
-            _until = _timeChosen!.plusMinutes(int.parse(_thisDuration));
-            print(_until);
-            double dbStartTime = toDouble(_startTime);
-            double dbEndTime = toDouble(_endTime);
-            double pickedStartTime = toDouble(_timeChosen!);
-            double pickedEndTime = toDouble(_until);
-            if(dbEndTime == 0.0){
-              dbEndTime = 24.0;
-            }
-            if(dbEndTime == 0.5){
-              dbEndTime = 24.5;
-            }
-
-            if (dbStartTime+0.1 <= pickedStartTime &&
-                dbEndTime-0.1 >= pickedStartTime) {
-              _reservationValid = false;
-              _timeChosen = null;
-
-              _warning = 'Ja existe uma reserva a essa hora!';
-            } else if (dbStartTime+0.1 <= pickedEndTime &&
-                dbEndTime-0.1 >= pickedEndTime) {
-              _reservationValid = false;
-              _timeChosen = null;
-              _warning = 'Ja existe uma reserva a essa hora!';
-
-            } else if (pickedStartTime <= dbStartTime+0.1 &&
-                dbEndTime-0.1 <= pickedEndTime) {
-              _reservationValid = false;
-              _timeChosen = null;
-              _warning = 'Ja existe uma reserva a essa hora!';
-
-            } else {
-              _reservationValid = true;
-            }
-          }
+          validateTime(hour: reservation.hour, duration: reservation.duration);
         } else {
           _reservationValid = true;
         }
@@ -133,7 +137,11 @@ class _ReserveState extends State<Reserve> {
     else {
       _reservationValid = true;
     }
-
+    for (var element in adminReservations) {
+      if(element["weekday"] == _selectedDate!.weekday){
+        validateTime(hour: element["hour"], duration: element["duration"]);
+      }
+    }
   }
 
   void _presentDatePicker() {
@@ -142,14 +150,14 @@ class _ReserveState extends State<Reserve> {
             context: context,
             initialDate: DateTime.now(),
             firstDate: DateTime.now(),
-            lastDate: DateTime.now().add(Duration(days: 365)),
+            lastDate: DateTime.now().add(const Duration(days: 365)),
     )
         .then((value) {
-      print(value);
       if (value == null) {
         return;
       }
       setState(() {
+
         _selectedDate = value;
         _timeChosen = null;
         _warning = 'Nenuma Hora Escolhida!';
@@ -191,11 +199,9 @@ class _ReserveState extends State<Reserve> {
             _selectedDate!.day, value.hour, value.minute);
 //COMPARING PICKED DATE WITH DATE NOW
         var comparison = pickedTime.compareTo(date);
-        print('When $comparison');
 // IF DATA CHOSEN IS AFTER NOW
         if (comparison == 1) {
           setState(() {
-            print(value);
             _timeChosen = value;
             _isNotNow = true;
           });
@@ -239,8 +245,7 @@ class _ReserveState extends State<Reserve> {
     final reservations = database.child('reservations');
 
     String _pin = randomNumbers();
-    String _idd = DateFormat('ddMMyyyy').format(_selectedDate!) +
-        "$_timeChosen";
+    String _idd = "${DateFormat('ddMMyyyy').format(_selectedDate!)}$_timeChosen";
 
     String? price;
     String _thisDuration = _selectedDuration!;
@@ -314,7 +319,9 @@ class _ReserveState extends State<Reserve> {
 
   @override
   Widget build(BuildContext context) {
-
+    final Stream<QuerySnapshot> dbAdminReservations = firestore
+        .collection('adminReservations')
+        .snapshots(includeMetadataChanges: true,);
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: Stack(
@@ -327,9 +334,8 @@ class _ReserveState extends State<Reserve> {
                   settingState();
                 });
               },
-              child: Icon(Icons.shopping_cart, color: Colors.white,),
+              child: const Icon(Icons.shopping_cart, color: Colors.white,),
             ),
-
             reservationsToCheckOut.isEmpty?
             Positioned(
                 top: 1.0,
@@ -354,33 +360,24 @@ class _ReserveState extends State<Reserve> {
       ),
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        title: Text("Cork Padel Arena"),
+        title: const Text("Cork Padel Arena"),
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: SingleChildScrollView(
           child: Container(
             alignment: Alignment.topCenter,
-            margin: EdgeInsets.only(top: 20, left: 20),
-           height: MediaQuery.of(context).size.height*0.87,
+            margin: const EdgeInsets.only(top: 20, left: 20),
+            height: MediaQuery.of(context).size.height,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               //mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
-                Text(
-                  AppLocalizations.of(context)!.reservations,
-                  style: TextStyle(
-                    fontSize: 16,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top:8.0),
-                  child: Text(
+                  Text(
                     AppLocalizations.of(context)!.makeReservation,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 28,
                     ),
                   ),
-                ),
                 Container(
                   width: MediaQuery.of(context).size.width*0.9,
                   height: 20,
@@ -397,7 +394,7 @@ class _ReserveState extends State<Reserve> {
                     padding: const EdgeInsets.only(top: 20.0, right:10),
                     child: Text(
                       AppLocalizations.of(context)!.attention30Mins,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         color: Colors.red,
                       ),
@@ -409,19 +406,22 @@ class _ReserveState extends State<Reserve> {
                   child: Card(
                     elevation: 5,
                     child: Container(
-                      padding: EdgeInsets.only(left: 15, right: 15, top:10),
+                      padding: const EdgeInsets.only(left: 15, right: 15, top:10),
                       child: Column(
                         children: [
                             Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
 /////////////////////////////BUTTON TO CHOOSE DATE////////////////////////////////////////////////
-                              Container(
+                              SizedBox(
                                 width: 110,
                                 child: ElevatedButton(
                                   onPressed: () {
                                     _presentDatePicker();
                                   },
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: Theme.of(context).primaryColor,
+                                  ),
                                   child: FittedBox(
                                     child: Text(AppLocalizations.of(context)!
                                         .chooseDate,
@@ -433,9 +433,6 @@ class _ReserveState extends State<Reserve> {
                                         ),
                                     ),
                                   ),
-                                  style: TextButton.styleFrom(
-                                    primary: Theme.of(context).primaryColor,
-                                  ),
                                 ),
                               ),
 /////////////////////////////TEXT SHOWING CHOSEN DATE////////////////////////////////////////////////
@@ -445,7 +442,7 @@ class _ReserveState extends State<Reserve> {
                                     _selectedDate == null
                                         ? AppLocalizations.of(context)!.noDateChosen
                                         : '${DateFormat.yMd('pt').format(_selectedDate!)}',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         fontSize: 14, fontWeight: FontWeight.bold),
                                     textAlign: TextAlign.right,
                                   ),
@@ -458,10 +455,13 @@ class _ReserveState extends State<Reserve> {
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: <Widget>[
 ////////////////////////////////BUTTON TO CHOOSE TIME ////////////////////////////////////////////////
-                                    Container(
+                                    SizedBox(
                                       width: 110,
                                       child: ElevatedButton(
                                         onPressed: _presentTimePicker,
+                                        style: TextButton.styleFrom(
+                                          foregroundColor: Theme.of(context).primaryColor,
+                                        ),
                                         child: FittedBox(
                                           child: Text(AppLocalizations.of(context)!
                                               .chooseTime,
@@ -472,20 +472,17 @@ class _ReserveState extends State<Reserve> {
                                                 fontSize: 12
                                               )),
                                         ),
-                                        style: TextButton.styleFrom(
-                                          primary: Theme.of(context).primaryColor,
-                                        ),
                                       ),
                                     ),
 /////////////////////////////////TEXT SHOWING CHOSEN TIME ////////////////////////////////////////////////
 
-                                 Container(
+                                 SizedBox(
                                    width: 180,
                                      child: Text(
                                             _timeChosen == null
                                                 ? _warning
                                                 : TimeOfDay(hour: _timeChosen!.hour, minute: _timeChosen!.minute).format(context),
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                                 fontSize: 14, fontWeight: FontWeight.bold),
                                        maxLines: 2,
                                        textAlign: TextAlign.right,
@@ -502,7 +499,7 @@ class _ReserveState extends State<Reserve> {
                                 children: <Widget>[
                                   Text(
                                     '${AppLocalizations.of(context)!.duration}:',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         fontSize: 16, fontWeight: FontWeight.bold),
                                   ),
                                   Container(
@@ -538,7 +535,7 @@ class _ReserveState extends State<Reserve> {
                                   ),
                                   Text(
                                     AppLocalizations.of(context)!.hours,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         fontSize: 16, fontWeight: FontWeight.bold),
                                   ),
                                 ]),
@@ -554,7 +551,7 @@ class _ReserveState extends State<Reserve> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Text(AppLocalizations.of(context)!.reserveAsAnother,
-                      style: TextStyle(
+                      style: const TextStyle(
                       fontSize: 16,
                     ),),
                     Switch(
@@ -568,12 +565,12 @@ class _ReserveState extends State<Reserve> {
                 Align(
                   alignment: Alignment.center,
                   child: DropdownButton<String>(
-                      hint: Text('Escolha o Cliente'),
+                      hint: const Text('Escolha o Cliente'),
                       value: chosenName,
                       items: clientsName.map((String name) {
                         return DropdownMenuItem<String>(
                           value: name,
-                          child: Text(name, style: TextStyle(fontSize: 14),),
+                          child: Text(name, style: const TextStyle(fontSize: 14),),
                         );
                       }).toList(),
                       onChanged: (value) {
@@ -581,7 +578,6 @@ class _ReserveState extends State<Reserve> {
                         setState(() {
                           chosenName = clientsName[index];
                           chosenClient = clientsEmail[index];
-                          print(chosenClient);
                         });
                       },
                     ),
@@ -595,12 +591,11 @@ class _ReserveState extends State<Reserve> {
 ////////////////////// BUTTON TO RESERVE ////////////////////////////////////////////////
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: Theme.of(context).primaryColor,
-                        onPrimary: Colors.white,
+                        foregroundColor: Colors.white, backgroundColor: Theme.of(context).primaryColor,
                       ),
                       child: Text(
                         AppLocalizations.of(context)!.reserve,
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 15,
                             letterSpacing: 1),
                       ),
@@ -635,6 +630,54 @@ class _ReserveState extends State<Reserve> {
                   ),
                 ),
 ////////////////// LIST SHOWING RESERVES FOR THIS DAY ////////////////////////////////////////////////
+                if(_selectedDate != null && adminReservations.any((element) => element["weekday"] == _selectedDate!.weekday))
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 5.0),
+                    child: Text("Bloqueio de Campo:"),
+                  ),
+                StreamBuilder<QuerySnapshot>(
+                  stream: dbAdminReservations,
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasError) {
+                      return const Text('Something went wrong');
+                    }
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return ColorLoader();
+                    }
+                    return (snapshot.data!.docs.isNotEmpty)
+                        ? Flexible(
+                      flex: 1,
+                      child: ListView(
+                        children: snapshot.data!.docs
+                            .map((DocumentSnapshot document) {
+                          Map<String, dynamic> data =
+                          document.data()! as Map<String, dynamic>;
+                          if(snapshot.data!.docs.isNotEmpty && !adminReservations.contains(data)){
+                            adminReservations.add(data);
+                          }
+                          if(_selectedDate != null && _selectedDate!.weekday == data["weekday"]){
+                            return Container(
+                              decoration: const BoxDecoration(color: Color.fromRGBO(255, 0, 0, 0.15),),
+                              child: ListTile(
+                                leading: const Icon(Icons.lock_clock),
+                                title: Row(
+                                  children: [
+                                    Text('Das ${data['hour']}'),
+                                    Text(' às ${data['duration']}'),
+                                  ],
+                                ),
+                              ),
+                            );
+                          }else{
+                            return const SizedBox();
+                          }
+                        }).toList(),
+                      ),
+                    )
+                        : const SizedBox();
+                  },
+                ),
                 if(_selectedDate !=null )Padding(
                   padding: const EdgeInsets.only(top:8.0),
                   child: Text('${AppLocalizations.of(context)!.reservedSlots}:'),
@@ -664,7 +707,7 @@ class _ReserveState extends State<Reserve> {
                             tilesList
                                 .addAll(reservations.map((nextReservation) {
                               return ListTile(
-                                leading: Icon(Icons.lock_clock),
+                                leading: const Icon(Icons.timelapse_outlined),
                                 title: Text(
                                     "${AppLocalizations.of(context)!.from} ${nextReservation.hour} ${AppLocalizations.of(context)!.to} ${nextReservation.duration}"),
                               );
@@ -676,15 +719,16 @@ class _ReserveState extends State<Reserve> {
                         }
                         // }
                         if (tilesList.isNotEmpty) {
-                          return Expanded(
+                          return Flexible(
+                            flex: 7,
                             child: ListView(
                               children: tilesList,
-                            ),
+                            )
                           );
                         }
                         return Text(AppLocalizations.of(context)!.noReservationsOnDay);
                       })
-                    : SizedBox(),
+                    : const SizedBox(),
               ],),
             ),
 
@@ -715,6 +759,8 @@ extension TimeOfDayExtension on TimeOfDay {
 double toDouble(TimeOfDay myTime) => myTime.hour + myTime.minute / 60.0;
 
 class ToastWidget extends StatelessWidget {
+  const ToastWidget({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Positioned(
@@ -727,8 +773,8 @@ class ToastWidget extends StatelessWidget {
           color: Theme.of(context).primaryColor,
           elevation: 10.0,
           borderRadius: BorderRadius.circular(10),
-          child: Padding(
-            padding: const EdgeInsets.all(5.0),
+          child: const Padding(
+            padding: EdgeInsets.all(5.0),
             child: Text(
               'Reserva adicionada ao carrinho',
               style: TextStyle(

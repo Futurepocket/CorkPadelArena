@@ -52,6 +52,7 @@ dependencies:
   table_calendar: ^3.0.4
   collection: ^1.15.0
   http_auth: ^1.0.1
+  uuid: ^3.0.7
 
 flutter_icons:
   image_path: "assets/images/logo.jpg"

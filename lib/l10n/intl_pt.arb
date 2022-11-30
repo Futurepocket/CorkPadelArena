@@ -53,6 +53,7 @@
     "paymentValidated": "Pagamento validado",
     "payments": "Pagamentos",
     "pendingPayment": "A AGUARDAR PAGAMENTO",
+    "adminReservation": "Bloqueio de Campo",
     "personalDetails": "Dados Pessoais",
     "phone": "Telemóvel",
     "pleaseVisitMailBox":"Por favor visite a sua caixa de email",
@@ -83,6 +84,7 @@
     "userReservations": "Reservas do Utilizador",
     "users": "Utilizadores",
     "validatePayment": "Pretende validar este pagamento?",
+    "weekDay": "Dia da Semana",
     "welcome": "Bem Vindo",
     "yesCancel": "Sim, Cancelar"
 }

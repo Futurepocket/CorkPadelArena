@@ -14,6 +14,7 @@ import '../../models/userr.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'admin_payments.dart';
 import 'new_admin_reservations.dart';
+import 'permanent_reservation.dart';
 
 class AdminDash extends StatefulWidget {
   @override
@@ -65,7 +66,7 @@ class _AdminDashState extends State<AdminDash> {
       ),
       Pages(
         Icon(
-          Icons.list_alt_rounded,
+          Icons.calendar_month_outlined,
           size: 120,
           color: _menuColor,
         ),
@@ -88,6 +89,18 @@ class _AdminDashState extends State<AdminDash> {
             ctx,
           ).push(MaterialPageRoute(builder: (_) {
             return AdminPayments();
+          }));
+        },
+      ),
+      Pages(
+        Icon(Icons.block, size: 120, color: _menuColor),
+        AppLocalizations.of(context)!.adminReservation,
+        Theme.of(context).primaryColor,
+            (BuildContext ctx) {
+          Navigator.of(
+            ctx,
+          ).push(MaterialPageRoute(builder: (_) {
+            return PermanentReservation();
           }));
         },
       ),
