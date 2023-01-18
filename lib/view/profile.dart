@@ -4,7 +4,7 @@ import 'package:cork_padel_arena/utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'dash.dart';
 import 'editDetails.dart';
-import 'myReservations.dart';
+import 'new_my_Reservations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Profile extends StatefulWidget {
@@ -14,15 +14,19 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   checkoutValue _check = checkoutValue();
+
   @override
   void initState() {
     super.initState();
   }
-  settingState(){
-    setState(() {
 
-    });
+  settingState() {
+    setState(() {});
+    ScaffoldMessenger.of(context).showSnackBar(
+        newSnackBar(context,
+            const Text('Perfil atualizado com sucesso.')));
   }
+
   Userr _userr = Userr();
   static const double _padd = 10.0;
 
@@ -31,49 +35,36 @@ class _ProfileState extends State<Profile> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-          title: const Align(
-              alignment: Alignment.centerLeft,
-              child: Text("Cork Padel Arena")),
-          backgroundColor: Theme.of(context).primaryColor),
+        title: Text(AppLocalizations.of(context)!.myProfile),
+      ),
       body: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.only(left:20.0, top: 40),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-              Text(
-                AppLocalizations.of(context)!.myProfile,
-                style: const TextStyle(
-                  fontFamily: 'Roboto Condensed',
-                  fontSize: 16,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 20.0, top: 30),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+                Text(
+                  AppLocalizations.of(context)!.personalDetails,
+                  style: const TextStyle(
+                    fontFamily: 'Roboto Condensed',
+                    fontSize: 28,
+                  ),
                 ),
-              ),
-            Padding(
-              padding: const EdgeInsets.only(top:8.0),
-              child: Text(
-                AppLocalizations.of(context)!.personalDetails,
-                style: const TextStyle(
-                  fontFamily: 'Roboto Condensed',
-                  fontSize: 28,
-                ),
-              ),
-            ),
               Container(
-                width: MediaQuery.of(context).size.width*0.9,
+                width: MediaQuery.of(context).size.width * 0.9,
                 height: 20,
                 decoration: BoxDecoration(
                     border: Border(
-                        bottom: BorderSide(
-                            color: Colors.grey.shade600,
-                          width: 2
-              ))),),
+                        bottom:
+                            BorderSide(color: Colors.grey.shade600, width: 2))),
+              ),
               Container(
-                padding:
-                    const EdgeInsets.only(top: 20, right: 15, bottom: 15),
+                padding: const EdgeInsets.only(top: 20, right: 15, bottom: 15),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
                 ),
-                child: Card(elevation: 5,
+                child: Card(
+                  elevation: 5,
                   child: Container(
                     padding: const EdgeInsets.all(20),
                     child: Column(
@@ -199,7 +190,7 @@ class _ProfileState extends State<Profile> {
                           primary: Theme.of(context).primaryColor,
                           onPrimary: Colors.white,
                         ),
-                        child: Text(
+                        child: const Text(
                           "EDITAR PERFIL",
                           style: TextStyle(fontSize: 15, letterSpacing: 1.2),
                         ),
@@ -207,12 +198,8 @@ class _ProfileState extends State<Profile> {
                           Navigator.of(
                             context,
                           ).push(MaterialPageRoute(builder: (_) {
-                            return EditDetails();
-                          })).then((value) {
-                            settingState();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                newSnackBar(context, Text('Perfil atualizado com sucesso.')));
-                          });
+                            return EditDetails(settingState: settingState,);
+                          }));
                         },
                       ),
                     ),
@@ -222,15 +209,17 @@ class _ProfileState extends State<Profile> {
                           primary: Theme.of(context).primaryColor,
                           onPrimary: Colors.white,
                         ),
-                        child: Text(
+                        child: const Text(
                           "MINHAS RESERVAS",
-                          style: TextStyle(fontSize: 15,),
+                          style: TextStyle(
+                            fontSize: 15,
+                          ),
                         ),
                         onPressed: () {
                           Navigator.of(
                             context,
                           ).push(MaterialPageRoute(builder: (_) {
-                            return MyReservations();
+                            return NewMyReservations();
                           }));
                         },
                       ),
@@ -238,45 +227,42 @@ class _ProfileState extends State<Profile> {
                   ],
                 ),
               )
-          ],
+            ],
+          ),
         ),
-            ),
-    ),
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: Stack(
-          children: [
-            FloatingActionButton(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              onPressed: () {
-                showShoppingCart(context).then((value) {
-                  settingState();
-                });
-              },
-              child: Icon(Icons.shopping_cart, color: Colors.white,),
-            ),
-
-            reservationsToCheckOut.isEmpty?
-            Positioned(
+      floatingActionButton: Stack(children: [
+        FloatingActionButton(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          onPressed: () {
+            showShoppingCart(context).then((value) {
+              settingState();
+            });
+          },
+          child: Icon(
+            Icons.shopping_cart,
+            color: Colors.white,
+          ),
+        ),
+        reservationsToCheckOut.isEmpty
+            ? Positioned(top: 1.0, left: 1.0, child: Container())
+            : Positioned(
                 top: 1.0,
                 left: 1.0,
-                child: Container())
-                : Positioned(
-              top: 1.0,
-              left: 1.0,
-              child: CircleAvatar(
-                radius: 10,
-                backgroundColor: Colors.red,
-                child: Text(reservationsToCheckOut.length.toString(),
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 11.0,
-                      fontWeight: FontWeight.w500
+                child: CircleAvatar(
+                  radius: 10,
+                  backgroundColor: Colors.red,
+                  child: Text(
+                    reservationsToCheckOut.length.toString(),
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 11.0,
+                        fontWeight: FontWeight.w500),
                   ),
                 ),
-              ),
-            )
-          ]
-      ),
+              )
+      ]),
     );
   }
 }

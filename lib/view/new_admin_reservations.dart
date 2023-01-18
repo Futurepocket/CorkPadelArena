@@ -124,6 +124,7 @@ class _NewAdminReservationsState extends State<NewAdminReservations> {
             rangeEndDay: _rangeEnd,
             locale: 'pt_PT',
             calendarFormat: _calendarFormat,
+            daysOfWeekHeight: 20,
             rangeSelectionMode: _rangeSelectionMode,
             eventLoader: _getReservationsForDay,
             onDaySelected: _onDaySelected,

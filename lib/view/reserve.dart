@@ -643,7 +643,7 @@ class _ReserveState extends State<Reserve> {
                       return const Text('Something went wrong');
                     }
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return ColorLoader();
+                      return SizedBox();
                     }
                     return (snapshot.data!.docs.isNotEmpty)
                         ? Flexible(

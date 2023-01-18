@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cork_padel_arena/apis/mbway.dart';
 import 'package:cork_padel_arena/apis/webservice.dart';
 import 'package:cork_padel_arena/models/checkoutValue.dart';
@@ -52,8 +54,6 @@ class _MbWayPaymentState extends State<MbWayPayment> {
       emailDetails +=
       '<p>Dia: ${element.day}, das ${element.hour} às ${element.duration}.</p>';
     });
-
-    _sendCompanyEmail();
   }
 
   void _generateReference() {
@@ -71,7 +71,7 @@ class _MbWayPaymentState extends State<MbWayPayment> {
         <p>Olá, ${Userr().name},</p>
         <p>Obrigado pela sua reserva.</p>
         <p>Detalhes:</p>
-        <p>${emailDetails}</p>
+        <p>$emailDetails</p>
        <p></p>
        <p>Valor: € $price</p>
        <p>Obrigado,</p>
@@ -103,7 +103,7 @@ class _MbWayPaymentState extends State<MbWayPayment> {
         <p>Morada: ${Userr().address}, ${Userr().postCode}, ${Userr().city}</p>
         <p></p>
         <p>Detalhes:</p>
-        <p>${emailDetails}</p>
+        <p>$emailDetails</p>
        <p></p>
        <p>Valor: € $price</p> 
        <p></p>
@@ -131,13 +131,13 @@ class _MbWayPaymentState extends State<MbWayPayment> {
   @override
   Widget build(BuildContext context) {
     price = checkoutValue().price.toString();
-    void _savePayment() async {
+    Future<void> _savePayment() async {
       CollectionReference payments = FirebaseFirestore.instance.collection(
           'MBWayPayments');
-      String _idd = 'Arena${paymentTlm}' +
+      String idd = 'Arena$paymentTlm' +
           DateFormat('ddMMyyyy HH:mm').format(DateTime.now());
       /////////////////////SAVING PAYMENT////////////////////////////////////
-      Payment _payment = Payment(
+      Payment payment = Payment(
           IdPedido: idPedido!,
           DataHoraPedidoRegistado: DateFormat('ddMMyyyy HH:mm').format(
               DateTime.now()),
@@ -146,13 +146,13 @@ class _MbWayPaymentState extends State<MbWayPayment> {
           tlmCliente: paymentTlm!,
           amount: price!
       );
-      await payments.doc(_idd).set({
-        'IdPedido': _payment.IdPedido,
-        'DataHoraPedidoRegistado': _payment.DataHoraPedidoRegistado,
-        'EmailCliente': _payment.EmailCliente,
-        'Referencia': _payment.Referencia,
-        'tlmCliente': _payment.tlmCliente,
-        'amount': _payment.amount,
+      await payments.doc(idd).set({
+        'IdPedido': payment.IdPedido,
+        'DataHoraPedidoRegistado': payment.DataHoraPedidoRegistado,
+        'EmailCliente': payment.EmailCliente,
+        'Referencia': payment.Referencia,
+        'tlmCliente': payment.tlmCliente,
+        'amount': payment.amount,
       }).then((value) {
         Navigator.of(context).pop();
         checkoutValue().reservations = 0;
@@ -163,16 +163,16 @@ class _MbWayPaymentState extends State<MbWayPayment> {
         reservationsToCheckOut.clear();
         Navigator.of(context).pop();
         Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) {
-          return Dash();
+          return const Dash();
         }));
         ScaffoldMessenger.of(context).showSnackBar(
-            newSnackBar(context, Text('Reservas Efetuados')));
+            newSnackBar(context, const Text('Reservas Efetuados')));
       }).catchError((onError) => print("Failed to save payment: $onError"));
     }
-    void _saveAll() async {
+    Future <void> _saveAll() async {
       final reservations = database.child('reservations');
       generateEmailDetails();
-      reservationsToCheckOut.forEach((element) async {
+      for (var element in reservationsToCheckOut) {
         try {
           await reservations.child(element.id).update({
             'state': 'pago',
@@ -181,48 +181,70 @@ class _MbWayPaymentState extends State<MbWayPayment> {
         } catch (e) {
           print('There is an error!');
         }
+      }
+    }
+    void itIsDone() async{
+      await Future.delayed(
+          const Duration(milliseconds: 2000), () async{
+        await _saveAll().then((value) async{
+          await _sendCompanyEmail();
+          await _sendClientEmail();
+          await _savePayment();
+        }).then((value) => Navigator.of(context).pop());
       });
     }
+    Timer? timer;
     void awaitingConfirmation(BuildContext context) async {
       _showLoading = true;
       _isAproved = false;
-      bool _confirmed = false;
+      bool confirmed = false;
       showDialog<void>(
         barrierDismissible: false,
         context: context,
         builder: (context) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
-                if (!_confirmed) {
-                  ws.get(Mbway.getRequestState(idPagamento: idPedido!))
-                      .then((value) async {
-                    if (value['Estado'] == "000") {
-                      _sendClientEmail();
-                      await Future.delayed(
-                          const Duration(milliseconds: 2000), () {});
-                      _savePayment();
-                    } else {
-                      setState(() {
-                        _showLoading = false;
-                        _isAproved = false;
-                        _resultText = 'Por favor confirme o pagamento na app.';
-                      });
-                    }
-                  });
-                }
+                timer?.cancel();
+                timer = Timer.periodic(Duration(seconds: 2), (Timer t) {
+                  if (!confirmed) {
+                    ws.get(Mbway.getRequestState(idPagamento: idPedido!))
+                        .then((value) async {
+                      if (value['Estado'] == "000") {
+                        itIsDone();
+                        setState((){
+                          confirmed = true;
+                        });
+                      } else {
+                        setState(() {
+                          _showLoading = false;
+                          _isAproved = false;
+                          _resultText = 'Por favor confirme o pagamento na app.';
+                        });
+                      }
+                    });
+                  }else{
+                    timer!.cancel();
+                    setState(() {
+                      _showLoading = false;
+                      _isAproved = false;
+                      _resultText = 'Pagamento confirmado. Receberá confirmação dentro de momentos.';
+                    });
+                  }
+                });
                 return AlertDialog(
                   content: SingleChildScrollView(
-                    padding: EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(8),
                     child: ListBody(
                       children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8.0),
+                        const Padding(
+                          padding: EdgeInsets.only(bottom: 8.0),
                           child: Text(
                             'A aguardar pagamento',
-                            style: const TextStyle(
+                            style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                         ),
+                        const Text("Não feche a app antes de finalizar o pagamento", style: TextStyle(color: Colors.red),),
                         _showLoading ?
                         Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -250,7 +272,7 @@ class _MbWayPaymentState extends State<MbWayPayment> {
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: Text(
+                      child: const Text(
                         "CANCELAR",
                         style: TextStyle(color: Colors.white),
                       ),
@@ -309,14 +331,14 @@ class _MbWayPaymentState extends State<MbWayPayment> {
                 }
                 return AlertDialog(
                   content: SingleChildScrollView(
-                    padding: EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(8),
                     child: ListBody(
                       children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8.0),
+                        const Padding(
+                          padding: EdgeInsets.only(bottom: 8.0),
                           child: Text(
                             'A processar pagamento',
-                            style: const TextStyle(
+                            style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -342,12 +364,12 @@ class _MbWayPaymentState extends State<MbWayPayment> {
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: Text(
+                      child: const Text(
                         "Cancelar",
                       ),
                     )
                         : Container(),
-                    _isAproved == true ?
+                    _isAproved ?
                     Container(
                     )
                         : _showLoading == false ? OutlinedButton(
@@ -357,7 +379,7 @@ class _MbWayPaymentState extends State<MbWayPayment> {
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: Text(
+                      child: const Text(
                         "OK",
                         style: TextStyle(color: Colors.white),
                       ),
@@ -373,7 +395,7 @@ class _MbWayPaymentState extends State<MbWayPayment> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-          title: Text("Pagamento"),
+          title: const Text("Pagamento"),
           backgroundColor: Theme
               .of(context)
               .primaryColor),
@@ -406,7 +428,7 @@ class _MbWayPaymentState extends State<MbWayPayment> {
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: Text(
                       'Valor total: € $price.00',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontFamily: 'Roboto Condensed',
                         fontSize: 24,
                       ),
@@ -431,9 +453,9 @@ class _MbWayPaymentState extends State<MbWayPayment> {
                       controller: tlmController,
                       textInputAction: TextInputAction.next,
                       keyboardType:
-                      TextInputType.numberWithOptions(decimal: false),
+                      const TextInputType.numberWithOptions(decimal: false),
                       decoration: InputDecoration(
-                        contentPadding: EdgeInsets.all(10),
+                        contentPadding: const EdgeInsets.all(10),
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(
                               color: Theme
@@ -471,7 +493,7 @@ class _MbWayPaymentState extends State<MbWayPayment> {
                       keyboardType: TextInputType.emailAddress,
                       controller: emailController,
                       decoration: InputDecoration(
-                        contentPadding: EdgeInsets.all(10),
+                        contentPadding: const EdgeInsets.all(10),
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(
                               color: Theme
@@ -510,10 +532,9 @@ class _MbWayPaymentState extends State<MbWayPayment> {
                       ),
                       child: Text(
                         AppLocalizations.of(context)!.submit,
-                        style: TextStyle(fontSize: 15),
+                        style: const TextStyle(fontSize: 15),
                       ),
                       onPressed: () {
-                        _saveAll();
                         final isValid = _form.currentState!.validate();
                         if (isValid) {
                           _saveForm(context);

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:linkwell/linkwell.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import '../utils/common_utils.dart';
 import 'dash.dart';
@@ -19,20 +20,20 @@ class _ContactsState extends State<Contacts> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        title: Text("Cork Padel", style: TextStyle(color: Colors.white),),
+        title: const Text("Cork Padel", style: TextStyle(color: Colors.white),),
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.only(top: 20),
+          padding: const EdgeInsets.only(top: 20),
           child: Container(
-            margin: EdgeInsets.symmetric(horizontal: 20),
+            margin: const EdgeInsets.symmetric(horizontal: 20),
             width: double.infinity,
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  Text(
+                  const Text(
                     'Cork Padel Arena',
                     style: TextStyle(
                       fontFamily: 'Roboto Condensed',
@@ -43,7 +44,7 @@ class _ContactsState extends State<Contacts> {
                     padding: const EdgeInsets.only(top:8.0),
                     child: Text(
                       AppLocalizations.of(context)!.contacts,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontFamily: 'Roboto Condensed',
                         fontSize: 28,
                       ),
@@ -72,14 +73,15 @@ class _ContactsState extends State<Contacts> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(5.0),
-                        child: LinkWell(
-                          'corkpadel@corkpadel.com',
-                          linkStyle: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold
-                          ),
-                        ),
+                        child: TextButton(
+                          onPressed: (){
+                          launchUrlString('corkpadel@corkpadel.com');
+                        }, child: const Text('corkpadel@corkpadel.com', style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold
+                        ),),
+                      ),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(left:5.0, top:5),
@@ -92,7 +94,7 @@ class _ContactsState extends State<Contacts> {
                       ),
 
                       TextButton(
-                        child: Text(
+                        child: const Text(
                           '91 248 23 38',
                           style: TextStyle(
                               fontSize: 16,
@@ -101,7 +103,7 @@ class _ContactsState extends State<Contacts> {
                           ),
                         ),
                         onPressed: () async{
-                          await launch('tel://912482338');
+                          await launchUrlString('tel://912482338');
                         },
                       ),
                       Padding(
@@ -114,9 +116,9 @@ class _ContactsState extends State<Contacts> {
                         ),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(left:5.0, top:5),
-                        child: const Text("Edifício CORK PADEL,\n"
+                      const Padding(
+                        padding: EdgeInsets.only(left:5.0, top:5),
+                        child: Text("Edifício CORK PADEL,\n"
                             "Parque desportivo da UDS\n"
                             "2495-143 Santa Catarina da Serra",
                           style: TextStyle(
@@ -125,16 +127,17 @@ class _ContactsState extends State<Contacts> {
                               fontWeight: FontWeight.bold
                         ),),
                       ),
-                      Align(
-                        alignment: Alignment.center,
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 10.0),
+                        TextButton(onPressed: (){
+                          launchUrlString("https://goo.gl/maps/jRBM83orrxARDWDA6");
+                        }, child: const Text("Ver no Mapa"),
+                      ),
+                      Padding(
+                          padding: const EdgeInsets.only(top: 10, bottom: 10.0),
                           child: Image.asset(
                             'assets/images/arena.jpeg',
                             width: 432.0,
                             height: 243.0,
                           ),
-                        ),
                       ),
                     ],
             ),
@@ -153,7 +156,7 @@ class _ContactsState extends State<Contacts> {
                   });
                 });
               },
-              child: Icon(Icons.shopping_cart, color: Colors.white,),
+              child: const Icon(Icons.shopping_cart, color: Colors.white,),
             ),
 
             reservationsToCheckOut.isEmpty?

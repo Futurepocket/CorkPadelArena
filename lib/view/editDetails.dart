@@ -5,6 +5,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/userr.dart';
 
 class EditDetails extends StatefulWidget {
+  final Function settingState;
+
+  const EditDetails({Key? key, required this.settingState}) : super(key: key);
   @override
   _EditDetailsState createState() => _EditDetailsState();
 }
@@ -15,27 +18,34 @@ class _EditDetailsState extends State<EditDetails> {
     return Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
-          title: Text("Cork Padel"),
+          title: Text("Cork Padel Arena"),
           backgroundColor: Theme.of(context).primaryColor,
         ),
-        body: Center(
+        body: Padding(
+          padding: const EdgeInsets.only(top: 20.0),
           child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Image.asset(
-                  'assets/images/logo.png',
-                  width: 80.0,
-                  height: 100.0,
-                ),
-                EditDetailsWidget(),
-              ],
-            ),
+              child: Column(
+                children: [
+                  Image.asset(
+                    'assets/images/logo.png',
+                    width: 80.0,
+                    height: 100.0,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: EditDetailsWidget(settingState: widget.settingState,),
+                  ),
+                ],
+              ),
           ),
         ));
   }
 }
 
 class EditDetailsWidget extends StatefulWidget {
+  final Function settingState;
+
+  const EditDetailsWidget({Key? key, required this.settingState}) : super(key: key);
   @override
   State<EditDetailsWidget> createState() => _EditDetailsWidgetState();
 }
@@ -328,7 +338,7 @@ class _EditDetailsWidgetState extends State<EditDetailsWidget> {
                     controller: nifController,
                     textInputAction: TextInputAction.next,
                     keyboardType:
-                        TextInputType.numberWithOptions(decimal: true),
+                        const TextInputType.numberWithOptions(decimal: true),
                     decoration: InputDecoration(
                       contentPadding: EdgeInsets.all(10),
                       focusedBorder: OutlineInputBorder(
@@ -362,10 +372,9 @@ class _EditDetailsWidgetState extends State<EditDetailsWidget> {
                   width: 150,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      primary: Theme.of(context).primaryColor,
-                      onPrimary: Colors.white,
+                      foregroundColor: Colors.white, primary: Theme.of(context).primaryColor,
                     ),
-                    child: Text(
+                    child: const Text(
                       "Submeter",
                       style: TextStyle(fontSize: 15),
                     ),
@@ -373,6 +382,7 @@ class _EditDetailsWidgetState extends State<EditDetailsWidget> {
                       _saveForm();
                       final isValid = _form.currentState!.validate();
                       if (isValid) {
+                        widget.settingState();
                         Navigator.of(
                           context,
                         ).pop();

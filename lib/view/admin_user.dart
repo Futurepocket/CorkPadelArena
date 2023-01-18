@@ -32,10 +32,10 @@ class _AdminUserState extends State<AdminUser> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-          title: Align(
+          title: const Align(
               alignment: Alignment.centerLeft,
               child: Text("Cork Padel Arena")),
-          backgroundColor: Theme.of(context).primaryColor),
+          backgroundColor: Theme.of(context).primaryColor,),
       body: SingleChildScrollView(
           child: Container(
             padding: const EdgeInsets.only(left:20.0, top:8),
@@ -45,7 +45,7 @@ class _AdminUserState extends State<AdminUser> {
               children: [
                 Text(
                     AppLocalizations.of(context)!.userProfile,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontFamily: 'Roboto Condensed',
                       fontSize: 28,
                     ),
@@ -61,54 +61,54 @@ class _AdminUserState extends State<AdminUser> {
                           ))),),
                 Container(
                   padding:
-                  EdgeInsets.only(top: 10, right: 15, bottom: 15),
+                  const EdgeInsets.only(top: 10, right: 15, bottom: 15),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: Card(elevation: 5,
                     child: Container(
-                      padding: EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Row(
                             children: [
-                              Text(
+                              const Text(
                                 "Nome: ",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 18),
                               ),
                               Text(
                                 _user['first_name'] + ' ' + _user['last_name'],
-                                style: TextStyle(fontSize: 16),
+                                style: const TextStyle(fontSize: 16),
                               )
                             ],
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: _padd),
                             child: Row(children: [
-                              Text(
+                              const Text(
                                 "Email: ",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 18),
                               ),
                               Text(
                                 _user['email'],
-                                style: TextStyle(fontSize: 16),
+                                style: const TextStyle(fontSize: 16),
                               )
                             ]),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: _padd),
                             child: Row(children: [
-                              Text(
+                              const Text(
                                 "Tel: ",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 18),
                               ),
                               Text(
                                 _user['phoneNbr'],
-                                style: TextStyle(fontSize: 16),
+                                style: const TextStyle(fontSize: 16),
                               )
                             ]),
                           ),
@@ -116,7 +116,7 @@ class _AdminUserState extends State<AdminUser> {
                             padding: const EdgeInsets.only(top: _padd),
                             child: Row(
                               children: [
-                                Text(
+                                const Text(
                                   "Morada: ",
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold, fontSize: 18),
@@ -125,7 +125,7 @@ class _AdminUserState extends State<AdminUser> {
                                   width: 220,
                                   child: Text(
                                     _user['address'],
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 16,
                                     ),
                                   ),
@@ -136,42 +136,42 @@ class _AdminUserState extends State<AdminUser> {
                           Padding(
                             padding: const EdgeInsets.only(top: _padd),
                             child: Row(children: [
-                              Text(
+                              const Text(
                                 "Codigo Postal: ",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 18),
                               ),
                               Text(
                                 _user['postal_code'],
-                                style: TextStyle(fontSize: 16),
+                                style: const TextStyle(fontSize: 16),
                               )
                             ]),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: _padd),
                             child: Row(children: [
-                              Text(
+                              const Text(
                                 "Localidade: ",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 18),
                               ),
                               Text(
                                 _user['city'],
-                                style: TextStyle(fontSize: 16),
+                                style: const TextStyle(fontSize: 16),
                               )
                             ]),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: _padd),
                             child: Row(children: [
-                              Text(
+                              const Text(
                                 "NIF: ",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 18),
                               ),
                               Text(
                                 _user['nif'],
-                                style: TextStyle(fontSize: 16),
+                                style: const TextStyle(fontSize: 16),
                               )
                             ]),
                           ),
@@ -184,7 +184,7 @@ class _AdminUserState extends State<AdminUser> {
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
                     '${AppLocalizations.of(context)!.userReservations}:',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontFamily: 'Roboto Condensed',
                       fontSize: 20,
                     ),
@@ -208,10 +208,10 @@ class _AdminUserState extends State<AdminUser> {
                                 return Container(
                                   decoration: BoxDecoration(
                                       color:
-                                      today.isAfter(starts)? Color.fromRGBO(255, 0, 0, 0.15)
+                                      today.isAfter(starts)? const Color.fromRGBO(255, 0, 0, 0.15)
                                           :Colors.white),
                                   child: ListTile(
-                                      leading: Icon(Icons.lock_clock),
+                                      leading: const Icon(Icons.lock_clock),
                                       title: Text('Das ' +
                                           nextReservation.hour +
                                           ' as ' +
@@ -220,7 +220,7 @@ class _AdminUserState extends State<AdminUser> {
                                 );
                               }));
                             } catch (e) {
-                              return Text('Ainda nao existem reservas');
+                              return const Text('Ainda nao existem reservas');
                             }
                           }
                           // }
@@ -229,7 +229,7 @@ class _AdminUserState extends State<AdminUser> {
                               children: tilesList,
                             );
                           }
-                          return Text('Ainda nao existem reservas');
+                          return const Text('Ainda nao existem reservas');
                         }
                     ),
                   ),
@@ -248,7 +248,7 @@ class _AdminUserState extends State<AdminUser> {
                   settingState();
                 });
               },
-              child: Icon(Icons.shopping_cart, color: Colors.white,),
+              child: const Icon(Icons.shopping_cart, color: Colors.white,),
             ),
 
             reservationsToCheckOut.isEmpty?

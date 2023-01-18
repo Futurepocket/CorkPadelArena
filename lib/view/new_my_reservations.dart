@@ -15,6 +15,8 @@ import '../src/widgets.dart';
 import '../utils/color_loader.dart';
 Map<DateTime, List<Reservation>> calendarMap = {};
 class NewMyReservations extends StatefulWidget {
+  const NewMyReservations({Key? key}) : super(key: key);
+
   @override
   _NewMyReservationsState createState() => _NewMyReservationsState();
 }
@@ -112,7 +114,7 @@ class _NewMyReservationsState extends State<NewMyReservations> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Minhas Reservas'),
+        title: const Text('Minhas Reservas'),
       ),
       body: kReservations == null? Center(child: ColorLoader(),) :Column(
         children: [
@@ -127,15 +129,16 @@ class _NewMyReservationsState extends State<NewMyReservations> {
             locale: 'pt_PT',
             calendarFormat: _calendarFormat,
             rangeSelectionMode: _rangeSelectionMode,
+            daysOfWeekHeight: 20,
             eventLoader: _getReservationsForDay,
             onDaySelected: _onDaySelected,
             calendarStyle: CalendarStyle(
-              markerDecoration: BoxDecoration(
+              markerDecoration: const BoxDecoration(
                 color: Colors.green,
                 shape: BoxShape.circle,
               ),
-              todayDecoration: BoxDecoration(
-                color: const Color.fromRGBO(212, 207, 96, 0.7),
+              todayDecoration: const BoxDecoration(
+                color: Color.fromRGBO(212, 207, 96, 0.7),
                 shape: BoxShape.circle,
               ),
               selectedDecoration: BoxDecoration(
@@ -174,13 +177,13 @@ class _NewMyReservationsState extends State<NewMyReservations> {
                       child: Card(
                         elevation: 5,
                         child: ListTile(
-                          leading: Icon(Icons.timelapse),
+                          leading: const Icon(Icons.timelapse),
                           title: Text(value[index].userEmail),
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text('Dia ${value[index].day} Das ${value[index].hour} às ${value[index].duration}'),
-                              value[index].completed == false? Text('No carrinho do utilizador', style: TextStyle(color: Colors.red, fontSize: 10),)
+                              value[index].completed == false? const Text('No carrinho do utilizador', style: TextStyle(color: Colors.red, fontSize: 10),)
                                   :Container()
                             ],
                           ),

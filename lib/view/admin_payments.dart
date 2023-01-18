@@ -36,7 +36,7 @@ class _AdminPaymentsState extends State<AdminPayments>with TickerProviderStateMi
       body: Container(
             width: MediaQuery.of(context).size.width*0.9,
             height: MediaQuery.of(context).size.height,
-            constraints: const BoxConstraints(minWidth: double.infinity, maxHeight: 680),
+            //constraints: const BoxConstraints(minWidth: double.infinity, maxHeight: 680),
             child: SingleChildScrollView(
               child: Column(
                   children: [

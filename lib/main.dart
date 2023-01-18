@@ -1,7 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cork_padel_arena/register/register.dart';
 import 'package:cork_padel_arena/register/user_details.dart';
 import 'package:cork_padel_arena/src/registerSplash.dart';
-import 'package:cork_padel_arena/utils/custom_proxy.dart';
+
 import 'package:cork_padel_arena/utils/firebase_utils.dart';
 import 'package:cork_padel_arena/view/dash.dart';
 import 'package:cork_padel_arena/view/email_verify.dart';
@@ -15,21 +16,25 @@ import 'firebase_options.dart';
 import 'view/login/login.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  if (!kReleaseMode) {
-    //const charlesIp = String.fromEnvironment('CHARLES_PROXY_IP');
 
-    // For Android devices you can also allowBadCertificates: true below, but you should ONLY do this when !kReleaseMode
-    final proxy = CustomProxy(ipAddress: 'localhost', port: 8888, allowBadCertificates: true);
-    proxy.enable();
-  }
+  WidgetsFlutterBinding.ensureInitialized();
+  // if (!kReleaseMode) {
+  //   //const charlesIp = String.fromEnvironment('CHARLES_PROXY_IP');
+  //
+  //   // For Android devices you can also allowBadCertificates: true below, but you should ONLY do this when !kReleaseMode
+  //   final proxy = CustomProxy(ipAddress: 'localhost', port: 8888, allowBadCertificates: true);
+  //   proxy.enable();
+  // }
   Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform
   ).whenComplete(() async{
     //initialLink = await FirebaseDynamicLinks.instance.getInitialLink();
   });
-  init();
-  // Get any initial links
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  await init();
+
   runApp(
     kIsWeb? const Center(
       child: SizedBox(
@@ -79,7 +84,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         appBarTheme: AppBarTheme(
             titleTextStyle: TextStyle(color: Colors.white, fontSize: 24, fontFamily: GoogleFonts.robotoCondensed().fontFamily),
-            iconTheme: IconThemeData(color: Colors.white)),
+            iconTheme: const IconThemeData(color: Colors.white)),
         visualDensity: VisualDensity.adaptivePlatformDensity,
         primarySwatch: MaterialColor(_colorMap[1000]!.value, _colorMap),
         fontFamily: 'ApexSans',
