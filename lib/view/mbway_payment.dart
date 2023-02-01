@@ -194,6 +194,7 @@ class _MbWayPaymentState extends State<MbWayPayment> {
       });
     }
     Timer? timer;
+
     void awaitingConfirmation(BuildContext context) async {
       _showLoading = true;
       _isAproved = false;
