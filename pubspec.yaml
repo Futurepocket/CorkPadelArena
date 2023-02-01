@@ -54,6 +54,7 @@ dependencies:
   http_auth: ^1.0.1
   uuid: ^3.0.7
   upgrader: ^5.1.0
+  cloud_functions: ^4.0.7
 
 flutter_icons:
   image_path: "assets/images/logo.jpg"

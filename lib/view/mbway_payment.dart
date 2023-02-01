@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:cork_padel_arena/apis/mbway.dart';
 import 'package:cork_padel_arena/apis/webservice.dart';
 import 'package:cork_padel_arena/models/checkoutValue.dart';
@@ -39,6 +39,7 @@ class _MbWayPaymentState extends State<MbWayPayment> {
   String? idPedido;
   String? referencia;
   String? price;
+
 
   @override
   void initState() {
@@ -183,7 +184,7 @@ class _MbWayPaymentState extends State<MbWayPayment> {
         }
       }
     }
-    void itIsDone() async{
+    void itIsDone() async{ //COLOCAR NA CLOUD FUNCTION
       await Future.delayed(
           const Duration(milliseconds: 2000), () async{
         await _saveAll().then((value) async{
@@ -195,6 +196,7 @@ class _MbWayPaymentState extends State<MbWayPayment> {
     }
     Timer? timer;
     void awaitingConfirmation(BuildContext context) async {
+      final functions = FirebaseFunctions.instance;
       _showLoading = true;
       _isAproved = false;
       bool confirmed = false;
@@ -205,23 +207,94 @@ class _MbWayPaymentState extends State<MbWayPayment> {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
                 timer?.cancel();
-                timer = Timer.periodic(Duration(seconds: 2), (Timer t) {
+                timer = Timer.periodic(Duration(seconds: 2), (Timer t) async {
                   if (!confirmed) {
-                    ws.get(Mbway.getRequestState(idPagamento: idPedido!))
-                        .then((value) async {
-                      if (value['Estado'] == "000") {
-                        itIsDone();
-                        setState((){
-                          confirmed = true;
-                        });
-                      } else {
-                        setState(() {
-                          _showLoading = false;
-                          _isAproved = false;
-                          _resultText = 'Por favor confirme o pagamento na app.';
-                        });
-                      }
-                    });
+                    generateEmailDetails();
+                     Map emailToCloud = {
+                      'to': 'corkpadel@corkpadel.com',
+                      'bcc': 'david@corkpadel.com',
+                      'message': {
+                        'subject': "Nova reserva de ${Userr().name} ${Userr()
+                            .surname} na Arena",
+                        'html': '''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+                        
+                        <p>Reserva de ${Userr().name} ${Userr().surname},</p>
+                        <p>Email: ${emailController.text} Tlm: ${tlmController.text},</p>
+                        <p>NIF: ${Userr().nif}</p>
+                        <p>Morada: ${Userr().address}, ${Userr().postCode}, ${Userr().city}</p>
+                        <p></p>
+                        <p>Detalhes:</p>
+                        <p>$emailDetails</p>
+                       <p></p>
+                       <p>Valor: € $price</p> 
+                       <p></p>
+                       <p>Obrigado,</p>
+                       <p>A sua equipa Cork Padel Arena</p>
+                        
+                        </html>''',
+                      },
+                    };
+
+                    Map clientEmailToCloud = {
+                      'to': emailController.text,
+                      'message': {
+                        'subject': "Reserva Confirmada",
+                        'html': '''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+                        
+                        <p>Olá, ${Userr().name},</p>
+                        <p>Obrigado pela sua reserva.</p>
+                        <p>Detalhes:</p>
+                        <p>$emailDetails</p>
+                       <p></p>
+                       <p>Valor: € $price</p>
+                       <p>Obrigado,</p>
+                       <p></p>
+                       A sua equipa Cork Padel Arena
+                        
+                        </html>''',
+                        },
+                      };
+
+                     String idd = 'Arena$paymentTlm' + DateFormat('ddMMyyyy HH:mm').format(DateTime.now());
+                     /////////////////////SAVING PAYMENT////////////////////////////////////
+                     Map payment = {
+                       "IdPedido": idPedido!,
+                       "DataHoraPedidoRegistado": DateFormat('ddMMyyyy HH:mm')
+                           .format(
+                           DateTime.now()),
+                       "EmailCliente": paymentEmail!,
+                       "Referencia": referencia!,
+                       "tlmCliente": paymentTlm!,
+                       "amount": price!
+                     };
+                     try {
+                       final result = await functions.httpsCallable(
+                           "checkPayment").call({
+                         "reservations": reservationsToCheckOut,
+                         "emailToCloud": emailToCloud,
+                         "clientEmailToCloud": clientEmailToCloud,
+                         "idPedido": idPedido,
+                         "payment": payment,
+                         "idd": idd
+                       });
+                       if(result.data == 0) {
+                         setState((){
+                           confirmed = true;
+                         });
+                       } else if(result == 1){
+                         setState(() {
+                           _showLoading = false;
+                           _isAproved = false;
+                           _resultText = 'Por favor confirme o pagamento na app.';
+                         });
+                       }
+                       } on FirebaseFunctionsException catch (error){
+                       print(error.code);
+                       print(error.details);
+                       print(error.message);
+                     }
                   }else{
                     timer!.cancel();
                     setState(() {
@@ -301,7 +374,7 @@ class _MbWayPaymentState extends State<MbWayPayment> {
                   _generateReference();
                   ws.get(Mbway.getRequest(
                       referencia: referencia!,
-                      valor: price!,
+                      valor: '1', // price!
                       nrtlm: paymentTlm!,
                       email: paymentEmail!,
                       descricao: 'testdesc')).then((value) async {

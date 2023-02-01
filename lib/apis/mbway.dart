@@ -53,8 +53,7 @@ class Mbway {
     return mbway;
   }
 
-  static Resource<dynamic> getRequestState(
-      {
+  static Resource<dynamic> getRequestState({
         String MbWayKey = 'PDY-214580',
         String canal = '03',
         required String idPagamento,
@@ -72,6 +71,39 @@ class Mbway {
         headers: {});
 
     return mbway;
+  }
+
+  static Resource<int> postFunction(
+      {
+        required List<dynamic> reservations,
+        required Map emailToCloud,
+        required Map clientEmailToCloud,
+        required String idPedido,
+        required Map payment,
+        required String idd,
+
+      }) {
+
+    var resource = Resource(
+        url: 'https://us-central1-corkpadel-arena-eb47b.cloudfunctions.net/checkPayment',
+        parse: (response) {
+          final result = json.decode(response.body);
+          final int toReturn = result['estado'];
+          //var decoded = Mbway.fromJson(result);
+
+          return toReturn;
+        },
+        body: {
+          "reservations":reservations,
+          "emailToCloud": emailToCloud,
+          "clientEmailToCloud": clientEmailToCloud,
+          "idPedido": idPedido,
+          "payment": payment,
+          "idd": idd,
+        },
+        headers: {});
+
+    return resource;
   }
 
   Mbway(
