@@ -4,6 +4,7 @@ import 'package:cork_padel_arena/apis/mbway.dart';
 import 'package:cork_padel_arena/apis/webservice.dart';
 import 'package:cork_padel_arena/models/checkoutValue.dart';
 import 'package:cork_padel_arena/models/payment.dart';
+import 'package:cork_padel_arena/models/reservation.dart';
 import 'package:cork_padel_arena/models/userr.dart';
 import 'package:cork_padel_arena/utils/color_loader.dart';
 import 'package:cork_padel_arena/utils/common_utils.dart';
@@ -196,6 +197,7 @@ class _MbWayPaymentState extends State<MbWayPayment> {
     }
     Timer? timer;
     void awaitingConfirmation(BuildContext context) async {
+      generateEmailDetails();
       final functions = FirebaseFunctions.instance;
       _showLoading = true;
       _isAproved = false;
@@ -209,7 +211,7 @@ class _MbWayPaymentState extends State<MbWayPayment> {
                 timer?.cancel();
                 timer = Timer.periodic(Duration(seconds: 2), (Timer t) async {
                   if (!confirmed) {
-                    generateEmailDetails();
+
                      Map emailToCloud = {
                       'to': 'corkpadel@corkpadel.com',
                       'bcc': 'david@corkpadel.com',
@@ -269,10 +271,11 @@ class _MbWayPaymentState extends State<MbWayPayment> {
                        "tlmCliente": paymentTlm!,
                        "amount": price!
                      };
+                     List<dynamic> list = reservationsToCheckOut.map((e) => Reservation.toMap(e)).toList();
                      try {
                        final result = await functions.httpsCallable(
                            "checkPayment").call({
-                         "reservations": reservationsToCheckOut,
+                         "reservationsToCheckOut": list,
                          "emailToCloud": emailToCloud,
                          "clientEmailToCloud": clientEmailToCloud,
                          "idPedido": idPedido,
@@ -283,12 +286,14 @@ class _MbWayPaymentState extends State<MbWayPayment> {
                          setState((){
                            confirmed = true;
                          });
-                       } else if(result == 1){
+                         print(result);
+                       } else if(result.data == 1){
                          setState(() {
                            _showLoading = false;
                            _isAproved = false;
                            _resultText = 'Por favor confirme o pagamento na app.';
                          });
+                         print("Não resultou: ${result.data}");
                        }
                        } on FirebaseFunctionsException catch (error){
                        print(error.code);
