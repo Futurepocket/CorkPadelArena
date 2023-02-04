@@ -19,6 +19,7 @@ class Login extends StatefulWidget {
   @override
   _LoginState createState() => _LoginState();
 }
+String appVersion = "";
 
 class _LoginState extends State<Login> {
   final _storage = const FlutterSecureStorage();
@@ -177,341 +178,36 @@ class _LoginState extends State<Login> {
     });
   }
 
+  bool checked = false;
 
   @override
   void initState() {
     _accountNameController.addListener(() => _readAll());
     _readAll().then((v) {
-      if(_items[0].key.isNotEmpty){
+      if (_items[0].key.isNotEmpty) {
         setState(() {
           _alreadyLoggedIn = true;
         });
-        if(loggedInBefore == false){
+        if (loggedInBefore == false) {
           _signInBio();
         }
-          if(kIsWeb){
-            _emailController.text = _email!;
-          }
-      };
+        if (kIsWeb) {
+          _emailController.text = _email!;
+        }
+      }
     });
     super.initState();
   }
+
 
   var _isObscure = true;
   @override
   Widget build(BuildContext context) {
 
-    if(!kIsWeb) {
-      return UpgradeAlert(
-        upgrader: Upgrader(
-            canDismissDialog: false,
-            countryCode: "PT",
-            languageCode: "PT",
-            minAppVersion: "2.0.1",
-            onIgnore: () {
-              Navigator.of(context).pop();
-              return false;
-            },
-            onLater: () {
-              Navigator.of(context).pop();
-              return false;
-            },
-            onUpdate: () {
-              if (Platform.isIOS) {
-                launchUrl(
-                  Uri.parse(
-                      'https://apps.apple.com/pt/app/cork-padel-arena/id1607689892'),
-                  mode: LaunchMode.externalApplication,
-                  //headers: <String, String>{'my_header_key': 'my_header_value'},
-                );
-              }
-              if (Platform.isAndroid) {
-                launchUrl(
-                  Uri.parse(
-                      'https://play.google.com/store/apps/details?id=com.corkpadel.arena'),
-                  mode: LaunchMode.externalApplication,
-                  //headers: <String, String>{'my_header_key': 'my_header_value'},
-                );
-              }
-              return false;
-            }
-        ),
-        child: Scaffold(
-          resizeToAvoidBottomInset: true,
-          appBar: AppBar(
-            title: Text("Cork Padel", style: TextStyle(color: Colors.white),),
-            backgroundColor: Theme
-                .of(context)
-                .primaryColor,
-          ),
-          body: SingleChildScrollView(
-            padding: EdgeInsets.only(top: 40),
-            child: Container(
-              alignment: Alignment.topCenter,
-              margin: EdgeInsets.symmetric(horizontal: 20),
-              width: double.infinity,
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 10.0),
-                      child: Image.asset(
-                        'assets/images/logo.png',
-                        width: 80.0,
-                        height: 100.0,
-                      ),
-                    ),
-                    Column(
-                      children: [
-                        Text(
-                          AppLocalizations.of(context)!.signIn,
-                          style: TextStyle(
-                            fontSize: 26,
-                            color: Theme
-                                .of(context)
-                                .primaryColor,
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(top: 10),
-                          child: Form(
-                            key: _formKey,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: TextFormField(
-                                    controller: _emailController,
-                                    autofillHints: [AutofillHints.email],
-                                    enableSuggestions: true,
-                                    enableInteractiveSelection: true,
-                                    textInputAction: TextInputAction.next,
-                                    keyboardType: TextInputType.emailAddress,
-                                    decoration: InputDecoration(
-                                      contentPadding: EdgeInsets.all(10),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(color: Theme
-                                            .of(context)
-                                            .primaryColor, width: 1.5),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(color: Theme
-                                            .of(context)
-                                            .primaryColor, width: 1.5),
-                                      ),
-                                      labelText: 'Email',
-                                    ),
-                                    validator: (value) {
-                                      if (value!.isEmpty) {
-                                        return AppLocalizations.of(context)!
-                                            .required;
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: TextFormField(
-                                    enableSuggestions: false,
-                                    autocorrect: false,
-                                    obscureText: _isObscure,
-                                    autofillHints: [AutofillHints.password],
-                                    decoration: InputDecoration(
-                                      suffixIcon:
-                                      GestureDetector(
-                                          onTap: () =>
-                                              setState(() {
-                                                _isObscure = !_isObscure;
-                                              }),
-                                          child: Icon(_isObscure
-                                              ? Icons.visibility
-                                              : Icons.visibility_off)),
-                                      contentPadding: EdgeInsets.all(10),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(color: Theme
-                                            .of(context)
-                                            .primaryColor, width: 1.5),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(color: Theme
-                                            .of(context)
-                                            .primaryColor, width: 1.5),
-                                      ),
-                                      labelText: AppLocalizations.of(context)!
-                                          .password,
-                                    ),
-                                    controller: _passwordController,
-                                    validator: (value) {
-                                      if (value!.isEmpty) {
-                                        return AppLocalizations.of(context)!
-                                            .required;
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 10),
-                                  child: Container(
-                                    width: 150,
-                                    child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        primary: Theme
-                                            .of(context)
-                                            .primaryColor,
-                                        onPrimary: Colors.white,
-                                      ),
-                                      child: Text(
-                                        AppLocalizations.of(context)!.login,
-                                        style: TextStyle(fontSize: 15),
-                                      ),
-                                      onPressed: () async {
-                                        if (_formKey.currentState!.validate()) {
-                                          _signIn();
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                ),
-                                if(kIsWeb == false && _alreadyLoggedIn == true)
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 10),
-                                    child: Container(
-                                      width: 180,
-                                      child: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            primary: Theme
-                                                .of(context)
-                                                .primaryColor,
-                                            onPrimary: Colors.white,
-                                          ),
-                                          child: Row(
-                                            children: const [
-                                              Icon(Icons.fingerprint),
-                                              Text(
-                                                'Login Biometrico',
-                                                style: TextStyle(fontSize: 15),
-                                              ),
-                                            ],
-                                          ),
-                                          onPressed: () {
-                                            _signInBio();
-                                          }
-                                      ),
-                                    ),
-                                  ),
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 8.0),
-                                  child: RichText(
-                                    text: TextSpan(
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Theme
-                                              .of(context)
-                                              .primaryColor,
-                                        ),
-                                        children: <TextSpan>[
-                                          TextSpan(text: AppLocalizations.of(
-                                              context)!.forgotPassword),
-                                          TextSpan(
-                                              text: AppLocalizations.of(
-                                                  context)!.tapHere,
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: Theme
-                                                      .of(context)
-                                                      .primaryColor,
-                                                  fontWeight: FontWeight.bold),
-                                              recognizer: TapGestureRecognizer()
-                                                ..onTap = () async {
-                                                  try {
-                                                    await FirebaseAuth.instance
-                                                        .sendPasswordResetEmail(
-                                                        email: _emailController
-                                                            .text);
-                                                    ScaffoldMessenger.of(
-                                                        context).showSnackBar(
-                                                        newSnackBar(
-                                                          context, Text(
-                                                            AppLocalizations.of(
-                                                                context)!
-                                                                .recoveryEmailSent),
-                                                        ));
-                                                  } on FirebaseAuthException catch (er) {
-                                                    showErrorDialog(
-                                                        context,
-                                                        AppLocalizations.of(
-                                                            context)!
-                                                            .enterYourEmail,
-                                                        er);
-                                                  }
-                                                })
-                                        ]),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(20.0),
-                                  child: Text(AppLocalizations.of(context)!.or,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Theme
-                                            .of(context)
-                                            .primaryColor,
-                                      )),
-                                ),
-                                Container(
-                                  width: 150,
-                                  padding: const EdgeInsets.only(
-                                      left: 10, right: 10),
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      primary: Theme
-                                          .of(context)
-                                          .primaryColor,
-                                      onPrimary: Colors.white,
-                                    ),
-                                    child: Text(
-                                      AppLocalizations.of(context)!.register,
-                                      style: TextStyle(fontSize: 15),
-                                    ),
-                                    onPressed: () {
-                                      Navigator.of(context).pushNamed(
-                                          '/register')
-                                          .then((value) {
-                                        if (Userr().email != '') {
-                                          setState(() {
-                                            _emailController.text =
-                                                Userr().email;
-                                          });
-                                        }
-                                      }
-                                      );
-                                    },
-                                  ),
-                                ),
-
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    )
-                  ]
-              ),
-            ),
-          ),
-
-        ),
-      );
-    }else{
       return Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
-          title: Text("Cork Padel", style: TextStyle(color: Colors.white),),
+          title: const Text("Cork Padel", style: TextStyle(color: Colors.white),),
           backgroundColor: Theme
               .of(context)
               .primaryColor,
@@ -778,7 +474,7 @@ class _LoginState extends State<Login> {
         ),
 
       );
-    }
+
   }
 }
 

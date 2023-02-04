@@ -40,6 +40,10 @@ class _MbWayPaymentState extends State<MbWayPayment> {
   String? idPedido;
   String? referencia;
   String? price;
+  bool shallIPay = true;
+  Map<String, dynamic> companyEmailToCloud = {};
+  Map<String, dynamic> clientEmailToCloud = {};
+  // FirebaseFirestore databasePayments = FirebaseFirestore.instance.collection('MBWayPayments').id("");
 
 
   @override
@@ -62,8 +66,8 @@ class _MbWayPaymentState extends State<MbWayPayment> {
     referencia = 'CKA${DateFormat('ddMMyyHHmmss').format(DateTime.now())}';
   }
 
-  _sendClientEmail() async {
-    await(firestore.collection("reservationEmails").add({
+  _createClientEmail() {
+    clientEmailToCloud = {
       'to': emailController.text,
       'message': {
         'subject': "Reserva Confirmada",
@@ -82,21 +86,17 @@ class _MbWayPaymentState extends State<MbWayPayment> {
         
         </html>''',
       },
-    },)
-        .then((value) => print("email queued"),
-    )
-    );
-    print('Email done');
+    };
   }
 
-  _sendCompanyEmail() async {
-    await(firestore.collection("reservationEmails").add({
-      'to': 'corkpadel@corkpadel.com',
-      'bcc': 'david@corkpadel.com',
-      'message': {
-        'subject': "Nova reserva de ${Userr().name} ${Userr()
-            .surname} na Arena",
-        'html': '''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  _createCompanyEmail() {
+     companyEmailToCloud = {
+       'to': 'corkpadel@corkpadel.com',
+       'bcc': 'david@corkpadel.com',
+       'message': {
+         'subject': "Nova reserva de ${Userr().name} ${Userr()
+             .surname} na Arena",
+         'html': '''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
         
         <p>Reserva de ${Userr().name} ${Userr().surname},</p>
@@ -113,12 +113,8 @@ class _MbWayPaymentState extends State<MbWayPayment> {
        <p>A sua equipa Cork Padel Arena</p>
         
         </html>''',
-      },
-    },)
-        .then((value) => print("email queued"),
-    )
-    );
-    print('Email done');
+       }
+     };
   }
 
   DatabaseReference database = FirebaseDatabase.instance.ref();
@@ -133,30 +129,7 @@ class _MbWayPaymentState extends State<MbWayPayment> {
   @override
   Widget build(BuildContext context) {
     price = checkoutValue().price.toString();
-    Future<void> _savePayment() async {
-      CollectionReference payments = FirebaseFirestore.instance.collection(
-          'MBWayPayments');
-      String idd = 'Arena$paymentTlm' +
-          DateFormat('ddMMyyyy HH:mm').format(DateTime.now());
-      /////////////////////SAVING PAYMENT////////////////////////////////////
-      Payment payment = Payment(
-          IdPedido: idPedido!,
-          DataHoraPedidoRegistado: DateFormat('ddMMyyyy HH:mm').format(
-              DateTime.now()),
-          EmailCliente: paymentEmail!,
-          Referencia: referencia!,
-          tlmCliente: paymentTlm!,
-          amount: price!
-      );
-      await payments.doc(idd).set({
-        'IdPedido': payment.IdPedido,
-        'DataHoraPedidoRegistado': payment.DataHoraPedidoRegistado,
-        'EmailCliente': payment.EmailCliente,
-        'Referencia': payment.Referencia,
-        'tlmCliente': payment.tlmCliente,
-        'amount': payment.amount,
-      }).then((value) {
-        Navigator.of(context).pop();
+    void _clearAll() {
         checkoutValue().reservations = 0;
         checkoutValue().price = 0;
         setState(() {
@@ -169,35 +142,31 @@ class _MbWayPaymentState extends State<MbWayPayment> {
         }));
         ScaffoldMessenger.of(context).showSnackBar(
             newSnackBar(context, const Text('Reservas Efetuados')));
-      }).catchError((onError) => print("Failed to save payment: $onError"));
-    }
-    Future <void> _saveAll() async {
-      final reservations = database.child('reservations');
-      generateEmailDetails();
-      for (var element in reservationsToCheckOut) {
-        try {
-          await reservations.child(element.id).update({
-            'state': 'pago',
-            'completed': true
-          });
-        } catch (e) {
-          print('There is an error!');
-        }
       }
-    }
+
+
     void itIsDone() async{ //COLOCAR NA CLOUD FUNCTION
       await Future.delayed(
-          const Duration(milliseconds: 2000), () async{
-        await _saveAll().then((value) async{
-          await _sendCompanyEmail();
-          await _sendClientEmail();
-          await _savePayment();
-        }).then((value) => Navigator.of(context).pop());
+          const Duration(milliseconds: 2000), (){
+           _clearAll();
       });
     }
     Timer? timer;
     void awaitingConfirmation(BuildContext context) async {
+      String idd = 'Arena$paymentTlm${DateFormat('ddMMyyyy HH:mm').format(DateTime.now())}';
+      Map<String, dynamic> payment = {
+        "IdPedido": idPedido!,
+        "DataHoraPedidoRegistado": DateFormat('ddMMyyyy HH:mm')
+            .format(
+            DateTime.now()),
+        "EmailCliente": paymentEmail!,
+        "Referencia": referencia!,
+        "tlmCliente": paymentTlm!,
+        "amount": price!
+      };
       generateEmailDetails();
+      _createCompanyEmail();
+      _createClientEmail();
       final functions = FirebaseFunctions.instance;
       _showLoading = true;
       _isAproved = false;
@@ -208,156 +177,116 @@ class _MbWayPaymentState extends State<MbWayPayment> {
         builder: (context) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
-                timer?.cancel();
-                timer = Timer.periodic(Duration(seconds: 2), (Timer t) async {
-                  if (!confirmed) {
-
-                     Map companyEmailToCloud = {
-                      'to': 'corkpadel@corkpadel.com',
-                      'bcc': 'david@corkpadel.com',
-                      'message': {
-                        'subject': "Nova reserva de ${Userr().name} ${Userr()
-                            .surname} na Arena",
-                        'html': '''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-                        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-                        
-                        <p>Reserva de ${Userr().name} ${Userr().surname},</p>
-                        <p>Email: ${emailController.text} Tlm: ${tlmController.text},</p>
-                        <p>NIF: ${Userr().nif}</p>
-                        <p>Morada: ${Userr().address}, ${Userr().postCode}, ${Userr().city}</p>
-                        <p></p>
-                        <p>Detalhes:</p>
-                        <p>$emailDetails</p>
-                       <p></p>
-                       <p>Valor: € $price</p> 
-                       <p></p>
-                       <p>Obrigado,</p>
-                       <p>A sua equipa Cork Padel Arena</p>
-                        
-                        </html>''',
-                      },
-                    };
-
-                    Map clientEmailToCloud = {
-                      'to': emailController.text,
-                      'message': {
-                        'subject': "Reserva Confirmada",
-                        'html': '''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-                        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-                        
-                        <p>Olá, ${Userr().name},</p>
-                        <p>Obrigado pela sua reserva.</p>
-                        <p>Detalhes:</p>
-                        <p>$emailDetails</p>
-                       <p></p>
-                       <p>Valor: € $price</p>
-                       <p>Obrigado,</p>
-                       <p></p>
-                       A sua equipa Cork Padel Arena
-                        
-                        </html>''',
-                        },
-                      };
-
-                     String idd = 'Arena$paymentTlm' + DateFormat('ddMMyyyy HH:mm').format(DateTime.now());
-                     /////////////////////SAVING PAYMENT////////////////////////////////////
-                     Map payment = {
-                       "IdPedido": idPedido!,
-                       "DataHoraPedidoRegistado": DateFormat('ddMMyyyy HH:mm')
-                           .format(
-                           DateTime.now()),
-                       "EmailCliente": paymentEmail!,
-                       "Referencia": referencia!,
-                       "tlmCliente": paymentTlm!,
-                       "amount": price!
-                     };
-                     List<dynamic> list = reservationsToCheckOut.map((e) => Reservation.toMap(e)).toList();
-                     try {
-                       final result = await functions.httpsCallable(
-                           "checkPayment").call({
-                         "reservationsToCheckOut": list,
-                         "companyEmailToCloud": companyEmailToCloud,
-                         "clientEmailToCloud": clientEmailToCloud,
-                         "idPedido": idPedido,
-                         "payment": payment,
-                         "idd": idd
-                       });
-                       print(result);
-                       if(result.data == 0) {
-                         setState((){
-                           confirmed = true;
-                         });
-                         print(result);
-                       } else if(result.data == 1){
-                         setState(() {
-                           _showLoading = false;
-                           _isAproved = false;
-                           _resultText = 'Por favor confirme o pagamento na app.';
-                         });
-                         print("Não resultou: ${result.data}");
-                       }
-                       } on FirebaseFunctionsException catch (error){
-                       print(error.code);
-                       print(error.details);
-                       print(error.message);
-                     }
-                  }else{
-                    timer!.cancel();
-                    setState(() {
-                      _showLoading = false;
-                      _isAproved = false;
-                      _resultText = 'Pagamento confirmado. Receberá confirmação dentro de momentos.';
-                    });
-                  }
-                });
-                return AlertDialog(
-                  content: SingleChildScrollView(
-                    padding: const EdgeInsets.all(8),
-                    child: ListBody(
-                      children: <Widget>[
-                        const Padding(
-                          padding: EdgeInsets.only(bottom: 8.0),
-                          child: Text(
-                            'A aguardar pagamento',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
+                if(shallIPay) {
+                  timer?.cancel();
+                  timer = Timer.periodic(Duration(seconds: 2), (Timer t) async {
+                    if (!confirmed) {
+                      // Get reference to Firestore collection
+                      var collectionRef = FirebaseFirestore.instance.collection(
+                          'MBWayPayments');
+                      var doc = await collectionRef.doc(idd).get();
+                      if (doc.exists) {
+                        setState(() {
+                          confirmed = true;
+                        });
+                      } else {
+                        setState(() {
+                          _showLoading = true;
+                          _isAproved = false;
+                          _resultText =
+                          'Por favor confirme o pagamento na app MBWay.';
+                        });
+                        /////////////////////SAVING PAYMENT////////////////////////////////////
+                        List<dynamic> list = reservationsToCheckOut.map((e) =>
+                            Reservation.toMap(e)).toList();
+                        try {
+                          final result = await functions.httpsCallable(
+                              "checkPayment").call({
+                            "reservationsToCheckOut": list,
+                            "companyEmailToCloud": companyEmailToCloud,
+                            "clientEmailToCloud": clientEmailToCloud,
+                            "idPedido": idPedido,
+                            "payment": payment,
+                            "idd": idd
+                          });
+                          print(result);
+                        } on FirebaseFunctionsException catch (error) {
+                          print(error.code);
+                          print(error.details);
+                          print(error.message);
+                        }
+                      }
+                    } else {
+                      timer!.cancel();
+                      setState(() {
+                        _showLoading = false;
+                        _isAproved = false;
+                        _resultText =
+                        'Pagamento confirmado. Receberá confirmação dentro de momentos.';
+                      });
+                      itIsDone();
+                    }
+                  });
+                  return AlertDialog(
+                    content: SingleChildScrollView(
+                      padding: const EdgeInsets.all(8),
+                      child: ListBody(
+                        children: <Widget>[
+                          const Padding(
+                            padding: EdgeInsets.only(bottom: 8.0),
+                            child: Text(
+                              'A aguardar pagamento MBWay',
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
                           ),
+                          const Text(
+                            "Não feche a app antes de finalizar o pagamento MBWay",
+                            style: TextStyle(color: Colors.red),),
+                          _showLoading ?
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ColorLoader(),
+                          )
+                              :
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                top: 8.0, bottom: 8.0),
+                            child: Text(
+                              _resultText,
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    actions: <Widget>[
+                      _isAproved ?
+                      Container(
+                      )
+                          : OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          backgroundColor: Colors.red,
                         ),
-                        const Text("Não feche a app antes de finalizar o pagamento", style: TextStyle(color: Colors.red),),
-                        _showLoading ?
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ColorLoader(),
-                        )
-                            :
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                          child: Text(
-                            _resultText,
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  actions: <Widget>[
-                    _isAproved ?
-                    Container(
-                    )
-                        : OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        backgroundColor: Colors.red,
+                        onPressed: () {
+                          if (timer != null) {
+                            timer!.cancel();
+                          }
+                          setState((){
+                            shallIPay = false;
+                          });
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text(
+                          "CANCELAR",
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text(
-                        "CANCELAR",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ],
-                );
+                    ],
+                  );
+                }else{
+                  return SizedBox();
+                }
               }
           );
         },
@@ -380,7 +309,7 @@ class _MbWayPaymentState extends State<MbWayPayment> {
                   _generateReference();
                   ws.get(Mbway.getRequest(
                       referencia: referencia!,
-                      valor: '1', // price!
+                      valor: price!, // price!
                       nrtlm: paymentTlm!,
                       email: paymentEmail!,
                       descricao: 'testdesc')).then((value) async {
@@ -439,16 +368,6 @@ class _MbWayPaymentState extends State<MbWayPayment> {
                   ),
                   actions: <Widget>[
                     _isAproved ?
-                    OutlinedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text(
-                        "Cancelar",
-                      ),
-                    )
-                        : Container(),
-                    _isAproved ?
                     Container(
                     )
                         : _showLoading == false ? OutlinedButton(
@@ -462,7 +381,22 @@ class _MbWayPaymentState extends State<MbWayPayment> {
                         "OK",
                         style: TextStyle(color: Colors.white),
                       ),
-                    ) : Container(),
+                    ) : OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                      ),
+                      onPressed: () {
+                        setState((){
+                          shallIPay = false;
+                        });
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text(
+                        "CANCEL",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
                   ],
                 );
               }
