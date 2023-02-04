@@ -212,7 +212,7 @@ class _MbWayPaymentState extends State<MbWayPayment> {
                 timer = Timer.periodic(Duration(seconds: 2), (Timer t) async {
                   if (!confirmed) {
 
-                     Map emailToCloud = {
+                     Map companyEmailToCloud = {
                       'to': 'corkpadel@corkpadel.com',
                       'bcc': 'david@corkpadel.com',
                       'message': {
@@ -276,12 +276,13 @@ class _MbWayPaymentState extends State<MbWayPayment> {
                        final result = await functions.httpsCallable(
                            "checkPayment").call({
                          "reservationsToCheckOut": list,
-                         "emailToCloud": emailToCloud,
+                         "companyEmailToCloud": companyEmailToCloud,
                          "clientEmailToCloud": clientEmailToCloud,
                          "idPedido": idPedido,
                          "payment": payment,
                          "idd": idd
                        });
+                       print(result);
                        if(result.data == 0) {
                          setState((){
                            confirmed = true;
