@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cork_padel_arena/models/userr.dart';
+import 'package:cork_padel_arena/view/login/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'dart:async';
@@ -65,12 +67,18 @@ Future<User?> signInWithEmailAndPassword(
     await FirebaseAuth.instance.signInWithEmailAndPassword(
       email: email,
       password: password,
-    ).then((value) {
+    ).then((value) async {
       getUserDetails().then((user) {
         Userr().email = user!.email.toString();
         Userr().id = user.uid.toString();
         checkEmailVerified(user);
         return user;
+      });
+      final instance = FirebaseFirestore.instance
+          .collection('constants');
+
+      await instance.doc("appVersion").get().then((value) {
+          appVersion = value.data()!["version"];
       });
     });
     return fbUser;

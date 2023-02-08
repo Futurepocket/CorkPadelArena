@@ -96,6 +96,27 @@ class Webservice {
 
   }
 
+  Future<T> postCloudFunction<T>(Resource<T> resource) async {
+    Map<String, String> headers = {
+      ...defaultHeader,
+      ...resource.headers,
+    };
+
+    String resourceUrl =
+        resource.url;
+
+
+    final response = await http.post(
+        Uri.parse(resourceUrl),
+        headers: headers,
+        body: resource.body
+    );
+
+
+    return resource.parse(response);
+
+  }
+
   // Future<T> post<T>(Resource<T> resource) async {
   //   if (globals.server == '' || globals.silo == '') {
   //     throw Exception('No server/silo set!');

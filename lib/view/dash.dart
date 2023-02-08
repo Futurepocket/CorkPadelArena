@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cork_padel_arena/models/checkoutValue.dart';
 import 'package:cork_padel_arena/models/reservation.dart';
 import 'package:cork_padel_arena/src/widgets.dart';
 import 'package:cork_padel_arena/utils/common_utils.dart';
+import 'package:cork_padel_arena/view/login/login.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http_auth/http_auth.dart';
@@ -14,6 +16,7 @@ import 'package:cork_padel_arena/models/page.dart';
 import 'package:cork_padel_arena/view/profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:upgrader/upgrader.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../models/userr.dart';
 import './reserve.dart';
@@ -191,6 +194,12 @@ class _DashState extends State<Dash> {
     isIn10Mins = false;
     final instance = FirebaseFirestore.instance
         .collection('constants');
+
+    instance.doc("appVersion").get().then((value) {
+      setState(() {
+        appVersion = value.data()!["version"];
+      });
+    });
     instance.doc('openDoorUrlID').get().then((value) {
       openDoorUrl = value.data()!['url'];
     });
@@ -341,158 +350,396 @@ class _DashState extends State<Dash> {
         }));
       }),
     ];
+    print(appVersion);
 
-    return Scaffold(
-        resizeToAvoidBottomInset: true,
-        appBar: AppBar(
-        title: Align(
-          alignment: Alignment.center,
-            child: Text("Cork Padel Arena")),
-    backgroundColor: Theme.of(context).primaryColor,
-    ),
-    body:
-     SafeArea(
-       child: SingleChildScrollView(
+    if(!kIsWeb) {
+      return UpgradeAlert(
+        upgrader: Upgrader(
+            canDismissDialog: false,
+            countryCode: "PT",
+            languageCode: "PT",
+            minAppVersion: appVersion,
+            onIgnore: () {
+              Navigator.of(context).pop();
+              return false;
+            },
+            onLater: () {
+              Navigator.of(context).pop();
+              return false;
+            },
+            onUpdate: () {
+              if (Platform.isIOS) {
+                launchUrl(
+                  Uri.parse(
+                      'https://apps.apple.com/pt/app/cork-padel-arena/id1607689892'),
+                  mode: LaunchMode.externalApplication,
+                  //headers: <String, String>{'my_header_key': 'my_header_value'},
+                );
+              }
+              if (Platform.isAndroid) {
+                launchUrl(
+                  Uri.parse(
+                      'https://play.google.com/store/apps/details?id=com.corkpadel.arena'),
+                  mode: LaunchMode.externalApplication,
+                  //headers: <String, String>{'my_header_key': 'my_header_value'},
+                );
+              }
+              return false;
+            }
+        ),
+        child: Scaffold(
+          resizeToAvoidBottomInset: true,
+          appBar: AppBar(
+            title: Align(
+                alignment: Alignment.center,
+                child: Text("Cork Padel Arena")),
+            backgroundColor: Theme
+                .of(context)
+                .primaryColor,
+          ),
+          body:
+          SafeArea(
+            child: SingleChildScrollView(
 
-         child: Column(
-          children: [
-            isToday?
-            Container(
-              width:MediaQuery.of(context).size.width,
-              height: 50,
-              decoration: BoxDecoration(color: Colors.yellow.shade200),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left:8.0),
-                    child: Text(
-                      '${AppLocalizations.of(context)!.resToday} ${reservedToday!.hour}',
+                  isToday ?
+                  Container(
+                    width: MediaQuery
+                        .of(context)
+                        .size
+                        .width,
+                    height: 50,
+                    decoration: BoxDecoration(color: Colors.yellow.shade200),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Text(
+                            '${AppLocalizations.of(context)!
+                                .resToday} ${reservedToday!.hour}',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 10.0),
+                          child: StyledButton(
+                              onPressed: isIn10Mins ?
+                                  () async {
+                                if (kIsWeb) {
+                                  launchUrl(Uri.parse(openDoorFullUrl));
+                                } else {
+                                  var client = DigestAuthClient(
+                                      "admin", "cork2021");
+                                  await client.get(Uri.parse(openDoorUrl)).then((
+                                      response) {
+                                    if (response.statusCode == 200) {
+                                      showWebView(context);
+                                    }
+                                  });
+                                }
+                              }
+                                  : () {},
+                              background: isIn10Mins ? Theme
+                                  .of(context)
+                                  .primaryColor
+                                  : Colors.grey,
+                              border: isIn10Mins ? Theme
+                                  .of(context)
+                                  .primaryColor
+                                  : Colors.grey,
+                              child: Text(AppLocalizations.of(context)!.openDoor,
+                                style: TextStyle(color: isIn10Mins ? Colors.white
+                                    : Colors.red
+                                ),)),
+                        )
+                      ],
+                    ),
+                  ) : Container(),
+                  Container(
+                      margin: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                      width: double.infinity,
+                      height: MediaQuery
+                          .of(context)
+                          .size
+                          .height * 0.85,
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: Text(
+                              '${AppLocalizations.of(context)!
+                                  .welcome} ${myName}',
+                              style: TextStyle(
+                                fontSize: 26,
+                                color: Theme
+                                    .of(context)
+                                    .primaryColor,
+                              ),
+                            ),
+                          ),
+                          Userr().role == "administrador" ?
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: Text(
+                              '${AppLocalizations.of(context)!.adminAccount}',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.red,
+                              ),
+                            ),
+                          )
+                              : Container(),
+                          Expanded(
+                            child: Scrollbar(
+                              child: GridView(
+
+                                padding: const EdgeInsets.all(5),
+                                children: menus
+                                    .map((menus) =>
+                                    Menu_Item(
+                                        menus.ikon, menus.title, menus.color,
+                                        menus.fun))
+                                    .toList(),
+                                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                                  maxCrossAxisExtent: 350,
+                                  childAspectRatio: 0.5,
+                                  crossAxisSpacing: 0,
+                                  mainAxisSpacing: 0,
+                                  mainAxisExtent: 180,
+                                ),
+                              ),
+                            ),
+                          ),
+                          FutureBuilder<void>(
+                              future: _launched, builder: _launchStatus)
+                        ],
+                      )),
+                ],
+              ),
+            ),
+          ),
+          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+          floatingActionButton: Stack(
+              children: [
+                FloatingActionButton(
+                  backgroundColor: Theme
+                      .of(context)
+                      .colorScheme
+                      .primary,
+                  onPressed: () {
+                    showShoppingCart(context).then((value) {
+                      settingState();
+                    });
+                  },
+                  child: Icon(Icons.shopping_cart, color: Colors.white,),
+                ),
+
+                reservationsToCheckOut.isEmpty ?
+                Positioned(
+                    top: 1.0,
+                    left: 1.0,
+                    child: Container())
+                    : Positioned(
+                  top: 1.0,
+                  left: 1.0,
+                  child: CircleAvatar(
+                    radius: 10,
+                    backgroundColor: Colors.red,
+                    child: Text(reservationsToCheckOut.length.toString(),
                       style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.black,
+                          color: Colors.white,
+                          fontSize: 11.0,
+                          fontWeight: FontWeight.w500
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(right:10.0),
-                    child: StyledButton(
-                        onPressed: isIn10Mins?
-                            () async {
-                              if(kIsWeb){
+                )
+              ]
+          ),
+        ),
+      );
+    }else {
+      return Scaffold(
+        resizeToAvoidBottomInset: true,
+        appBar: AppBar(
+          title: Align(
+              alignment: Alignment.center,
+              child: Text("Cork Padel Arena")),
+          backgroundColor: Theme
+              .of(context)
+              .primaryColor,
+        ),
+        body:
+        SafeArea(
+          child: SingleChildScrollView(
+
+            child: Column(
+              children: [
+                isToday ?
+                Container(
+                  width: MediaQuery
+                      .of(context)
+                      .size
+                      .width,
+                  height: 50,
+                  decoration: BoxDecoration(color: Colors.yellow.shade200),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: Text(
+                          '${AppLocalizations.of(context)!
+                              .resToday} ${reservedToday!.hour}',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 10.0),
+                        child: StyledButton(
+                            onPressed: isIn10Mins ?
+                                () async {
+                              if (kIsWeb) {
                                 launchUrl(Uri.parse(openDoorFullUrl));
-                              }else{
-                                var client = DigestAuthClient("admin", "cork2021");
-                                await client.get(Uri.parse(openDoorUrl)).then((response) {
-                                  if(response.statusCode == 200){
+                              } else {
+                                var client = DigestAuthClient(
+                                    "admin", "cork2021");
+                                await client.get(Uri.parse(openDoorUrl)).then((
+                                    response) {
+                                  if (response.statusCode == 200) {
                                     showWebView(context);
                                   }
                                 });
                               }
                             }
-                        :(){},
-                        background: isIn10Mins ? Theme.of(context).primaryColor
-                        : Colors.grey,
-                        border: isIn10Mins ? Theme.of(context).primaryColor
-                            : Colors.grey,
-                        child: Text(AppLocalizations.of(context)!.openDoor,
-                        style: TextStyle(color: isIn10Mins? Colors.white
-                        : Colors.red
-                        ),)),
-                  )
-                ],
-              ),
-            ): Container(),
-            Container(
-                margin: EdgeInsets.symmetric(vertical:15, horizontal: 10),
-                width: double.infinity,
-                height: MediaQuery.of(context).size.height*0.85,
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
-                      child: Text(
-                        '${AppLocalizations.of(context)!.welcome} ${myName}',
-                        style: TextStyle(
-                          fontSize: 26,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
-                    ),
-                    Userr().role == "administrador"?
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
-                      child: Text(
-                        '${AppLocalizations.of(context)!.adminAccount}',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.red,
-                        ),
-                      ),
-                    )
-                    : Container(),
-                    Expanded(
-                      child: Scrollbar(
-                        child: GridView(
-
-                          padding: const EdgeInsets.all(5),
-                          children: menus
-                              .map((menus) => Menu_Item(
-                              menus.ikon, menus.title, menus.color, menus.fun))
-                              .toList(),
-                          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                              maxCrossAxisExtent: 350,
-                              childAspectRatio: 0.5,
-                              crossAxisSpacing: 0,
-                              mainAxisSpacing: 0,
-                           mainAxisExtent: 180,
+                                : () {},
+                            background: isIn10Mins ? Theme
+                                .of(context)
+                                .primaryColor
+                                : Colors.grey,
+                            border: isIn10Mins ? Theme
+                                .of(context)
+                                .primaryColor
+                                : Colors.grey,
+                            child: Text(AppLocalizations.of(context)!.openDoor,
+                              style: TextStyle(color: isIn10Mins ? Colors.white
+                                  : Colors.red
+                              ),)),
+                      )
+                    ],
+                  ),
+                ) : Container(),
+                Container(
+                    margin: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                    width: double.infinity,
+                    height: MediaQuery
+                        .of(context)
+                        .size
+                        .height * 0.85,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: Text(
+                            '${AppLocalizations.of(context)!
+                                .welcome} ${myName}',
+                            style: TextStyle(
+                              fontSize: 26,
+                              color: Theme
+                                  .of(context)
+                                  .primaryColor,
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                    FutureBuilder<void>(future: _launched, builder: _launchStatus)
-                  ],
-                )),
-          ],
-    ),
-       ),
-     ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: Stack(
-          children: [
-            FloatingActionButton(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              onPressed: () {
-                showShoppingCart(context).then((value) {
-                  settingState();
-                });
-              },
-              child: Icon(Icons.shopping_cart, color: Colors.white,),
-            ),
+                        Userr().role == "administrador" ?
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: Text(
+                            '${AppLocalizations.of(context)!.adminAccount}',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.red,
+                            ),
+                          ),
+                        )
+                            : Container(),
+                        Expanded(
+                          child: Scrollbar(
+                            child: GridView(
 
-            reservationsToCheckOut.isEmpty?
-            Positioned(
+                              padding: const EdgeInsets.all(5),
+                              children: menus
+                                  .map((menus) =>
+                                  Menu_Item(
+                                      menus.ikon, menus.title, menus.color,
+                                      menus.fun))
+                                  .toList(),
+                              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                                maxCrossAxisExtent: 350,
+                                childAspectRatio: 0.5,
+                                crossAxisSpacing: 0,
+                                mainAxisSpacing: 0,
+                                mainAxisExtent: 180,
+                              ),
+                            ),
+                          ),
+                        ),
+                        FutureBuilder<void>(
+                            future: _launched, builder: _launchStatus)
+                      ],
+                    )),
+              ],
+            ),
+          ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+        floatingActionButton: Stack(
+            children: [
+              FloatingActionButton(
+                backgroundColor: Theme
+                    .of(context)
+                    .colorScheme
+                    .primary,
+                onPressed: () {
+                  showShoppingCart(context).then((value) {
+                    settingState();
+                  });
+                },
+                child: Icon(Icons.shopping_cart, color: Colors.white,),
+              ),
+
+              reservationsToCheckOut.isEmpty ?
+              Positioned(
+                  top: 1.0,
+                  left: 1.0,
+                  child: Container())
+                  : Positioned(
                 top: 1.0,
                 left: 1.0,
-                child: Container())
-                : Positioned(
-              top: 1.0,
-              left: 1.0,
-              child: CircleAvatar(
-                radius: 10,
-                backgroundColor: Colors.red,
-                child: Text(reservationsToCheckOut.length.toString(),
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 11.0,
-                      fontWeight: FontWeight.w500
+                child: CircleAvatar(
+                  radius: 10,
+                  backgroundColor: Colors.red,
+                  child: Text(reservationsToCheckOut.length.toString(),
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 11.0,
+                        fontWeight: FontWeight.w500
+                    ),
                   ),
                 ),
-              ),
-            )
-          ]
-      ),
-    );
+              )
+            ]
+        ),
+      );
+    }
   }
 
 }
