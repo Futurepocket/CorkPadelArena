@@ -4,6 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../utils/common_utils.dart';
 import 'dash.dart';
+// Import for Android features.
+import 'package:webview_flutter_android/webview_flutter_android.dart';
+
+// Import for iOS features.
+import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
 class AboutUs extends StatefulWidget {
 
@@ -16,6 +21,43 @@ class AboutUs extends StatefulWidget {
 }
 
 class _AboutUsState extends State<AboutUs> {
+late WebViewController webViewController;
+late final PlatformWebViewControllerCreationParams params;
+
+@override
+  void initState() {
+  if (WebViewPlatform.instance is WebKitWebViewPlatform) {
+    params = WebKitWebViewControllerCreationParams(
+        allowsInlineMediaPlayback: true,
+        mediaTypesRequiringUserAction: const <PlaybackMediaTypes>{}
+    );
+  } else {
+    params = const PlatformWebViewControllerCreationParams();
+  }
+    webViewController = WebViewController.fromPlatformCreationParams(params);
+  initiateWebviewController();
+    super.initState();
+  }
+
+Future<void> initiateWebviewController() async {
+  if (webViewController.platform is AndroidWebViewController) {
+    AndroidWebViewController.enableDebugging(true);
+    (webViewController.platform as AndroidWebViewController)
+        .setMediaPlaybackRequiresUserGesture(false);
+  }
+  webViewController
+    ..setJavaScriptMode(JavaScriptMode.unrestricted)
+  ..setNavigationDelegate(
+      NavigationDelegate(
+   onNavigationRequest: (NavigationRequest request) => NavigationDecision.navigate
+      )
+  );
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    webViewController.loadHtmlString('https://www.youtube.com/watch?v=nlom7a-UiLA');
+  });
+
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -23,20 +65,20 @@ class _AboutUsState extends State<AboutUs> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        title: Text("Cork Padel", style: TextStyle(color: Colors.white),),
+        title: const Text("Cork Padel", style: TextStyle(color: Colors.white),),
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.only(top: 20),
+          padding: const EdgeInsets.only(top: 20),
           child: Container(
-            margin: EdgeInsets.symmetric(horizontal: 20),
+            margin: const EdgeInsets.symmetric(horizontal: 20),
             width: double.infinity,
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  Text(
+                  const Text(
                     'Cork Padel',
                     style: TextStyle(
                       fontFamily: 'Roboto Condensed',
@@ -47,7 +89,7 @@ class _AboutUsState extends State<AboutUs> {
                     padding: const EdgeInsets.only(top:8.0),
                     child: Text(
                       AppLocalizations.of(context)!.about,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontFamily: 'Roboto Condensed',
                         fontSize: 28,
                       ),
@@ -70,7 +112,7 @@ class _AboutUsState extends State<AboutUs> {
                     children: [
                       Text(
                         AppLocalizations.of(context)!.moreThanRaquets,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontFamily: 'Roboto Condensed',
                           fontSize: 16,
                         ),
@@ -78,14 +120,13 @@ class _AboutUsState extends State<AboutUs> {
                       if(!kIsWeb) Container(
                           padding: const EdgeInsets.only(top:10.0),
                           height: 500,
-                          child: const WebView(
-                            initialUrl: 'https://www.youtube.com/watch?v=nlom7a-UiLA',
-                            javascriptMode: JavascriptMode.unrestricted,
+                          child: WebViewWidget(
+                            controller: webViewController,
                           )
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 20.0),
-                        child: Text(AppLocalizations.of(context)!.allAboutUs, style: TextStyle(
+                        child: Text(AppLocalizations.of(context)!.allAboutUs, style: const TextStyle(
                             decoration: TextDecoration.underline,
                             fontSize: 16,
 
@@ -111,7 +152,7 @@ class _AboutUsState extends State<AboutUs> {
                   });
                 });
               },
-              child: Icon(Icons.shopping_cart, color: Colors.white,),
+              child: const Icon(Icons.shopping_cart, color: Colors.white,),
             ),
 
             reservationsToCheckOut.isEmpty?

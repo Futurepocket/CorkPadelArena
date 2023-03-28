@@ -35,25 +35,25 @@ dependencies:
   firebase_database: ^10.0.6
   cloud_firestore: ^4.1.0
   firebase_auth: ^4.1.4   # new
-  google_fonts: ^3.0.1
+  google_fonts: ^4.0.3
   url_launcher: ^6.0.10
   json_annotation: ^4.4.0
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   flutter_email_sender: ^5.0.2
-  flutter_launcher_icons: ^0.11.0
+  flutter_launcher_icons: ^0.12.0
   linkwell: ^2.0.6
   local_auth: ^2.1.2
-  flutter_secure_storage: ^6.0.0
+  flutter_secure_storage: ^8.0.0
   interval_time_picker: ^2.0.0+5
-  webview_flutter: ^3.0.0
+  webview_flutter: ^4.0.7
   firebase_dynamic_links: ^5.0.6
   table_calendar: ^3.0.4
   collection: ^1.15.0
   http_auth: ^1.0.1
   uuid: ^3.0.7
-  upgrader: ^5.1.0
+  upgrader: ^6.2.0
   cloud_functions: ^4.0.7
 
 flutter_icons:

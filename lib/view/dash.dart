@@ -75,99 +75,100 @@ class _DashState extends State<Dash> {
     final formatter = DateFormat('dd/MM/yyyy HH:mm');
     database.child('reservations').onValue.listen((event) {
       if(event.snapshot.value != null){
-        //reservationsToCheckOut.clear();
+
         Map<String, dynamic>.from(event.snapshot.value as dynamic)
             .forEach((key, value){
-          final String whenMade = value['dateMade'] + ' ' + value['timeMade'];
-          String whenStarts = value['day'] + ' ' + value['hour'];
-          String whenEnds = value['day'] + ' ' + value['duration'];
-          if(whenEnds == '00:00'){
-            whenEnds = '24:00';
-          }
-          if(whenEnds == '00:30'){
-            whenEnds = '24:30';
-          }
-          final DateTime made = formatter.parse(whenMade);
-          final starts = formatter.parse(whenStarts);
-          final ends = formatter.parse(whenEnds);
-
-          if (today.isAfter(made.add(const Duration(minutes: 30))) &&
-              value['state'] == 'por completar') {
-            keys.add(key);
-            if(value['client_email'] == Userr().email){
-              reservationsToCheckOut.removeWhere((element) => element.id == key);
-              setState(() {
-                checkoutValue().reservations = reservationsToCheckOut.length;
-                checkoutValue().price -= int.parse(value["price"]);
-              });
-            }
-          }
-          else if(today.isAfter(made.add(const Duration(hours: 24))) &&
-              value['state'] == 'a aguardar pagamento'){
-            keys.add(key);
-          }
-          else if((today.isAfter(starts.subtract(const Duration(hours: 12)))
-              && today.isBefore(ends.add(const Duration(minutes: 10)))) &&
-              value['state'] == 'pago' && value['client_email'] == Userr().email
-              && reservedToday == null){
-
-              setState(() {
-                isToday = true;
-                if(today.isAfter(starts.subtract(const Duration(minutes: 10)))
-                    && today.isBefore(ends.add(const Duration(minutes: 10)))){
-                  isIn10Mins = true;
-                }else{
-                  isIn10Mins = false;
+              if(value['dateMade'] != null){
+                final String whenMade = value['dateMade'] + ' ' + value['timeMade'];
+                String whenStarts = value['day'] + ' ' + value['hour'];
+                String whenEnds = value['day'] + ' ' + value['duration'];
+                if(whenEnds == '00:00'){
+                  whenEnds = '24:00';
                 }
-                reservedToday =
-                    Reservation.fromRTDB(Map<String, dynamic>.from(value));
-              });
-          }
-          else if((today.isAfter(starts.subtract(const Duration(hours: 12)))
-              && today.isBefore(ends.add(const Duration(minutes: 10)))) &&
-              value['state'] == 'pago' && value['client_email'] == Userr().email
-              && reservedToday != null){
-            final String whenMade = reservedToday!.day + ' ' +
-                reservedToday!.hour;
-            final DateTime theOneToday = formatter.parse(whenMade);
-            if (starts.isBefore(theOneToday)){
-              setState(() {
-                isToday = true;
-                if(today.isAfter(starts.subtract(const Duration(minutes: 10)))
-                    && today.isBefore(ends.add(const Duration(minutes: 10)))){
-                  isIn10Mins = true;
-                }else{
-                  isIn10Mins = false;
+                if(whenEnds == '00:30'){
+                  whenEnds = '24:30';
                 }
-                reservedToday =
-                    Reservation.fromRTDB(Map<String, dynamic>.from(value));
-              });
-            }
-          }else if(reservedToday != null){
-            final String whenMade = reservedToday!.day + ' ' +
-                reservedToday!.duration;
-            final DateTime theOneTodayFinishes = formatter.parse(whenMade);
-            if(today.isAfter(theOneTodayFinishes.add(const Duration(minutes:  10)))){
-              setState(() {
-                isIn10Mins = false;
-                isToday = false;
-                reservedToday = null;
-              });
-            }else if(today.isAfter(formatter.parse(reservedToday!.day + ' ' + reservedToday!.hour))
-                && today.isBefore(formatter.parse(reservedToday!.day + ' ' + reservedToday!.duration))){
-              setState(() {
-                isIn10Mins = true;
-                isToday = true;
-              });
-            }
-          }
+                final DateTime made = formatter.parse(whenMade);
+                final starts = formatter.parse(whenStarts);
+                final ends = formatter.parse(whenEnds);
+
+                if ((today.isAfter(made.add(const Duration(minutes: 30))) &&
+                    value['state'] == 'por completar') || today.isAfter(made.add(const Duration(days: 90)))) {
+                  keys.add(key);
+                  if(value['client_email'] == Userr().email && reservationsToCheckOut.any((element) => element.id == key)){
+                    reservationsToCheckOut.removeWhere((element) => element.id == key);
+                    setState(() {
+                      checkoutValue().reservations = reservationsToCheckOut.length;
+                      checkoutValue().price -= int.parse(value["price"]);
+                    });
+                  }
+                }
+                else if(today.isAfter(made.add(const Duration(hours: 24))) &&
+                    value['state'] == 'a aguardar pagamento'){
+                  keys.add(key);
+                }
+                else if((today.isAfter(starts.subtract(const Duration(hours: 12)))
+                    && today.isBefore(ends.add(const Duration(minutes: 10)))) &&
+                    value['state'] == 'pago' && value['client_email'] == Userr().email
+                    && reservedToday == null){
+
+                  setState(() {
+                    isToday = true;
+                    if(today.isAfter(starts.subtract(const Duration(minutes: 10)))
+                        && today.isBefore(ends.add(const Duration(minutes: 10)))){
+                      isIn10Mins = true;
+                    }else{
+                      isIn10Mins = false;
+                    }
+                    reservedToday =
+                        Reservation.fromRTDB(Map<String, dynamic>.from(value));
+                  });
+                }
+                else if((today.isAfter(starts.subtract(const Duration(hours: 12)))
+                    && today.isBefore(ends.add(const Duration(minutes: 10)))) &&
+                    value['state'] == 'pago' && value['client_email'] == Userr().email
+                    && reservedToday != null){
+                  final String whenMade = reservedToday!.day + ' ' +
+                      reservedToday!.hour;
+                  final DateTime theOneToday = formatter.parse(whenMade);
+                  if (starts.isBefore(theOneToday)){
+                    setState(() {
+                      isToday = true;
+                      if(today.isAfter(starts.subtract(const Duration(minutes: 10)))
+                          && today.isBefore(ends.add(const Duration(minutes: 10)))){
+                        isIn10Mins = true;
+                      }else{
+                        isIn10Mins = false;
+                      }
+                      reservedToday =
+                          Reservation.fromRTDB(Map<String, dynamic>.from(value));
+                    });
+                  }
+                }else if(reservedToday != null){
+                  final String whenMade = reservedToday!.day + ' ' +
+                      reservedToday!.duration;
+                  final DateTime theOneTodayFinishes = formatter.parse(whenMade);
+                  if(today.isAfter(theOneTodayFinishes.add(const Duration(minutes:  10)))){
+                    setState(() {
+                      isIn10Mins = false;
+                      isToday = false;
+                      reservedToday = null;
+                    });
+                  }else if(today.isAfter(formatter.parse(reservedToday!.day + ' ' + reservedToday!.hour))
+                      && today.isBefore(formatter.parse(reservedToday!.day + ' ' + reservedToday!.duration))){
+                    setState(() {
+                      isIn10Mins = true;
+                      isToday = true;
+                    });
+                  }
+                }
+              }
         });
       }
     });
   }
   _removeFromDB(){
     for(String key in keys){
-      print(key);
       database.child('reservations').child(key).remove();
     }
     keys.clear();
@@ -350,7 +351,6 @@ class _DashState extends State<Dash> {
         }));
       }),
     ];
-    print(appVersion);
 
     if(!kIsWeb) {
       return UpgradeAlert(
