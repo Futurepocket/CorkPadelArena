@@ -403,147 +403,106 @@ class _ReserveState extends State<Reserve> {
                 Container(
                   margin: const EdgeInsets.only(top: 20.0),
                   width: MediaQuery.of(context).size.width*0.90,
-                  child: Card(
-                    elevation: 5,
                     child: Container(
                       padding: const EdgeInsets.only(left: 15, right: 15, top:10),
                       child: Column(
                         children: [
-                            Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-/////////////////////////////BUTTON TO CHOOSE DATE////////////////////////////////////////////////
-                              SizedBox(
-                                width: 110,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    _presentDatePicker();
-                                  },
-                                  style: TextButton.styleFrom(
-                                    foregroundColor: Theme.of(context).primaryColor,
-                                  ),
-                                  child: FittedBox(
-                                    child: Text(AppLocalizations.of(context)!
-                                        .chooseDate,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                            fontSize: 12,
-                                          letterSpacing: 1
-                                        ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-/////////////////////////////TEXT SHOWING CHOSEN DATE////////////////////////////////////////////////
-                                Container(
-                                  width: 180,
-                                  child: Text(
-                                    _selectedDate == null
-                                        ? AppLocalizations.of(context)!.noDateChosen
-                                        : '${DateFormat.yMd('pt').format(_selectedDate!)}',
-                                    style: const TextStyle(
-                                        fontSize: 14, fontWeight: FontWeight.bold),
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
 
-                            ]),
+/////////////////////////////BUTTON TO CHOOSE DATE////////////////////////////////////////////////
+                                Card(
+                                  elevation: 3,
+                                  child: ListTile(
+                                    leading: const Icon(Icons.calendar_month_outlined),
+                                    title: Text(
+                                      _selectedDate == null
+                                          ? AppLocalizations.of(context)!.noDateChosen
+                                          : DateFormat.yMd('pt').format(_selectedDate!),
+                                      style: const TextStyle(
+                                          fontSize: 14, fontWeight: FontWeight.bold),
+                                      textAlign: TextAlign.right,
+                                    ),
+                                    onTap: (){
+                                      _presentDatePicker();
+                                    },
+                                  ),
+                                ),
+////////////////////////////////BUTTON TO CHOOSE TIME ////////////////////////////////////////////////
                           Padding(
                             padding: const EdgeInsets.only(top:8.0),
-                            child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-////////////////////////////////BUTTON TO CHOOSE TIME ////////////////////////////////////////////////
-                                    SizedBox(
-                                      width: 110,
-                                      child: ElevatedButton(
-                                        onPressed: _presentTimePicker,
-                                        style: TextButton.styleFrom(
-                                          foregroundColor: Theme.of(context).primaryColor,
-                                        ),
-                                        child: FittedBox(
-                                          child: Text(AppLocalizations.of(context)!
-                                              .chooseTime,
-                                              style: const TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white,
-                                                  letterSpacing: 1,
-                                                fontSize: 12
-                                              )),
+                            child:
+                            Card(
+                              elevation: 3,
+                              child: ListTile(
+                                leading: const Icon(Icons.watch_later_outlined),
+                                title: Text(
+                                  _timeChosen == null
+                                      ? _warning
+                                      : TimeOfDay(hour: _timeChosen!.hour, minute: _timeChosen!.minute).format(context),
+                                  style: const TextStyle(
+                                      fontSize: 14, fontWeight: FontWeight.bold),
+                                  maxLines: 2,
+                                  textAlign: TextAlign.right,
+                                ),
+                                onTap: _presentTimePicker,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Card(
+                                      elevation: 3,
+                                      child: Container(
+                                        padding:
+                                            const EdgeInsets.only(left: 5.0, right: 5),
+//DROPDOWN LIST TO CHOOSE DURATION ////////////////////////////////////////////////
+                                        child: DropdownButton<String>(
+                                          alignment: Alignment.centerRight,
+                                          isExpanded: true,
+                                          icon: Padding(
+                                            padding: EdgeInsets.only(left: 3.0),
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.timelapse_outlined),
+                                                Text(
+                                                  AppLocalizations.of(context)!.hours,
+                                                  style: const TextStyle(
+                                                      fontSize: 16, fontWeight: FontWeight.bold),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          hint: Text(AppLocalizations.of(context)!.choose, textAlign: TextAlign.end,),
+                                          value: _selectedDuration,
+                                          items: <String>["01:00", "01:30", "02:00"]
+                                              .map((String value) {
+                                            return DropdownMenuItem<String>(
+                                              value: value,
+                                              alignment: Alignment.centerRight,
+                                              child: Text(value),
+                                            );
+                                          }).toList(),
+                                          onChanged: (newValue) {
+                                            setState(
+                                              () {
+                                                if (_timeChosen != null) {
+                                                  setState(() {
+                                                    _warning2 = '';
+                                                    _reservationValid = false;
+                                                    _selectedDuration = newValue;
+                                                    _activateListeners();
+                                                  });
+                                                }
+                                              },
+                                            );
+                                          },
                                         ),
                                       ),
                                     ),
-/////////////////////////////////TEXT SHOWING CHOSEN TIME ////////////////////////////////////////////////
 
-                                 SizedBox(
-                                   width: 180,
-                                     child: Text(
-                                            _timeChosen == null
-                                                ? _warning
-                                                : TimeOfDay(hour: _timeChosen!.hour, minute: _timeChosen!.minute).format(context),
-                                            style: const TextStyle(
-                                                fontSize: 14, fontWeight: FontWeight.bold),
-                                       maxLines: 2,
-                                       textAlign: TextAlign.right,
-                                          ),
-                                 ),
-                              ],
-                              ),
-                          ),
-
-                          Padding(
-                            padding: const EdgeInsets.only(left: 5.0, right: 5),
-                            child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: <Widget>[
-                                  Text(
-                                    '${AppLocalizations.of(context)!.duration}:',
-                                    style: const TextStyle(
-                                        fontSize: 16, fontWeight: FontWeight.bold),
-                                  ),
-                                  Container(
-                                    padding:
-                                        const EdgeInsets.only(left: 5.0, right: 5),
-                                    width: 120,
-//DROPDOWN LIST TO CHOOSE DURATION ////////////////////////////////////////////////
-                                    child: DropdownButton<String>(
-                                      hint: Text(AppLocalizations.of(context)!.choose),
-                                      value: _selectedDuration,
-                                      items: <String>["01:00", "01:30", "02:00"]
-                                          .map((String value) {
-                                        return DropdownMenuItem<String>(
-                                          value: value,
-                                          child: new Text(value),
-                                        );
-                                      }).toList(),
-                                      onChanged: (newValue) {
-                                        setState(
-                                          () {
-                                            if (_timeChosen != null) {
-                                              setState(() {
-                                                _warning2 = '';
-                                                _reservationValid = false;
-                                                _selectedDuration = newValue;
-                                                _activateListeners();
-                                              });
-                                            }
-                                          },
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                  Text(
-                                    AppLocalizations.of(context)!.hours,
-                                    style: const TextStyle(
-                                        fontSize: 16, fontWeight: FontWeight.bold),
-                                  ),
-                                ]),
                           ),
                         ],
                       ),
                     ),
-                  ),
                 ),
                 Text(_warning2),
                 if(Userr().role == "administrador")
@@ -643,7 +602,7 @@ class _ReserveState extends State<Reserve> {
                       return const Text('Something went wrong');
                     }
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return SizedBox();
+                      return const SizedBox();
                     }
                     return (snapshot.data!.docs.isNotEmpty)
                         ? Flexible(

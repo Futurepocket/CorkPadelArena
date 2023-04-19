@@ -23,127 +23,129 @@ class _ContactsState extends State<Contacts> {
         title: const Text("Cork Padel", style: TextStyle(color: Colors.white),),
         backgroundColor: Theme.of(context).primaryColor,
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.only(top: 20),
+      body: SingleChildScrollView(
           child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            width: double.infinity,
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  const Text(
-                    'Cork Padel Arena',
-                    style: TextStyle(
-                      fontFamily: 'Roboto Condensed',
-                      fontSize: 16,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top:8.0),
-                    child: Text(
-                      AppLocalizations.of(context)!.contacts,
-                      style: const TextStyle(
-                        fontFamily: 'Roboto Condensed',
-                        fontSize: 28,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width*0.9,
-                    height: 20,
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                            color: Colors.grey.shade600,
-                            width: 2
-                        ),
-                      ),
-                    ),
-                  ),
-                      Padding(
-                        padding: const EdgeInsets.only(top:15.0, right: 5),
-                        child: Text("Email:", style: TextStyle(
-                            decoration: TextDecoration.underline,
-                            fontSize: 18,
-                            color: Theme.of(context).primaryColor,
-                            fontWeight: FontWeight.bold
-                        ),),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: TextButton(
-                          onPressed: (){
-                          launchUrlString('corkpadel@corkpadel.com');
-                        }, child: const Text('corkpadel@corkpadel.com', style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold
-                        ),),
-                      ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left:5.0, top:5),
-                        child: Text("Telemóvel:", style: TextStyle(
-                            decoration: TextDecoration.underline,
-                            fontSize: 18,
-                            color: Theme.of(context).primaryColor,
-                            fontWeight: FontWeight.bold
-                        ),),
-                      ),
-
-                      TextButton(
-                        child: const Text(
-                          '91 248 23 38',
-                          style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold
+            padding: EdgeInsets.only(right: 10),
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child:
+                  Stack(
+                    alignment: Alignment.topCenter,
+                    children: [
+                      Positioned(
+                        bottom: 850,
+                        child: CircleAvatar(
+                          radius: 400,
+                          backgroundColor: Theme.of(context).colorScheme.primary,
+                          child: const CircleAvatar(
+                            radius: 398,
+                            backgroundColor: Colors.white,
                           ),
                         ),
-                        onPressed: () async{
-                          await launchUrlString('tel://912482338');
-                        },
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(left:5.0, top:5),
-                        child: Text("Morada:", style: TextStyle(
-                            decoration: TextDecoration.underline,
-                            fontSize: 18,
-                            color: Theme.of(context).primaryColor,
-                            fontWeight: FontWeight.bold
+
+                      Positioned(
+                        top: 40,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: CircleAvatar(
+                            radius: 35,
+                            backgroundColor: Theme.of(context).colorScheme.primary,
+                            child: CircleAvatar(
+                              radius: 33,
+                              backgroundColor: Colors.white,
+                              child: Icon(
+                                Icons.contact_mail_outlined,
+                                size: 50,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                            ),
+                          ),
                         ),
+                      ),
+                      Positioned(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top:8.0),
+                          child: Text(
+                            AppLocalizations.of(context)!.contacts,
+                            style: const TextStyle(
+                              fontFamily: 'Roboto Condensed',
+                              fontSize: 28,
+                            ),
+                          ),
                         ),
                       ),
-                      const Padding(
-                        padding: EdgeInsets.only(left:5.0, top:5),
-                        child: Text("Edifício CORK PADEL,\n"
-                            "Parque desportivo da UDS\n"
-                            "2495-143 Santa Catarina da Serra",
-                          style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold
-                        ),),
+                       Positioned(
+                        top: 130,
+                        child: Card(
+                          child: Container(
+                            width: 350,
+                            child: ListTile(
+                              leading: const Icon(Icons.alternate_email),
+                              title: const Text('corkpadel@corkpadel.com', style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold
+                              ),
+                              ),
+                              onTap: () => launchUrlString('corkpadel@corkpadel.com'),
+                            ),
+                          ),
+                        ),
                       ),
-                        TextButton(onPressed: (){
-                          launchUrlString("https://goo.gl/maps/jRBM83orrxARDWDA6");
-                        }, child: const Text("Ver no Mapa"),
+                      Positioned(
+                        top: 200,
+                        child: Card(
+                          child: Container(
+                            width: 350,
+                            child: ListTile(
+                              leading: const Icon(Icons.phone),
+                              title: const Text(
+                                '91 248 23 38',
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold
+                                ),
+                              ),
+                              onTap: () async => await launchUrlString('tel://912482338'),
+                            ),
+                          ),
+                        ),
                       ),
-                      Padding(
-                          padding: const EdgeInsets.only(top: 10, bottom: 10.0),
-                          child: Image.asset(
+                      Positioned(
+                        top: 270,
+                        child: Card(
+                          child: Container(
+                            width: 350,
+                            child: ListTile(
+                              leading: const Icon(Icons.location_on_outlined),
+                              title: const Text("Edifício CORK PADEL,\n"
+                                  "Parque desportivo da UDS\n"
+                                  "2495-143 Santa Catarina da Serra",
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold
+                                ),),
+                              onTap: () => launchUrlString("https://goo.gl/maps/jRBM83orrxARDWDA6"),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        top: 370,
+                        child: Image.asset(
                             'assets/images/arena.jpeg',
                             width: 432.0,
                             height: 243.0,
                           ),
                       ),
                     ],
-            ),
+                  ),
+
           ),
         ),
-      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: Stack(
           children: [

@@ -38,198 +38,189 @@ class _ProfileState extends State<Profile> {
         title: Text(AppLocalizations.of(context)!.myProfile),
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.only(left: 20.0, top: 30),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-                Text(
-                  AppLocalizations.of(context)!.personalDetails,
-                  style: const TextStyle(
-                    fontFamily: 'Roboto Condensed',
-                    fontSize: 28,
-                  ),
-                ),
-              Container(
-                width: MediaQuery.of(context).size.width * 0.9,
-                height: 20,
-                decoration: BoxDecoration(
-                    border: Border(
-                        bottom:
-                            BorderSide(color: Colors.grey.shade600, width: 2))),
-              ),
-              Container(
-                padding: const EdgeInsets.only(top: 20, right: 15, bottom: 15),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Card(
-                  elevation: 5,
-                  child: Container(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Row(
-                          children: [
-                            const Text(
-                              "Nome: ",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 18),
-                            ),
-                            Text(
-                              '${_userr.name} ${_userr.surname}',
-                              style: const TextStyle(fontSize: 16),
-                            )
-                          ],
+          child: Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  child: Stack(
+                    alignment: Alignment.topCenter,
+                    children: [
+                      Positioned(
+                        bottom: 850,
+                        child: CircleAvatar(
+                            radius: 400,
+                            backgroundColor: Theme.of(context).colorScheme.primary,
+                          child: const CircleAvatar(
+                            radius: 398,
+                            backgroundColor: Colors.white,
+                          ),
+                          ),
+                      ),
+                      Positioned(
+                        top: 10,
+                        child: Text(
+                          '${_userr.name} ${_userr.surname}',
+                          style: const TextStyle(
+                            fontFamily: 'Roboto Condensed',
+                            fontSize: 28,
+                          ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: _padd),
-                          child: Row(children: [
-                            const Text(
-                              "Email: ",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 18),
-                            ),
-                            Text(
-                              _userr.email,
-                              style: const TextStyle(fontSize: 16),
-                            )
-                          ]),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: _padd),
-                          child: Row(children: [
-                            const Text(
-                              "Tel: ",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 18),
-                            ),
-                            Text(
-                              _userr.phoneNbr,
-                              style: TextStyle(fontSize: 16),
-                            )
-                          ]),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: _padd),
-                          child: Row(
-                            children: [
-                              const Text(
-                                "Morada: ",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 18),
-                              ),
-                              SizedBox(
-                                width: 220,
-                                child: Text(
-                                  _userr.address,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                  ),
+                      ),
+                      Positioned(
+                        top: 40,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                            child: CircleAvatar(
+                              radius: 35,
+                              backgroundColor: Theme.of(context).colorScheme.primary,
+                              child: CircleAvatar(
+                                radius: 33,
+                                backgroundColor: Colors.white,
+                                child: Icon(
+                                  Icons.person,
+                                  size: 50,
+                                  color: Theme.of(context).colorScheme.primary,
                                 ),
                               ),
-                            ],
+                            ),
+                            ),
+                          ),
+                      Positioned(
+                        top: 100,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Container(
+                            width: MediaQuery.of(context).size.width,
+                            padding: const EdgeInsets.all(20),
+                            child: Wrap(
+                              //crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Container(
+                                  decoration: const BoxDecoration(
+                                      border: Border(bottom: BorderSide(color: Colors.grey))
+                                  ),
+                                  child: ListTile(
+                                      leading: const Icon(Icons.person),
+                                      title: Text(
+                                        '${_userr.name} ${_userr.surname}',
+                                        style: const TextStyle(fontSize: 16),
+                                      )
+                                  ),
+                                ),
+                                Container(
+                                  decoration: const BoxDecoration(
+                                      border: Border(bottom: BorderSide(color: Colors.grey))
+                                  ),
+                                  child: ListTile(
+                                      leading: const Icon(Icons.alternate_email),
+                                      title: Text(
+                                        _userr.email,
+                                        style: const TextStyle(fontSize: 16),
+                                      )
+                                  ),
+                                ),
+                                Container(
+                                  decoration: const BoxDecoration(
+                                      border: Border(bottom: BorderSide(color: Colors.grey))
+                                  ),
+                                  child: ListTile(
+                                      leading: const Icon(Icons.phone),
+                                      title: Text(
+                                        _userr.phoneNbr,
+                                        style: const TextStyle(fontSize: 16),
+                                      )
+                                  ),
+                                ),
+                                Container(
+                                  decoration: const BoxDecoration(
+                                      border: Border(bottom: BorderSide(color: Colors.grey))
+                                  ),
+                                  child: ListTile(
+                                      leading: const Icon(Icons.place_outlined),
+                                      title: Text(
+                                        _userr.address,
+                                        style: const TextStyle(fontSize: 16),
+                                      )
+                                  ),
+                                ),
+                                Container(
+                                  decoration: const BoxDecoration(
+                                      border: Border(bottom: BorderSide(color: Colors.grey))
+                                  ),
+                                  child: ListTile(
+                                      leading: const Icon(Icons.numbers),
+                                      title: Text(
+                                        _userr.postCode,
+                                        style: const TextStyle(fontSize: 16),
+                                      )
+                                  ),
+                                ),
+                                Container(
+                                  decoration: const BoxDecoration(
+                                      border: Border(bottom: BorderSide(color: Colors.grey))
+                                  ),
+                                  child: ListTile(
+                                      leading: const Icon(Icons.location_city_outlined),
+                                      title: Text(
+                                        _userr.city,
+                                        style: const TextStyle(fontSize: 16),
+                                      )
+                                  ),
+                                ),
+                                Container(
+                                  decoration: const BoxDecoration(
+                                      border: Border(bottom: BorderSide(color: Colors.grey))
+                                  ),
+                                  child: ListTile(
+                                      leading: const Icon(Icons.account_balance_outlined),
+                                      title: Text(
+                                        _userr.nif,
+                                        style: const TextStyle(fontSize: 16),
+                                      )
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: _padd),
-                          child: Row(children: [
-                            Text(
-                              "Codigo Postal: ",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 18),
+                      ),
+                      Positioned(
+                        top: 550,
+                        child: Container(
+                          padding: const EdgeInsets.only(top: 15, right: 20),
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.white, backgroundColor: Theme.of(context).primaryColor,
                             ),
-                            Text(
-                              _userr.postCode,
-                              style: TextStyle(fontSize: 16),
-                            )
-                          ]),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: _padd),
-                          child: Row(children: [
-                            Text(
-                              "Localidade: ",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 18),
+                            child: Text(
+                              AppLocalizations.of(context)!.editProfile,
+                              style: const TextStyle(fontSize: 15, letterSpacing: 1.2),
                             ),
-                            Text(
-                              _userr.city,
-                              style: TextStyle(fontSize: 16),
-                            )
-                          ]),
+                            onPressed: () {
+                              Navigator.of(
+                                context,
+                              ).push(MaterialPageRoute(builder: (_) {
+                                return EditDetails(settingState: settingState,);
+                              }));
+                            },
+                          ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: _padd),
-                          child: Row(children: [
-                            Text(
-                              "NIF: ",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 18),
-                            ),
-                            Text(
-                              _userr.nif,
-                              style: TextStyle(fontSize: 16),
-                            )
-                          ]),
-                        ),
-                      ],
-                    ),
+                      )
+                    ],
                   ),
                 ),
-              ),
-              Container(
-                padding: EdgeInsets.only(top: 15, right: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          primary: Theme.of(context).primaryColor,
-                          onPrimary: Colors.white,
-                        ),
-                        child: const Text(
-                          "EDITAR PERFIL",
-                          style: TextStyle(fontSize: 15, letterSpacing: 1.2),
-                        ),
-                        onPressed: () {
-                          Navigator.of(
-                            context,
-                          ).push(MaterialPageRoute(builder: (_) {
-                            return EditDetails(settingState: settingState,);
-                          }));
-                        },
-                      ),
-                    ),
-                    Container(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          primary: Theme.of(context).primaryColor,
-                          onPrimary: Colors.white,
-                        ),
-                        child: const Text(
-                          "MINHAS RESERVAS",
-                          style: TextStyle(
-                            fontSize: 15,
-                          ),
-                        ),
-                        onPressed: () {
-                          Navigator.of(
-                            context,
-                          ).push(MaterialPageRoute(builder: (_) {
-                            return NewMyReservations();
-                          }));
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            ],
+
+              ],
+            ),
           ),
-        ),
+
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: Stack(children: [
@@ -240,7 +231,7 @@ class _ProfileState extends State<Profile> {
               settingState();
             });
           },
-          child: Icon(
+          child: const Icon(
             Icons.shopping_cart,
             color: Colors.white,
           ),
