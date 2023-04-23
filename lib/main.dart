@@ -7,6 +7,7 @@ import 'package:cork_padel_arena/utils/custom_proxy.dart';
 import 'package:cork_padel_arena/utils/firebase_utils.dart';
 import 'package:cork_padel_arena/view/dash.dart';
 import 'package:cork_padel_arena/view/email_verify.dart';
+import 'package:cork_padel_arena/view/profile.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -37,12 +38,13 @@ void main() async {
   await init();
 
   runApp(
-    kIsWeb? const Center(
-      child: SizedBox(
-      width: 400,
-        child:  MyApp(),
-    ),)
-      :  const MyApp());
+    // kIsWeb? const Center(
+    //   child: SizedBox(
+    //   width: 400,
+    //     child:  MyApp(),
+    // ),)
+    //   :
+    const MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -95,6 +97,7 @@ class _MyAppState extends State<MyApp> {
 //        '/': (context) => HomePage(),
         '/login': (context) => Login(),
         '/dash': (context) => Dash(),
+        '/profile': (context) => Profile(),
         '/register': (context) => Register(),
         '/splash':(context) => RegisterSplash(),
         '/emailVerify': (context) => EmailVerify(),

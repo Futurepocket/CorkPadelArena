@@ -213,10 +213,10 @@ class _LoginState extends State<Login> {
               .primaryColor,
         ),
         body: SingleChildScrollView(
-          padding: EdgeInsets.only(top: 40),
+          padding: const EdgeInsets.only(top: 40),
           child: Container(
             alignment: Alignment.topCenter,
-            margin: EdgeInsets.symmetric(horizontal: 20),
+            margin: const EdgeInsets.symmetric(horizontal: 20),
             width: double.infinity,
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -242,7 +242,7 @@ class _LoginState extends State<Login> {
                         ),
                       ),
                       Container(
-                        padding: EdgeInsets.only(top: 10),
+                        padding: const EdgeInsets.only(top: 10),
                         child: Form(
                           key: _formKey,
                           child: Column(
@@ -252,13 +252,14 @@ class _LoginState extends State<Login> {
                                 padding: const EdgeInsets.all(8.0),
                                 child: TextFormField(
                                   controller: _emailController,
-                                  autofillHints: [AutofillHints.email],
+                                  autofillHints: const [AutofillHints.email],
                                   enableSuggestions: true,
                                   enableInteractiveSelection: true,
                                   textInputAction: TextInputAction.next,
                                   keyboardType: TextInputType.emailAddress,
                                   decoration: InputDecoration(
-                                    contentPadding: EdgeInsets.all(10),
+                                    prefixIcon: Icon(Icons.alternate_email),
+                                    contentPadding: const EdgeInsets.all(10),
                                     focusedBorder: OutlineInputBorder(
                                       borderSide: BorderSide(color: Theme
                                           .of(context)
@@ -288,6 +289,7 @@ class _LoginState extends State<Login> {
                                   obscureText: _isObscure,
                                   autofillHints: [AutofillHints.password],
                                   decoration: InputDecoration(
+                                    prefixIcon: Icon(Icons.password),
                                     suffixIcon:
                                     GestureDetector(
                                         onTap: () =>
@@ -297,7 +299,7 @@ class _LoginState extends State<Login> {
                                         child: Icon(_isObscure
                                             ? Icons.visibility
                                             : Icons.visibility_off)),
-                                    contentPadding: EdgeInsets.all(10),
+                                    contentPadding: const EdgeInsets.all(10),
                                     focusedBorder: OutlineInputBorder(
                                       borderSide: BorderSide(color: Theme
                                           .of(context)
@@ -327,14 +329,19 @@ class _LoginState extends State<Login> {
                                   width: 150,
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
-                                      primary: Theme
+                                      foregroundColor: Colors.white, backgroundColor: Theme
                                           .of(context)
                                           .primaryColor,
-                                      onPrimary: Colors.white,
                                     ),
-                                    child: Text(
-                                      AppLocalizations.of(context)!.login,
-                                      style: TextStyle(fontSize: 15),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                      children: [
+                                        Icon(Icons.login),
+                                        Text(
+                                          AppLocalizations.of(context)!.login,
+                                          style: const TextStyle(fontSize: 15),
+                                        ),
+                                      ],
                                     ),
                                     onPressed: () async {
                                       if (_formKey.currentState!.validate()) {
@@ -352,12 +359,12 @@ class _LoginState extends State<Login> {
                                     width: 180,
                                     child: ElevatedButton(
                                         style: ElevatedButton.styleFrom(
-                                          primary: Theme
+                                          foregroundColor: Colors.white, backgroundColor: Theme
                                               .of(context)
                                               .primaryColor,
-                                          onPrimary: Colors.white,
                                         ),
                                         child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceAround,
                                           children: const [
                                             Icon(Icons.fingerprint),
                                             Text(
@@ -437,14 +444,19 @@ class _LoginState extends State<Login> {
                                     left: 10, right: 10),
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                    primary: Theme
+                                    foregroundColor: Colors.white, backgroundColor: Theme
                                         .of(context)
                                         .primaryColor,
-                                    onPrimary: Colors.white,
                                   ),
-                                  child: Text(
-                                    AppLocalizations.of(context)!.register,
-                                    style: TextStyle(fontSize: 15),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Icon(Icons.app_registration),
+                                      Text(
+                                        AppLocalizations.of(context)!.register,
+                                        style: const TextStyle(fontSize: 15),
+                                      ),
+                                    ],
                                   ),
                                   onPressed: () {
                                     Navigator.of(context).pushNamed(

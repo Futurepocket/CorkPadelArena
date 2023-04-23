@@ -238,9 +238,7 @@ class _DashState extends State<Dash> {
             (BuildContext ctx) {
           Navigator.of(
             ctx,
-          ).push(MaterialPageRoute(builder: (_) {
-            return Profile();
-          })).then((value) => settingState());
+          ).pushNamed("/profile").then((value) => settingState());
         },
       ),
       Pages(

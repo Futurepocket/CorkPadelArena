@@ -1,6 +1,7 @@
 import 'package:cork_padel_arena/models/checkoutValue.dart';
 import 'package:cork_padel_arena/models/userr.dart';
 import 'package:cork_padel_arena/utils/common_utils.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dash.dart';
 import 'editDetails.dart';
@@ -51,7 +52,7 @@ class _ProfileState extends State<Profile> {
                     alignment: Alignment.topCenter,
                     children: [
                       Positioned(
-                        bottom: 850,
+                        bottom: kIsWeb? 580 : 850,
                         child: CircleAvatar(
                             radius: 400,
                             backgroundColor: Theme.of(context).colorScheme.primary,
@@ -192,7 +193,7 @@ class _ProfileState extends State<Profile> {
                         ),
                       ),
                       Positioned(
-                        top: 550,
+                        top: 500,
                         child: Container(
                           padding: const EdgeInsets.only(top: 15, right: 20),
                           child: ElevatedButton(
