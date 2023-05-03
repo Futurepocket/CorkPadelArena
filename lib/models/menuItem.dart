@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
 class Menu_Item extends StatelessWidget {
-  final Icon ikon;
+  final IconData ikon;
   final String title;
-  final Color color;
+  Color? color;
+  final double iconSize;
   final Function(BuildContext ctx) fun;
 
-  const Menu_Item(this.ikon, this.title, this.color, this.fun);
+  Menu_Item(
+      {required this.ikon, required this.title, this.color, required this.fun, this.iconSize = 120});
 
   // void selectMenu(BuildContext ctx) {
   //   // Navigator.of(ctx).push(MaterialPageRoute(builder: (_) {
@@ -16,6 +18,7 @@ class Menu_Item extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    color ??= Colors.grey.shade800;
     return InkWell(
       onTap: () => this.fun(context),
       splashColor: Theme.of(context).primaryColor,
@@ -26,13 +29,13 @@ class Menu_Item extends StatelessWidget {
           children: [
             Flexible(
               flex: 5,
-                child: ikon),
+                child: Icon(ikon, size: iconSize, color: color,)),
               Flexible(
                 flex: 1,
                 child: FittedBox(
                   child: Text(
                     title,
-                    style: TextStyle(fontSize: 16, color: Colors.grey.shade800),
+                    style: TextStyle(fontSize: 16, color: color),
                   ),
                 ),
               ),

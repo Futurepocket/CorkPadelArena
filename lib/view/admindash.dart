@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cork_padel_arena/src/constants.dart';
 import 'package:http_auth/http_auth.dart';
 import 'package:cork_padel_arena/view/dash.dart';
 import 'package:cork_padel_arena/view/users.dart';
@@ -47,79 +48,7 @@ class _AdminDashState extends State<AdminDash> {
   Widget build(BuildContext context) {
 
     Color _menuColor = Colors.grey.shade800;
-    List<Pages> menus = [
-      Pages(
-        Icon(
-          Icons.supervised_user_circle_outlined,
-          size: 120,
-          color: _menuColor,
-        ),
-        AppLocalizations.of(context)!.users,
-        Theme.of(context).primaryColor,
-        (BuildContext ctx) {
-          Navigator.of(
-            ctx,
-          ).push(MaterialPageRoute(builder: (_) {
-            return const Users();
-          }));
-        },
-      ),
-      Pages(
-        Icon(
-          Icons.calendar_month_outlined,
-          size: 120,
-          color: _menuColor,
-        ),
-        AppLocalizations.of(context)!.reservations,
-        Theme.of(context).primaryColor,
-        (BuildContext ctx) {
-          Navigator.of(
-            ctx,
-          ).push(MaterialPageRoute(builder: (_) {
-            return NewAdminReservations();
-          }));
-        },
-      ),
-      Pages(
-        Icon(Icons.payments_outlined, size: 120, color: _menuColor),
-        AppLocalizations.of(context)!.payments,
-        Theme.of(context).primaryColor,
-        (BuildContext ctx) {
-          Navigator.of(
-            ctx,
-          ).push(MaterialPageRoute(builder: (_) {
-            return AdminPayments();
-          }));
-        },
-      ),
-      Pages(
-        Icon(Icons.block, size: 120, color: _menuColor),
-        AppLocalizations.of(context)!.adminReservation,
-        Theme.of(context).primaryColor,
-            (BuildContext ctx) {
-          Navigator.of(
-            ctx,
-          ).push(MaterialPageRoute(builder: (_) {
-            return PermanentReservation();
-          }));
-        },
-      ),
-      Pages(
-          Icon(Icons.sensor_door_outlined, size: 120, color: _menuColor),
-          AppLocalizations.of(context)!.openDoor,
-          Theme.of(context).primaryColor, (BuildContext ctx) async {
-        if (kIsWeb) {
-          launchUrlString(openDoorFullUrl);
-        } else {
-          var client = DigestAuthClient("admin", "cork2021");
-          await client.get(Uri.parse(openDoorUrl)).then((response) {
-            if(response.statusCode == 200){
-              showWebView(context);
-            }
-          });
-        }
-      }),
-    ];
+
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -160,9 +89,9 @@ class _AdminDashState extends State<AdminDash> {
                               mainAxisSpacing: 0,
                               mainAxisExtent: 180,
                             ),
-                            children: menus
-                                .map((menus) => Menu_Item(menus.ikon,
-                                    menus.title, menus.color, menus.fun))
+                            children: getAdminDashButtons(context)
+                                .map((menus) => Menu_Item(ikon: menus.ikon,
+                                    title: menus.title, fun: menus.fun))
                                 .toList(),
                           ),
                         ),

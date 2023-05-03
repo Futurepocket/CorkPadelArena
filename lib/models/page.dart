@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Pages {
-  final Icon ikon;
+  final IconData ikon;
   final String title;
   final Color color;
 

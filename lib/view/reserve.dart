@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cork_padel_arena/utils/color_loader.dart';
+import 'package:cork_padel_arena/models/splitScaffoldBody.dart';
 import 'package:cork_padel_arena/view/shoppingCart.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -363,336 +363,338 @@ class _ReserveState extends State<Reserve> {
         title: const Text("Cork Padel Arena"),
         backgroundColor: Theme.of(context).primaryColor,
       ),
-      body: SingleChildScrollView(
-          child: Container(
-            alignment: Alignment.topCenter,
-            margin: const EdgeInsets.only(top: 20, left: 20),
-            height: MediaQuery.of(context).size.height,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              //mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                  Text(
-                    AppLocalizations.of(context)!.makeReservation,
-                    style: const TextStyle(
-                      fontSize: 28,
-                    ),
-                  ),
-                Container(
-                  width: MediaQuery.of(context).size.width*0.9,
-                  height: 20,
-                  decoration: BoxDecoration(
-                      border: Border(
-                          bottom: BorderSide(
-                              color: Colors.grey.shade600,
-                              width: 2
-                          ),
-                      ),
-                  ),
-                ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 20.0, right:10),
-                    child: Text(
-                      AppLocalizations.of(context)!.attention30Mins,
+      body: SplitScaffoldBody(
+        rightWidget: SingleChildScrollView(
+            child: Container(
+              alignment: Alignment.topCenter,
+              margin: const EdgeInsets.only(top: 20, left: 20),
+              height: MediaQuery.of(context).size.height,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                //mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                    Text(
+                      AppLocalizations.of(context)!.makeReservation,
                       style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.red,
+                        fontSize: 28,
                       ),
                     ),
+                  Container(
+                    width: MediaQuery.of(context).size.width*0.9,
+                    height: 20,
+                    decoration: BoxDecoration(
+                        border: Border(
+                            bottom: BorderSide(
+                                color: Colors.grey.shade600,
+                                width: 2
+                            ),
+                        ),
+                    ),
                   ),
-                Container(
-                  margin: const EdgeInsets.only(top: 20.0),
-                  width: MediaQuery.of(context).size.width*0.90,
-                    child: Container(
-                      padding: const EdgeInsets.only(left: 15, right: 15, top:10),
-                      child: Column(
-                        children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20.0, right:10),
+                      child: Text(
+                        AppLocalizations.of(context)!.attention30Mins,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 20.0),
+                    width: MediaQuery.of(context).size.width*0.90,
+                      child: Container(
+                        padding: const EdgeInsets.only(left: 15, right: 15, top:10),
+                        child: Column(
+                          children: [
 
 /////////////////////////////BUTTON TO CHOOSE DATE////////////////////////////////////////////////
-                                Card(
-                                  elevation: 3,
-                                  child: ListTile(
-                                    leading: const Icon(Icons.calendar_month_outlined),
-                                    title: Text(
-                                      _selectedDate == null
-                                          ? AppLocalizations.of(context)!.noDateChosen
-                                          : DateFormat.yMd('pt').format(_selectedDate!),
-                                      style: const TextStyle(
-                                          fontSize: 14, fontWeight: FontWeight.bold),
-                                      textAlign: TextAlign.right,
+                                  Card(
+                                    elevation: 3,
+                                    child: ListTile(
+                                      leading: const Icon(Icons.calendar_month_outlined),
+                                      title: Text(
+                                        _selectedDate == null
+                                            ? AppLocalizations.of(context)!.noDateChosen
+                                            : DateFormat.yMd('pt').format(_selectedDate!),
+                                        style: const TextStyle(
+                                            fontSize: 14, fontWeight: FontWeight.bold),
+                                        textAlign: TextAlign.right,
+                                      ),
+                                      onTap: (){
+                                        _presentDatePicker();
+                                      },
                                     ),
-                                    onTap: (){
-                                      _presentDatePicker();
-                                    },
                                   ),
-                                ),
 ////////////////////////////////BUTTON TO CHOOSE TIME ////////////////////////////////////////////////
-                          Padding(
-                            padding: const EdgeInsets.only(top:8.0),
-                            child:
-                            Card(
-                              elevation: 3,
-                              child: ListTile(
-                                leading: const Icon(Icons.watch_later_outlined),
-                                title: Text(
-                                  _timeChosen == null
-                                      ? _warning
-                                      : TimeOfDay(hour: _timeChosen!.hour, minute: _timeChosen!.minute).format(context),
-                                  style: const TextStyle(
-                                      fontSize: 14, fontWeight: FontWeight.bold),
-                                  maxLines: 2,
-                                  textAlign: TextAlign.right,
+                            Padding(
+                              padding: const EdgeInsets.only(top:8.0),
+                              child:
+                              Card(
+                                elevation: 3,
+                                child: ListTile(
+                                  leading: const Icon(Icons.watch_later_outlined),
+                                  title: Text(
+                                    _timeChosen == null
+                                        ? _warning
+                                        : TimeOfDay(hour: _timeChosen!.hour, minute: _timeChosen!.minute).format(context),
+                                    style: const TextStyle(
+                                        fontSize: 14, fontWeight: FontWeight.bold),
+                                    maxLines: 2,
+                                    textAlign: TextAlign.right,
+                                  ),
+                                  onTap: _presentTimePicker,
                                 ),
-                                onTap: _presentTimePicker,
                               ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 8.0),
-                            child: Card(
-                                      elevation: 3,
-                                      child: Container(
-                                        padding:
-                                            const EdgeInsets.only(left: 5.0, right: 5),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Card(
+                                        elevation: 3,
+                                        child: Container(
+                                          padding:
+                                              const EdgeInsets.only(left: 5.0, right: 5),
 //DROPDOWN LIST TO CHOOSE DURATION ////////////////////////////////////////////////
-                                        child: DropdownButton<String>(
-                                          alignment: Alignment.centerRight,
-                                          isExpanded: true,
-                                          icon: Padding(
-                                            padding: EdgeInsets.only(left: 3.0),
-                                            child: Row(
-                                              children: [
-                                                Icon(Icons.timelapse_outlined),
-                                                Text(
-                                                  AppLocalizations.of(context)!.hours,
-                                                  style: const TextStyle(
-                                                      fontSize: 16, fontWeight: FontWeight.bold),
-                                                ),
-                                              ],
+                                          child: DropdownButton<String>(
+                                            alignment: Alignment.centerRight,
+                                            isExpanded: true,
+                                            icon: Padding(
+                                              padding: EdgeInsets.only(left: 3.0),
+                                              child: Row(
+                                                children: [
+                                                  Icon(Icons.timelapse_outlined),
+                                                  Text(
+                                                    AppLocalizations.of(context)!.hours,
+                                                    style: const TextStyle(
+                                                        fontSize: 16, fontWeight: FontWeight.bold),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
+                                            hint: Text(AppLocalizations.of(context)!.choose, textAlign: TextAlign.end,),
+                                            value: _selectedDuration,
+                                            items: <String>["01:00", "01:30", "02:00"]
+                                                .map((String value) {
+                                              return DropdownMenuItem<String>(
+                                                value: value,
+                                                alignment: Alignment.centerRight,
+                                                child: Text(value),
+                                              );
+                                            }).toList(),
+                                            onChanged: (newValue) {
+                                              setState(
+                                                () {
+                                                  if (_timeChosen != null) {
+                                                    setState(() {
+                                                      _warning2 = '';
+                                                      _reservationValid = false;
+                                                      _selectedDuration = newValue;
+                                                      _activateListeners();
+                                                    });
+                                                  }
+                                                },
+                                              );
+                                            },
                                           ),
-                                          hint: Text(AppLocalizations.of(context)!.choose, textAlign: TextAlign.end,),
-                                          value: _selectedDuration,
-                                          items: <String>["01:00", "01:30", "02:00"]
-                                              .map((String value) {
-                                            return DropdownMenuItem<String>(
-                                              value: value,
-                                              alignment: Alignment.centerRight,
-                                              child: Text(value),
-                                            );
-                                          }).toList(),
-                                          onChanged: (newValue) {
-                                            setState(
-                                              () {
-                                                if (_timeChosen != null) {
-                                                  setState(() {
-                                                    _warning2 = '';
-                                                    _reservationValid = false;
-                                                    _selectedDuration = newValue;
-                                                    _activateListeners();
-                                                  });
-                                                }
-                                              },
-                                            );
-                                          },
                                         ),
                                       ),
-                                    ),
 
-                          ),
-                        ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                ),
-                Text(_warning2),
-                if(Userr().role == "administrador")
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Text(AppLocalizations.of(context)!.reserveAsAnother,
-                      style: const TextStyle(
-                      fontSize: 16,
-                    ),),
-                    Switch(
-                        value: _asAnother,
-                        onChanged: (_) => setState(() {
-                          _asAnother = !_asAnother;
-                        }))
-                  ],
-                ),
-                _asAnother?
-                Align(
-                  alignment: Alignment.center,
-                  child: DropdownButton<String>(
-                      hint: const Text('Escolha o Cliente'),
-                      value: chosenName,
-                      items: clientsName.map((String name) {
-                        return DropdownMenuItem<String>(
-                          value: name,
-                          child: Text(name, style: const TextStyle(fontSize: 14),),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        int index = clientsName.indexOf(value!);
-                        setState(() {
-                          chosenName = clientsName[index];
-                          chosenClient = clientsEmail[index];
-                        });
-                      },
-                    ),
-                )
-                    : Container(),
-                Align(
-                  alignment: Alignment.center,
-                  child: Container(
-                    padding: const EdgeInsets.only(left: 5.0, right: 5),
-                    width: 150,
-////////////////////// BUTTON TO RESERVE ////////////////////////////////////////////////
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white, backgroundColor: Theme.of(context).primaryColor,
-                      ),
-                      child: Text(
-                        AppLocalizations.of(context)!.reserve,
+                  ),
+                  Text(_warning2),
+                  if(Userr().role == "administrador")
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Text(AppLocalizations.of(context)!.reserveAsAnother,
                         style: const TextStyle(
-                            fontSize: 15,
-                            letterSpacing: 1),
+                        fontSize: 16,
+                      ),),
+                      Switch(
+                          value: _asAnother,
+                          onChanged: (_) => setState(() {
+                            _asAnother = !_asAnother;
+                          }))
+                    ],
+                  ),
+                  _asAnother?
+                  Align(
+                    alignment: Alignment.center,
+                    child: DropdownButton<String>(
+                        hint: const Text('Escolha o Cliente'),
+                        value: chosenName,
+                        items: clientsName.map((String name) {
+                          return DropdownMenuItem<String>(
+                            value: name,
+                            child: Text(name, style: const TextStyle(fontSize: 14),),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          int index = clientsName.indexOf(value!);
+                          setState(() {
+                            chosenName = clientsName[index];
+                            chosenClient = clientsEmail[index];
+                          });
+                        },
                       ),
-                      onPressed: () async{
-                        _activateListeners().then((_){
-                          if (_reservationValid &&
-                              _isNotNow &&
-                              _selectedDuration != null) {
-                            _reserve();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                newSnackBar(context,
-                                    Text(AppLocalizations.of(context)!.reservationAdded))
-                            );
-                            return;
-                          } else if (!_reservationValid || !_isNotNow) {
-                            _timeChosen = null;
-                            _warning = AppLocalizations.of(context)!.invalidSlot;
-                            setState(() {
-                              _warning2 = AppLocalizations.of(context)!.invalidSlot;
-                            });
-                            return;
-                          } else if (_selectedDuration == null) {
-                            setState(() {
-                              _warning2 = AppLocalizations.of(context)!.chooseDuration;
-                            });
-                            return;
-                          }
-                        });
+                  )
+                      : Container(),
+                  Align(
+                    alignment: Alignment.center,
+                    child: Container(
+                      padding: const EdgeInsets.only(left: 5.0, right: 5),
+                      width: 150,
+////////////////////// BUTTON TO RESERVE ////////////////////////////////////////////////
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white, backgroundColor: Theme.of(context).primaryColor,
+                        ),
+                        child: Text(
+                          AppLocalizations.of(context)!.reserve,
+                          style: const TextStyle(
+                              fontSize: 15,
+                              letterSpacing: 1),
+                        ),
+                        onPressed: () async{
+                          _activateListeners().then((_){
+                            if (_reservationValid &&
+                                _isNotNow &&
+                                _selectedDuration != null) {
+                              _reserve();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  newSnackBar(context,
+                                      Text(AppLocalizations.of(context)!.reservationAdded))
+                              );
+                              return;
+                            } else if (!_reservationValid || !_isNotNow) {
+                              _timeChosen = null;
+                              _warning = AppLocalizations.of(context)!.invalidSlot;
+                              setState(() {
+                                _warning2 = AppLocalizations.of(context)!.invalidSlot;
+                              });
+                              return;
+                            } else if (_selectedDuration == null) {
+                              setState(() {
+                                _warning2 = AppLocalizations.of(context)!.chooseDuration;
+                              });
+                              return;
+                            }
+                          });
 
-                      },
+                        },
+                      ),
                     ),
                   ),
-                ),
 ////////////////// LIST SHOWING RESERVES FOR THIS DAY ////////////////////////////////////////////////
-                if(_selectedDate != null && adminReservations.any((element) => element["weekday"] == _selectedDate!.weekday))
-                  const Padding(
-                    padding: EdgeInsets.only(bottom: 5.0),
-                    child: Text("Bloqueio de Campo:"),
-                  ),
-                StreamBuilder<QuerySnapshot>(
-                  stream: dbAdminReservations,
-                  builder: (BuildContext context,
-                      AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (snapshot.hasError) {
-                      return const Text('Something went wrong');
-                    }
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const SizedBox();
-                    }
-                    return (snapshot.data!.docs.isNotEmpty)
-                        ? Flexible(
-                      flex: 1,
-                      child: ListView(
-                        children: snapshot.data!.docs
-                            .map((DocumentSnapshot document) {
-                          Map<String, dynamic> data =
-                          document.data()! as Map<String, dynamic>;
-                          if(snapshot.data!.docs.isNotEmpty && !adminReservations.contains(data)){
-                            adminReservations.add(data);
-                          }
-                          if(_selectedDate != null && _selectedDate!.weekday == data["weekday"]){
-                            return Container(
-                              decoration: const BoxDecoration(color: Color.fromRGBO(255, 0, 0, 0.15),),
-                              child: ListTile(
-                                leading: const Icon(Icons.lock_clock),
-                                title: Row(
-                                  children: [
-                                    Text('Das ${data['hour']}'),
-                                    Text(' às ${data['duration']}'),
-                                  ],
-                                ),
-                              ),
-                            );
-                          }else{
-                            return const SizedBox();
-                          }
-                        }).toList(),
-                      ),
-                    )
-                        : const SizedBox();
-                  },
-                ),
-                if(_selectedDate !=null )Padding(
-                  padding: const EdgeInsets.only(top:8.0),
-                  child: Text('${AppLocalizations.of(context)!.reservedSlots}:'),
-                ),
-                _selectedDate != null
-                    ? StreamBuilder(
-                      stream:
-                      ReservationStreamPublisher().getReservationStream(),
-                      builder: (context, snapshot) {
-                        final tilesList = <ListTile>[];
-                        if (snapshot.hasData) {
-                          List reservations =
-                          snapshot.data as List<Reservation>;
-                          int i = 0;
-                          do {
-                            if (reservations.isNotEmpty) {
-                              if (reservations[i].day !=
-                                  (DateFormat('dd/MM/yyyy')
-                                      .format(_selectedDate!))) {
-                                reservations.removeAt(i);
-                                i = i;
-                              } else
-                                i++;
+                  if(_selectedDate != null && adminReservations.any((element) => element["weekday"] == _selectedDate!.weekday))
+                    const Padding(
+                      padding: EdgeInsets.only(bottom: 5.0),
+                      child: Text("Bloqueio de Campo:"),
+                    ),
+                  StreamBuilder<QuerySnapshot>(
+                    stream: dbAdminReservations,
+                    builder: (BuildContext context,
+                        AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.hasError) {
+                        return const Text('Something went wrong');
+                      }
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const SizedBox();
+                      }
+                      return (snapshot.data!.docs.isNotEmpty)
+                          ? Flexible(
+                        flex: 1,
+                        child: ListView(
+                          children: snapshot.data!.docs
+                              .map((DocumentSnapshot document) {
+                            Map<String, dynamic> data =
+                            document.data()! as Map<String, dynamic>;
+                            if(snapshot.data!.docs.isNotEmpty && !adminReservations.contains(data)){
+                              adminReservations.add(data);
                             }
-                          } while (i < reservations.length);
-                          try {
-                            tilesList
-                                .addAll(reservations.map((nextReservation) {
-                              return ListTile(
-                                leading: const Icon(Icons.timelapse_outlined),
-                                title: Text(
-                                    "${AppLocalizations.of(context)!.from} ${nextReservation.hour} ${AppLocalizations.of(context)!.to} ${nextReservation.duration}"),
+                            if(_selectedDate != null && _selectedDate!.weekday == data["weekday"]){
+                              return Container(
+                                decoration: const BoxDecoration(color: Color.fromRGBO(255, 0, 0, 0.15),),
+                                child: ListTile(
+                                  leading: const Icon(Icons.lock_clock),
+                                  title: Row(
+                                    children: [
+                                      Text('Das ${data['hour']}'),
+                                      Text(' às ${data['duration']}'),
+                                    ],
+                                  ),
+                                ),
                               );
-                            }));
-                          } catch (e) {
-                            return Text(
-                                AppLocalizations.of(context)!.noReservationsOnDay);
+                            }else{
+                              return const SizedBox();
+                            }
+                          }).toList(),
+                        ),
+                      )
+                          : const SizedBox();
+                    },
+                  ),
+                  if(_selectedDate !=null )Padding(
+                    padding: const EdgeInsets.only(top:8.0),
+                    child: Text('${AppLocalizations.of(context)!.reservedSlots}:'),
+                  ),
+                  _selectedDate != null
+                      ? StreamBuilder(
+                        stream:
+                        ReservationStreamPublisher().getReservationStream(),
+                        builder: (context, snapshot) {
+                          final tilesList = <ListTile>[];
+                          if (snapshot.hasData) {
+                            List reservations =
+                            snapshot.data as List<Reservation>;
+                            int i = 0;
+                            do {
+                              if (reservations.isNotEmpty) {
+                                if (reservations[i].day !=
+                                    (DateFormat('dd/MM/yyyy')
+                                        .format(_selectedDate!))) {
+                                  reservations.removeAt(i);
+                                  i = i;
+                                } else
+                                  i++;
+                              }
+                            } while (i < reservations.length);
+                            try {
+                              tilesList
+                                  .addAll(reservations.map((nextReservation) {
+                                return ListTile(
+                                  leading: const Icon(Icons.timelapse_outlined),
+                                  title: Text(
+                                      "${AppLocalizations.of(context)!.from} ${nextReservation.hour} ${AppLocalizations.of(context)!.to} ${nextReservation.duration}"),
+                                );
+                              }));
+                            } catch (e) {
+                              return Text(
+                                  AppLocalizations.of(context)!.noReservationsOnDay);
+                            }
                           }
-                        }
-                        // }
-                        if (tilesList.isNotEmpty) {
-                          return Flexible(
-                            flex: 7,
-                            child: ListView(
-                              children: tilesList,
-                            )
-                          );
-                        }
-                        return Text(AppLocalizations.of(context)!.noReservationsOnDay);
-                      })
-                    : const SizedBox(),
-              ],),
-            ),
+                          // }
+                          if (tilesList.isNotEmpty) {
+                            return Flexible(
+                              flex: 7,
+                              child: ListView(
+                                children: tilesList,
+                              )
+                            );
+                          }
+                          return Text(AppLocalizations.of(context)!.noReservationsOnDay);
+                        })
+                      : const SizedBox(),
+                ],),
+              ),
 
 
-        ),
+          ),
+      ),
     );
   }
 }

@@ -3,6 +3,7 @@
 import 'dart:collection';
 import 'package:collection/collection.dart';
 import 'package:cork_padel_arena/models/reservation.dart';
+import 'package:cork_padel_arena/models/splitScaffoldBody.dart';
 import 'package:cork_padel_arena/utils/calendar_utils.dart';
 import 'package:cork_padel_arena/view/dash.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -116,7 +117,8 @@ class _NewMyReservationsState extends State<NewMyReservations> {
       appBar: AppBar(
         title: const Text('Minhas Reservas'),
       ),
-      body: kReservations == null? Center(child: ColorLoader(),) :Column(
+      body: SplitScaffoldBody(rightWidget:
+      kReservations == null? Center(child: ColorLoader(),) :Column(
         children: [
           TableCalendar<Reservation>(
             firstDay: kFirstDay,
@@ -196,7 +198,7 @@ class _NewMyReservationsState extends State<NewMyReservations> {
             ),
           ),
         ],
-      ),
+      ),)
     );
   }
   void _deleting(BuildContext context, String id) {

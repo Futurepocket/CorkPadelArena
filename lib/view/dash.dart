@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cork_padel_arena/models/checkoutValue.dart';
 import 'package:cork_padel_arena/models/reservation.dart';
+import 'package:cork_padel_arena/src/constants.dart';
 import 'package:cork_padel_arena/src/widgets.dart';
 import 'package:cork_padel_arena/utils/common_utils.dart';
 import 'package:cork_padel_arena/view/login/login.dart';
@@ -10,20 +11,11 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http_auth/http_auth.dart';
 import 'package:intl/intl.dart';
-import 'package:cork_padel_arena/main.dart';
 import 'package:cork_padel_arena/models/menuItem.dart';
-import 'package:cork_padel_arena/models/page.dart';
-import 'package:cork_padel_arena/view/profile.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:upgrader/upgrader.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../models/userr.dart';
-import './reserve.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'admindash.dart';
-import 'contacts.dart';
-import 'new_my_reservations.dart';
 
 List<Reservation> reservationList = [];
 List<Reservation> reservationsToCheckOut = [];
@@ -40,7 +32,8 @@ class Dash extends StatefulWidget {
 
 class _DashState extends State<Dash> {
   late bool isToday;
-  late bool isIn10Mins;
+  late bool canOpen;
+  int earlyOpenDuration = 15;
   DatabaseReference database = FirebaseDatabase.instance.ref();
   var myName;
   Future<void>? _launched;
@@ -60,7 +53,7 @@ class _DashState extends State<Dash> {
   didChangeDependencies(){
     super.didChangeDependencies();
     timer.cancel();
-    timer = Timer.periodic(Duration(seconds: 5), (timer) {
+    timer = Timer.periodic(const Duration(seconds: 5), (timer) {
       deleteOldReservations();
       _removeFromDB();
     });
@@ -114,31 +107,30 @@ class _DashState extends State<Dash> {
 
                   setState(() {
                     isToday = true;
-                    if(today.isAfter(starts.subtract(const Duration(minutes: 10)))
-                        && today.isBefore(ends.add(const Duration(minutes: 10)))){
-                      isIn10Mins = true;
+                    if(today.isAfter(starts.subtract(Duration(minutes: earlyOpenDuration)))
+                        && today.isBefore(ends.add(Duration(minutes: earlyOpenDuration)))){
+                      canOpen = true;
                     }else{
-                      isIn10Mins = false;
+                      canOpen = false;
                     }
                     reservedToday =
                         Reservation.fromRTDB(Map<String, dynamic>.from(value));
                   });
                 }
                 else if((today.isAfter(starts.subtract(const Duration(hours: 12)))
-                    && today.isBefore(ends.add(const Duration(minutes: 10)))) &&
+                    && today.isBefore(ends.add(Duration(minutes: earlyOpenDuration)))) &&
                     value['state'] == 'pago' && value['client_email'] == Userr().email
                     && reservedToday != null){
-                  final String whenMade = reservedToday!.day + ' ' +
-                      reservedToday!.hour;
+                  final String whenMade = '${reservedToday!.day} ${reservedToday!.hour}';
                   final DateTime theOneToday = formatter.parse(whenMade);
                   if (starts.isBefore(theOneToday)){
                     setState(() {
                       isToday = true;
-                      if(today.isAfter(starts.subtract(const Duration(minutes: 10)))
-                          && today.isBefore(ends.add(const Duration(minutes: 10)))){
-                        isIn10Mins = true;
+                      if(today.isAfter(starts.subtract(Duration(minutes: earlyOpenDuration)))
+                          && today.isBefore(ends.add(Duration(minutes: earlyOpenDuration)))){
+                        canOpen = true;
                       }else{
-                        isIn10Mins = false;
+                        canOpen = false;
                       }
                       reservedToday =
                           Reservation.fromRTDB(Map<String, dynamic>.from(value));
@@ -148,16 +140,16 @@ class _DashState extends State<Dash> {
                   final String whenMade = reservedToday!.day + ' ' +
                       reservedToday!.duration;
                   final DateTime theOneTodayFinishes = formatter.parse(whenMade);
-                  if(today.isAfter(theOneTodayFinishes.add(const Duration(minutes:  10)))){
+                  if(today.isAfter(theOneTodayFinishes.add(Duration(minutes:  earlyOpenDuration)))){
                     setState(() {
-                      isIn10Mins = false;
+                      canOpen = false;
                       isToday = false;
                       reservedToday = null;
                     });
-                  }else if(today.isAfter(formatter.parse(reservedToday!.day + ' ' + reservedToday!.hour))
-                      && today.isBefore(formatter.parse(reservedToday!.day + ' ' + reservedToday!.duration))){
+                  }else if(today.isAfter(formatter.parse('${reservedToday!.day} ${reservedToday!.hour}'))
+                      && today.isBefore(formatter.parse('${reservedToday!.day} ${reservedToday!.duration}'))){
                     setState(() {
-                      isIn10Mins = true;
+                      canOpen = true;
                       isToday = true;
                     });
                   }
@@ -192,7 +184,7 @@ class _DashState extends State<Dash> {
   @override
   void initState() {
     isToday = false;
-    isIn10Mins = false;
+    canOpen = false;
     final instance = FirebaseFirestore.instance
         .collection('constants');
 
@@ -201,6 +193,12 @@ class _DashState extends State<Dash> {
         appVersion = value.data()!["version"];
       });
     });
+    instance.doc("userOpenBefore").get().then((value) {
+      setState(() {
+        earlyOpenDuration = value.data()!["duration"];
+      });
+    });
+
     instance.doc('openDoorUrlID').get().then((value) {
       openDoorUrl = value.data()!['url'];
     });
@@ -230,125 +228,7 @@ class _DashState extends State<Dash> {
   @override
   Widget build(BuildContext context) {
     Color _menuColor = Colors.grey.shade800;
-    var menus = [
-      Pages(
-        Icon(Icons.person, size: 120, color: _menuColor,),
-        AppLocalizations.of(context)!.profile,
-        Theme.of(context).primaryColor,
-            (BuildContext ctx) {
-          Navigator.of(
-            ctx,
-          ).pushNamed("/profile").then((value) => settingState());
-        },
-      ),
-      Pages(
-        Icon(Icons.edit_calendar_outlined, size: 120, color: _menuColor),
-        AppLocalizations.of(context)!.makeReservation,
-        Theme.of(context).primaryColor,
-            (BuildContext ctx) {
-          Navigator.of(
-            ctx,
-          ).push(MaterialPageRoute(builder: (_) {
-            return Reserve();
-          })).then((value) => settingState());
-        },
-      ),
-      Pages(
-        Icon(Icons.calendar_month_outlined, size: 120, color: _menuColor),
-        AppLocalizations.of(context)!.myReservations,
-        Theme.of(context).primaryColor,
-            (BuildContext ctx) {
-          Navigator.of(
-            ctx,
-          ).push(MaterialPageRoute(builder: (_) {
-            return NewMyReservations();
-          })).then((value) => settingState());
-        },
-      ),
-      Pages(
-          Icon(
-            Icons.contact_phone,
-            color: _menuColor,
-            size: 120,
-          ),
-          AppLocalizations.of(context)!.contacts,
-          Theme.of(context).primaryColor,
-              (BuildContext ctx) {
-        Navigator.of(
-          ctx,
-        ).push(MaterialPageRoute(builder: (_) {
-          return Contacts();
-        })).then((value) => settingState());
-      }),
-      Pages(
-        Icon(
-          Icons.shopping_bag_rounded,
-          color: _menuColor,
-          size: 120,
-        ),
-        AppLocalizations.of(context)!.onlineShop,
-        Theme.of(context).primaryColor,
-            (BuildContext ctx) async {
-          if (await canLaunchUrl(Uri.parse('https://www.corkpadel.pt/en/store'))) {
-            await launchUrl(
-              Uri.parse('https://www.corkpadel.pt/en/store'),
-              mode: LaunchMode.platformDefault,
-              //headers: <String, String>{'my_header_key': 'my_header_value'},
-            );
-          } else {
-            throw 'Could not launch the store';
-          }
-        },
-      ),
-      // Pages(
-      //   Icon(
-      //     Icons.device_unknown,
-      //     color: _menuColor,
-      //     size: 120,
-      //   ),
-      //   AppLocalizations.of(context)!.about,
-      //   Theme.of(context).primaryColor,
-      //         (BuildContext ctx) {
-      //       Navigator.of(
-      //         ctx,
-      //       ).push(MaterialPageRoute(builder: (_) {
-      //         return AboutUs();
-      //       })).then((value) => settingState());
-      //     }
-      // ),
-      if(Userr().role == "administrador")
-        Pages(
-            Icon(
-              Icons.admin_panel_settings_outlined,
-              color: _menuColor,
-              size: 120,
-            ),
-            AppLocalizations.of(context)!.admin,
-            Theme.of(context).primaryColor,
-                (BuildContext ctx) {
-          Navigator.of(
-            ctx,
-          ).push(MaterialPageRoute(builder: (ctx) {
-            return AdminDash();
-          }));
-        }
-        ),
-      Pages(
-          Icon(
-            Icons.exit_to_app_rounded,
-            color: _menuColor,
-            size: 120,
-          ),
-          AppLocalizations.of(context)!.logout,
-          Theme.of(context).primaryColor, (BuildContext ctx) {
-        FirebaseAuth.instance.signOut();
-        Navigator.of(
-          ctx,
-        ).pushReplacement(MaterialPageRoute(builder: (ctx) {
-          return MyApp();
-        }));
-      }),
-    ];
+
 
     if(!kIsWeb) {
       return UpgradeAlert(
@@ -388,7 +268,7 @@ class _DashState extends State<Dash> {
         child: Scaffold(
           resizeToAvoidBottomInset: true,
           appBar: AppBar(
-            title: Align(
+            title: const Align(
                 alignment: Alignment.center,
                 child: Text("Cork Padel Arena")),
             backgroundColor: Theme
@@ -415,7 +295,7 @@ class _DashState extends State<Dash> {
                         Padding(
                           padding: const EdgeInsets.only(left: 8.0),
                           child: Text(
-                            '${AppLocalizations.of(context)!
+                            '${localizations
                                 .resToday} ${reservedToday!.hour}',
                             style: const TextStyle(
                               fontSize: 16,
@@ -426,7 +306,7 @@ class _DashState extends State<Dash> {
                         Padding(
                           padding: const EdgeInsets.only(right: 10.0),
                           child: StyledButton(
-                              onPressed: isIn10Mins ?
+                              onPressed: canOpen ?
                                   () async {
                                 if (kIsWeb) {
                                   launchUrl(Uri.parse(openDoorFullUrl));
@@ -442,16 +322,16 @@ class _DashState extends State<Dash> {
                                 }
                               }
                                   : () {},
-                              background: isIn10Mins ? Theme
+                              background: canOpen ? Theme
                                   .of(context)
                                   .primaryColor
                                   : Colors.grey,
-                              border: isIn10Mins ? Theme
+                              border: canOpen ? Theme
                                   .of(context)
                                   .primaryColor
                                   : Colors.grey,
-                              child: Text(AppLocalizations.of(context)!.openDoor,
-                                style: TextStyle(color: isIn10Mins ? Colors.white
+                              child: Text(localizations.openDoor,
+                                style: TextStyle(color: canOpen ? Colors.white
                                     : Colors.red
                                 ),)),
                         )
@@ -459,7 +339,7 @@ class _DashState extends State<Dash> {
                     ),
                   ) : Container(),
                   Container(
-                      margin: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                      margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
                       width: double.infinity,
                       height: MediaQuery
                           .of(context)
@@ -470,7 +350,7 @@ class _DashState extends State<Dash> {
                           Padding(
                             padding: const EdgeInsets.only(bottom: 8.0),
                             child: Text(
-                              '${AppLocalizations.of(context)!
+                              '${localizations
                                   .welcome} ${myName}',
                               style: TextStyle(
                                 fontSize: 26,
@@ -484,8 +364,8 @@ class _DashState extends State<Dash> {
                           Padding(
                             padding: const EdgeInsets.only(bottom: 8.0),
                             child: Text(
-                              '${AppLocalizations.of(context)!.adminAccount}',
-                              style: TextStyle(
+                              '${localizations.adminAccount}',
+                              style: const TextStyle(
                                 fontSize: 18,
                                 color: Colors.red,
                               ),
@@ -497,12 +377,6 @@ class _DashState extends State<Dash> {
                               child: GridView(
 
                                 padding: const EdgeInsets.all(5),
-                                children: menus
-                                    .map((menus) =>
-                                    Menu_Item(
-                                        menus.ikon, menus.title, menus.color,
-                                        menus.fun))
-                                    .toList(),
                                 gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                                   maxCrossAxisExtent: 350,
                                   childAspectRatio: 0.5,
@@ -510,6 +384,12 @@ class _DashState extends State<Dash> {
                                   mainAxisSpacing: 0,
                                   mainAxisExtent: 180,
                                 ),
+                                children: getDashButtons(context, settingState)
+                                    .map((menus) =>
+                                    Menu_Item(
+                                        ikon: menus.ikon, title: menus.title,
+                                        fun: menus.fun,))
+                                    .toList(),
                               ),
                             ),
                           ),
@@ -534,7 +414,7 @@ class _DashState extends State<Dash> {
                       settingState();
                     });
                   },
-                  child: Icon(Icons.shopping_cart, color: Colors.white,),
+                  child: const Icon(Icons.shopping_cart, color: Colors.white,),
                 ),
 
                 reservationsToCheckOut.isEmpty ?
@@ -565,139 +445,138 @@ class _DashState extends State<Dash> {
       return Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
-          title: Align(
+          title: const Align(
               alignment: Alignment.center,
               child: Text("Cork Padel Arena")),
           backgroundColor: Theme
               .of(context)
               .primaryColor,
         ),
-        body:
-        SafeArea(
-          child: SingleChildScrollView(
+        body: SafeArea(
+                child: SingleChildScrollView(
 
-            child: Column(
-              children: [
-                isToday ?
-                Container(
-                  width: MediaQuery
-                      .of(context)
-                      .size
-                      .width,
-                  height: 50,
-                  decoration: BoxDecoration(color: Colors.yellow.shade200),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  child: Column(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: Text(
-                          '${AppLocalizations.of(context)!
-                              .resToday} ${reservedToday!.hour}',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 10.0),
-                        child: StyledButton(
-                            onPressed: isIn10Mins ?
-                                () async {
-                              if (kIsWeb) {
-                                launchUrl(Uri.parse(openDoorFullUrl));
-                              } else {
-                                var client = DigestAuthClient(
-                                    "admin", "cork2021");
-                                await client.get(Uri.parse(openDoorUrl)).then((
-                                    response) {
-                                  if (response.statusCode == 200) {
-                                    showWebView(context);
-                                  }
-                                });
-                              }
-                            }
-                                : () {},
-                            background: isIn10Mins ? Theme
-                                .of(context)
-                                .primaryColor
-                                : Colors.grey,
-                            border: isIn10Mins ? Theme
-                                .of(context)
-                                .primaryColor
-                                : Colors.grey,
-                            child: Text(AppLocalizations.of(context)!.openDoor,
-                              style: TextStyle(color: isIn10Mins ? Colors.white
-                                  : Colors.red
-                              ),)),
-                      )
-                    ],
-                  ),
-                ) : Container(),
-                Container(
-                    margin: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-                    width: double.infinity,
-                    height: MediaQuery
-                        .of(context)
-                        .size
-                        .height * 0.85,
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8.0),
-                          child: Text(
-                            '${AppLocalizations.of(context)!
-                                .welcome} ${myName}',
-                            style: TextStyle(
-                              fontSize: 26,
-                              color: Theme
-                                  .of(context)
-                                  .primaryColor,
-                            ),
-                          ),
-                        ),
-                        Userr().role == "administrador" ?
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8.0),
-                          child: Text(
-                            '${AppLocalizations.of(context)!.adminAccount}',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.red,
-                            ),
-                          ),
-                        )
-                            : Container(),
-                        Expanded(
-                          child: Scrollbar(
-                            child: GridView(
-
-                              padding: const EdgeInsets.all(5),
-                              children: menus
-                                  .map((menus) =>
-                                  Menu_Item(
-                                      menus.ikon, menus.title, menus.color,
-                                      menus.fun))
-                                  .toList(),
-                              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                                maxCrossAxisExtent: 350,
-                                childAspectRatio: 0.5,
-                                crossAxisSpacing: 0,
-                                mainAxisSpacing: 0,
-                                mainAxisExtent: 180,
+                      isToday ?
+                      Container(
+                        width: MediaQuery
+                            .of(context)
+                            .size
+                            .width,
+                        height: 50,
+                        decoration: BoxDecoration(color: Colors.yellow.shade200),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(
+                                '${localizations
+                                    .resToday} ${reservedToday!.hour}',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black,
+                                ),
                               ),
                             ),
-                          ),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 10.0),
+                              child: StyledButton(
+                                  onPressed: canOpen ?
+                                      () async {
+                                    if (kIsWeb) {
+                                      launchUrl(Uri.parse(openDoorFullUrl));
+                                    } else {
+                                      var client = DigestAuthClient(
+                                          "admin", "cork2021");
+                                      await client.get(Uri.parse(openDoorUrl)).then((
+                                          response) {
+                                        if (response.statusCode == 200) {
+                                          showWebView(context);
+                                        }
+                                      });
+                                    }
+                                  }
+                                      : () {},
+                                  background: canOpen ? Theme
+                                      .of(context)
+                                      .primaryColor
+                                      : Colors.grey,
+                                  border: canOpen ? Theme
+                                      .of(context)
+                                      .primaryColor
+                                      : Colors.grey,
+                                  child: Text(localizations.openDoor,
+                                    style: TextStyle(color: canOpen ? Colors.white
+                                        : Colors.red
+                                    ),)),
+                            )
+                          ],
                         ),
-                        FutureBuilder<void>(
-                            future: _launched, builder: _launchStatus)
-                      ],
-                    )),
-              ],
-            ),
-          ),
-        ),
+                      ) : Container(),
+                      Container(
+                          margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                          width: double.infinity,
+                          height: MediaQuery
+                              .of(context)
+                              .size
+                              .height * 0.85,
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 8.0),
+                                child: Text(
+                                  '${localizations
+                                      .welcome} ${myName}',
+                                  style: TextStyle(
+                                    fontSize: 26,
+                                    color: Theme
+                                        .of(context)
+                                        .primaryColor,
+                                  ),
+                                ),
+                              ),
+                              Userr().role == "administrador" ?
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 8.0),
+                                child: Text(
+                                  '${localizations.adminAccount}',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              )
+                                  : Container(),
+                              Expanded(
+                                child: Scrollbar(
+                                  child: GridView(
+
+                                    padding: const EdgeInsets.all(5),
+                                    children: getDashButtons(context, settingState)
+                                        .map((menus) =>
+                                        Menu_Item(
+                                            ikon: menus.ikon, title: menus.title,
+                                            fun: menus.fun))
+                                        .toList(),
+                                    gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                                      maxCrossAxisExtent: 350,
+                                      childAspectRatio: 0.5,
+                                      crossAxisSpacing: 0,
+                                      mainAxisSpacing: 0,
+                                      mainAxisExtent: 180,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              FutureBuilder<void>(
+                                  future: _launched, builder: _launchStatus)
+                            ],
+                          )),
+                    ],
+                  ),
+                ),
+              ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         floatingActionButton: Stack(
             children: [
@@ -711,7 +590,7 @@ class _DashState extends State<Dash> {
                     settingState();
                   });
                 },
-                child: Icon(Icons.shopping_cart, color: Colors.white,),
+                child: const Icon(Icons.shopping_cart, color: Colors.white,),
               ),
 
               reservationsToCheckOut.isEmpty ?
