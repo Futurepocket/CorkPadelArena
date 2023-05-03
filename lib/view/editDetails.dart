@@ -18,7 +18,7 @@ class _EditDetailsState extends State<EditDetails> {
     return Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
-          title: Text("Cork Padel Arena"),
+          title: const Text("Cork Padel Arena"),
           backgroundColor: Theme.of(context).primaryColor,
         ),
         body: Padding(
@@ -93,7 +93,7 @@ class _EditDetailsWidgetState extends State<EditDetailsWidget> {
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.topCenter,
-      margin: EdgeInsets.all(20),
+      margin: const EdgeInsets.all(20),
       width: double.infinity,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -124,7 +124,7 @@ class _EditDetailsWidgetState extends State<EditDetailsWidget> {
                               controller: nameController,
                               textInputAction: TextInputAction.next,
                               decoration: InputDecoration(
-                                contentPadding: EdgeInsets.all(10),
+                                contentPadding: const EdgeInsets.all(10),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
                                       color: Theme.of(context).primaryColor,
@@ -161,7 +161,7 @@ class _EditDetailsWidgetState extends State<EditDetailsWidget> {
                               controller: surnameController,
                               textInputAction: TextInputAction.next,
                               decoration: InputDecoration(
-                                contentPadding: EdgeInsets.all(10),
+                                contentPadding: const EdgeInsets.all(10),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
                                       color: Theme.of(context).primaryColor,
@@ -196,7 +196,7 @@ class _EditDetailsWidgetState extends State<EditDetailsWidget> {
                     textInputAction: TextInputAction.next,
                     controller: addressController,
                     decoration: InputDecoration(
-                      contentPadding: EdgeInsets.all(10),
+                      contentPadding: const EdgeInsets.all(10),
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(
                             color: Theme.of(context).primaryColor, width: 1.5),
@@ -231,7 +231,7 @@ class _EditDetailsWidgetState extends State<EditDetailsWidget> {
                           controller: cityController,
                           textInputAction: TextInputAction.next,
                           decoration: InputDecoration(
-                            contentPadding: EdgeInsets.all(10),
+                            contentPadding: const EdgeInsets.all(10),
                             focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(
                                   color: Theme.of(context).primaryColor,
@@ -266,7 +266,7 @@ class _EditDetailsWidgetState extends State<EditDetailsWidget> {
                           controller: postCodeController,
                           textInputAction: TextInputAction.next,
                           decoration: InputDecoration(
-                            contentPadding: EdgeInsets.all(10),
+                            contentPadding: const EdgeInsets.all(10),
                             focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(
                                   color: Theme.of(context).primaryColor,
@@ -302,9 +302,9 @@ class _EditDetailsWidgetState extends State<EditDetailsWidget> {
                     textInputAction: TextInputAction.next,
                     autofillHints: [AutofillHints.telephoneNumber],
                     keyboardType:
-                    TextInputType.numberWithOptions(decimal: false),
+                    const TextInputType.numberWithOptions(decimal: false),
                     decoration: InputDecoration(
-                      contentPadding: EdgeInsets.all(10),
+                      contentPadding: const EdgeInsets.all(10),
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(
                             color: Theme.of(context).primaryColor, width: 1.5),
@@ -340,7 +340,7 @@ class _EditDetailsWidgetState extends State<EditDetailsWidget> {
                     keyboardType:
                         const TextInputType.numberWithOptions(decimal: true),
                     decoration: InputDecoration(
-                      contentPadding: EdgeInsets.all(10),
+                      contentPadding: const EdgeInsets.all(10),
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(
                             color: Theme.of(context).primaryColor, width: 1.5),

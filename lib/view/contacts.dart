@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:linkwell/linkwell.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-
 import '../utils/common_utils.dart';
 import 'dash.dart';
 
@@ -25,15 +22,15 @@ class _ContactsState extends State<Contacts> {
       ),
       body: SingleChildScrollView(
           child: Container(
-            padding: EdgeInsets.only(right: 10),
-            height: MediaQuery.of(context).size.height,
+            padding: const EdgeInsets.only(right: 10),
+            height: MediaQuery.of(context).size.height-300,
             width: MediaQuery.of(context).size.width,
             child:
                   Stack(
                     alignment: Alignment.topCenter,
                     children: [
                       Positioned(
-                        bottom: 850,
+                        top: -700,
                         child: CircleAvatar(
                           radius: 400,
                           backgroundColor: Theme.of(context).colorScheme.primary,
@@ -88,7 +85,10 @@ class _ContactsState extends State<Contacts> {
                                   fontWeight: FontWeight.bold
                               ),
                               ),
-                              onTap: () => launchUrlString('corkpadel@corkpadel.com'),
+                              onTap: () {
+                        launchUrlString(
+                            'mailto:corkpadel@corkpadel.com?subject=Cork%20Padel%20Arena');
+                      },
                             ),
                           ),
                         ),

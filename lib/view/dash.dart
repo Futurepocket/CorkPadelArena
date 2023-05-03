@@ -11,6 +11,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http_auth/http_auth.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:cork_padel_arena/models/menuItem.dart';
 import 'package:flutter/material.dart';
 import 'package:upgrader/upgrader.dart';
@@ -227,8 +228,6 @@ class _DashState extends State<Dash> {
 
   @override
   Widget build(BuildContext context) {
-    Color _menuColor = Colors.grey.shade800;
-
 
     if(!kIsWeb) {
       return UpgradeAlert(
@@ -295,7 +294,7 @@ class _DashState extends State<Dash> {
                         Padding(
                           padding: const EdgeInsets.only(left: 8.0),
                           child: Text(
-                            '${localizations
+                            '${AppLocalizations.of(context)!
                                 .resToday} ${reservedToday!.hour}',
                             style: const TextStyle(
                               fontSize: 16,
@@ -330,7 +329,7 @@ class _DashState extends State<Dash> {
                                   .of(context)
                                   .primaryColor
                                   : Colors.grey,
-                              child: Text(localizations.openDoor,
+                              child: Text(AppLocalizations.of(context)!.openDoor,
                                 style: TextStyle(color: canOpen ? Colors.white
                                     : Colors.red
                                 ),)),
@@ -350,7 +349,7 @@ class _DashState extends State<Dash> {
                           Padding(
                             padding: const EdgeInsets.only(bottom: 8.0),
                             child: Text(
-                              '${localizations
+                              '${AppLocalizations.of(context)!
                                   .welcome} ${myName}',
                               style: TextStyle(
                                 fontSize: 26,
@@ -364,7 +363,7 @@ class _DashState extends State<Dash> {
                           Padding(
                             padding: const EdgeInsets.only(bottom: 8.0),
                             child: Text(
-                              '${localizations.adminAccount}',
+                              '${AppLocalizations.of(context)!.adminAccount}',
                               style: const TextStyle(
                                 fontSize: 18,
                                 color: Colors.red,
@@ -454,7 +453,6 @@ class _DashState extends State<Dash> {
         ),
         body: SafeArea(
                 child: SingleChildScrollView(
-
                   child: Column(
                     children: [
                       isToday ?
@@ -471,7 +469,7 @@ class _DashState extends State<Dash> {
                             Padding(
                               padding: const EdgeInsets.only(left: 8.0),
                               child: Text(
-                                '${localizations
+                                '${AppLocalizations.of(context)!
                                     .resToday} ${reservedToday!.hour}',
                                 style: const TextStyle(
                                   fontSize: 16,
@@ -506,7 +504,7 @@ class _DashState extends State<Dash> {
                                       .of(context)
                                       .primaryColor
                                       : Colors.grey,
-                                  child: Text(localizations.openDoor,
+                                  child: Text(AppLocalizations.of(context)!.openDoor,
                                     style: TextStyle(color: canOpen ? Colors.white
                                         : Colors.red
                                     ),)),
@@ -526,7 +524,7 @@ class _DashState extends State<Dash> {
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 8.0),
                                 child: Text(
-                                  '${localizations
+                                  '${AppLocalizations.of(context)!
                                       .welcome} ${myName}',
                                   style: TextStyle(
                                     fontSize: 26,
@@ -540,7 +538,7 @@ class _DashState extends State<Dash> {
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 8.0),
                                 child: Text(
-                                  '${localizations.adminAccount}',
+                                  AppLocalizations.of(context)!.adminAccount,
                                   style: const TextStyle(
                                     fontSize: 18,
                                     color: Colors.red,

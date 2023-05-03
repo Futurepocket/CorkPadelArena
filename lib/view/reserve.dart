@@ -1,9 +1,8 @@
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cork_padel_arena/models/splitScaffoldBody.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:cork_padel_arena/view/shoppingCart.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:cork_padel_arena/models/ReservationStreamPublisher.dart';
 import 'package:cork_padel_arena/models/reservation.dart';
 import 'package:cork_padel_arena/models/userr.dart';
@@ -39,12 +38,17 @@ class _ReserveState extends State<Reserve> {
 
   @override
   void didChangeDependencies() {
-    _warning = AppLocalizations.of(context)!.noTimeChosen;
+    if(_warning.isEmpty) _warning = AppLocalizations.of(context)!.noTimeChosen;
     super.didChangeDependencies();
   }
+
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  late Stream<QuerySnapshot> dbAdminReservations;
   @override
   void initState() {
+    dbAdminReservations = firestore
+        .collection('adminReservations')
+        .snapshots(includeMetadataChanges: true,);
     getClients();
     super.initState();
   }
@@ -225,7 +229,7 @@ class _ReserveState extends State<Reserve> {
 
   String randomNumbers() {
     var rndnumber = "";
-    var rnd = new Random();
+    var rnd = Random();
     for (num i = 1; i < 7; i++) {
       rndnumber = rndnumber + (rnd.nextInt(9) + 1).toString();
     }
@@ -319,9 +323,7 @@ class _ReserveState extends State<Reserve> {
 
   @override
   Widget build(BuildContext context) {
-    final Stream<QuerySnapshot> dbAdminReservations = firestore
-        .collection('adminReservations')
-        .snapshots(includeMetadataChanges: true,);
+
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: Stack(
@@ -363,11 +365,10 @@ class _ReserveState extends State<Reserve> {
         title: const Text("Cork Padel Arena"),
         backgroundColor: Theme.of(context).primaryColor,
       ),
-      body: SplitScaffoldBody(
-        rightWidget: SingleChildScrollView(
+      body: SingleChildScrollView(
             child: Container(
               alignment: Alignment.topCenter,
-              margin: const EdgeInsets.only(top: 20, left: 20),
+              margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
               height: MediaQuery.of(context).size.height,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -380,7 +381,6 @@ class _ReserveState extends State<Reserve> {
                       ),
                     ),
                   Container(
-                    width: MediaQuery.of(context).size.width*0.9,
                     height: 20,
                     decoration: BoxDecoration(
                         border: Border(
@@ -403,10 +403,9 @@ class _ReserveState extends State<Reserve> {
                     ),
                   Container(
                     margin: const EdgeInsets.only(top: 20.0),
-                    width: MediaQuery.of(context).size.width*0.90,
-                      child: Container(
-                        padding: const EdgeInsets.only(left: 15, right: 15, top:10),
-                        child: Column(
+                    padding: const EdgeInsets.only(left: 15, right: 15, top:10),
+                    width: MediaQuery.of(context).size.width,
+                      child: Column(
                           children: [
 
 /////////////////////////////BUTTON TO CHOOSE DATE////////////////////////////////////////////////
@@ -454,11 +453,11 @@ class _ReserveState extends State<Reserve> {
                                         elevation: 3,
                                         child: Container(
                                           padding:
-                                              const EdgeInsets.only(left: 5.0, right: 5),
+                                              const EdgeInsets.only(left: 10.0, right: 10),
 //DROPDOWN LIST TO CHOOSE DURATION ////////////////////////////////////////////////
                                           child: DropdownButton<String>(
                                             alignment: Alignment.centerRight,
-                                            isExpanded: true,
+                                            isExpanded: false,
                                             icon: Padding(
                                               padding: EdgeInsets.only(left: 3.0),
                                               child: Row(
@@ -503,7 +502,6 @@ class _ReserveState extends State<Reserve> {
                             ),
                           ],
                         ),
-                      ),
                   ),
                   Text(_warning2),
                   if(Userr().role == "administrador")
@@ -694,7 +692,7 @@ class _ReserveState extends State<Reserve> {
 
 
           ),
-      ),
+
     );
   }
 }

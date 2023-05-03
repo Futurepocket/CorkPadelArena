@@ -38,22 +38,15 @@ class _ProfileState extends State<Profile> {
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.myProfile),
       ),
-      body: SplitScaffoldBody(
-        rightWidget: SingleChildScrollView(
+      body: SingleChildScrollView(
             child: Container(
               height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    height: MediaQuery.of(context).size.height,
-                    width: MediaQuery.of(context).size.width,
-                    child: Stack(
+              child: Stack(
                       alignment: Alignment.topCenter,
                       children: [
                         Positioned(
-                          bottom: kIsWeb? 580 : 850,
+                          top: -700, //: 850,
                           child: CircleAvatar(
                               radius: 400,
                               backgroundColor: Theme.of(context).colorScheme.primary,
@@ -218,11 +211,8 @@ class _ProfileState extends State<Profile> {
                       ],
                     ),
                   ),
-                ],
-              ),
-            ),
+
         ),
-      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: Stack(children: [
         FloatingActionButton(

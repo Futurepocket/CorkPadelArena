@@ -1,17 +1,12 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cork_padel_arena/apis/local_auth_api.dart';
-import 'package:cork_padel_arena/src/constants.dart';
 import 'package:cork_padel_arena/utils/common_utils.dart';
 import 'package:cork_padel_arena/utils/firebase_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
-import 'package:upgrader/upgrader.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../../models/userr.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -204,7 +199,6 @@ class _LoginState extends State<Login> {
   var _isObscure = true;
   @override
   Widget build(BuildContext context) {
-localizations = AppLocalizations.of(context)!;
       return Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
