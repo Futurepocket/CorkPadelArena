@@ -92,7 +92,7 @@ class _MbWayPaymentState extends State<MbWayPayment> {
   _createCompanyEmail() {
      companyEmailToCloud = {
        'to': 'corkpadel@corkpadel.com',
-       'bcc': 'david@corkpadel.com',
+       'bcc': 'david@corkpadel.com; corkpadel@gmail.com',
        'message': {
          'subject': "Nova reserva de ${Userr().name} ${Userr()
              .surname} na Arena",
