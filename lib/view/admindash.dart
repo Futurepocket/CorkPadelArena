@@ -37,15 +37,12 @@ class _AdminDashState extends State<AdminDash> {
   @override
   Widget build(BuildContext context) {
 
-    Color _menuColor = Colors.grey.shade800;
-
-
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
+        centerTitle: true,
         title: const Align(
-            alignment: Alignment.centerLeft, child: Text("Cork Padel Arena")),
-        backgroundColor: Theme.of(context).primaryColor,
+            child: Text("Cork Padel Arena")),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -73,15 +70,15 @@ class _AdminDashState extends State<AdminDash> {
                             padding: const EdgeInsets.all(5),
                             gridDelegate:
                                 const SliverGridDelegateWithMaxCrossAxisExtent(
-                              maxCrossAxisExtent: 350,
-                              childAspectRatio: 0.5,
-                              crossAxisSpacing: 0,
-                              mainAxisSpacing: 0,
-                              mainAxisExtent: 180,
+                                  maxCrossAxisExtent: 150,
+                                  childAspectRatio: 0.5,
+                                  crossAxisSpacing: 0,
+                                  mainAxisSpacing: 0,
+                                  mainAxisExtent: 150,
                             ),
                             children: getAdminDashButtons(context)
                                 .map((menus) => Menu_Item(ikon: menus.ikon,
-                                    title: menus.title, fun: menus.fun))
+                                    title: menus.title, fun: menus.fun, color: menus.color,))
                                 .toList(),
                           ),
                         ),
@@ -95,15 +92,15 @@ class _AdminDashState extends State<AdminDash> {
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: Stack(children: [
         FloatingActionButton(
-          backgroundColor: Theme.of(context).colorScheme.primary,
+          backgroundColor: Theme.of(context).colorScheme.secondary,
           onPressed: () {
             showShoppingCart(context).then((value) {
               settingState();
             });
           },
-          child: const Icon(
+          child: Icon(
             Icons.shopping_cart,
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.onSecondary,
           ),
         ),
         _check.reservations == 0

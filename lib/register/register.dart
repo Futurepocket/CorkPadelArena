@@ -25,14 +25,13 @@ class _RegisterState extends State<Register> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        title: Text("Cork Padel"),
-        backgroundColor: Theme.of(context).primaryColor,
+        title: const Text("Cork Padel")
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.only(top: 80),
+        padding: const EdgeInsets.only(top: 80),
         child: Container(
           alignment: Alignment.topCenter,
-          margin: EdgeInsets.symmetric(horizontal: 20),
+          margin: const EdgeInsets.symmetric(horizontal: 20),
           width: double.infinity,
           child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -55,7 +54,7 @@ class _RegisterState extends State<Register> {
                         AppLocalizations.of(context)!.registration,
                         style: TextStyle(
                           fontSize: 26,
-                          color: Theme.of(context).primaryColor,
+                          color: Theme.of(context).colorScheme.secondary,
                         ),
                       ),
                     ),
@@ -79,15 +78,15 @@ class _RegisterState extends State<Register> {
                                         autofillHints: [AutofillHints.givenName],
                                         textInputAction: TextInputAction.next,
                                         decoration: InputDecoration(
-                                          contentPadding: EdgeInsets.all(10),
+                                          contentPadding: const EdgeInsets.all(10),
                                           focusedBorder: OutlineInputBorder(
                                             borderSide: BorderSide(
-                                                color: Theme.of(context).primaryColor,
+                                                color: Theme.of(context).colorScheme.secondary,
                                                 width: 1.5),
                                           ),
                                           enabledBorder: OutlineInputBorder(
                                             borderSide: BorderSide(
-                                                color: Theme.of(context).primaryColor,
+                                                color: Theme.of(context).colorScheme.secondary,
                                                 width: 1.5),
                                           ),
                                           labelText: 'Nome',
@@ -111,15 +110,15 @@ class _RegisterState extends State<Register> {
                                         autofillHints: [AutofillHints.familyName],
                                         textInputAction: TextInputAction.next,
                                         decoration: InputDecoration(
-                                          contentPadding: EdgeInsets.all(10),
+                                          contentPadding: const EdgeInsets.all(10),
                                           focusedBorder: OutlineInputBorder(
                                             borderSide: BorderSide(
-                                                color: Theme.of(context).primaryColor,
+                                                color: Theme.of(context).colorScheme.secondary,
                                                 width: 1.5),
                                           ),
                                           enabledBorder: OutlineInputBorder(
                                             borderSide: BorderSide(
-                                                color: Theme.of(context).primaryColor,
+                                                color: Theme.of(context).colorScheme.secondary,
                                                 width: 1.5),
                                           ),
                                           labelText: 'Sobrenome',
@@ -145,14 +144,14 @@ class _RegisterState extends State<Register> {
                                 autofillHints: [AutofillHints.email],
                                 textInputAction: TextInputAction.next,
                                 decoration: InputDecoration(
-                                  contentPadding: EdgeInsets.all(10),
+                                  contentPadding: const EdgeInsets.all(10),
                                   focusedBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
-                                        color: Theme.of(context).primaryColor, width: 1.5),
+                                        color: Theme.of(context).colorScheme.secondary, width: 1.5),
                                   ),
                                   enabledBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
-                                        color: Theme.of(context).primaryColor, width: 1.5),
+                                        color: Theme.of(context).colorScheme.secondary, width: 1.5),
                                   ),
                                   labelText: 'Email',
                                   // errorText: 'Error Text',
@@ -168,7 +167,7 @@ class _RegisterState extends State<Register> {
                             ),
 //---------------------------------------//PASSWORD-------------------------------------------------------------
                             Padding(
-                              padding: EdgeInsets.all(8.0),
+                              padding: const EdgeInsets.all(8.0),
                               child: TextFormField(
                                 textInputAction: TextInputAction.next,
                                 enableSuggestions: false,
@@ -176,12 +175,12 @@ class _RegisterState extends State<Register> {
                                 obscureText: true,
                                 autofillHints: [AutofillHints.password],
                                 decoration: InputDecoration(
-                                  contentPadding: EdgeInsets.all(10),
+                                  contentPadding: const EdgeInsets.all(10),
                                   focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.lime, width: 1.5),
+                                    borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary, width: 1.5),
                                   ),
                                   enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.lime, width: 1.5),
+                                    borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary, width: 1.5),
                                   ),
                                   labelText: 'Password',
                                   // errorText: 'Error Text',
@@ -196,18 +195,18 @@ class _RegisterState extends State<Register> {
                               ),
                             ),
                             Padding(
-                              padding: EdgeInsets.all(8.0),
+                              padding: const EdgeInsets.all(8.0),
                               child: TextFormField(
                                 enableSuggestions: false,
                                 autocorrect: false,
                                 obscureText: true,
                                 decoration: InputDecoration(
-                                  contentPadding: EdgeInsets.all(10),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.lime, width: 1.5),
+                                  contentPadding: const EdgeInsets.all(10),
+                                  focusedBorder:  OutlineInputBorder(
+                                    borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary, width: 1.5),
                                   ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.lime, width: 1.5),
+                                  enabledBorder:  OutlineInputBorder(
+                                    borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary, width: 1.5),
                                   ),
                                   labelText: AppLocalizations.of(context)!.confirmPassword,
                                   // errorText: 'Error Text',
@@ -228,12 +227,11 @@ class _RegisterState extends State<Register> {
                               width: 150,
                               child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
-                                        primary: Theme.of(context).primaryColor,
-                                        onPrimary: Colors.white,
+                                        foregroundColor: Theme.of(context).colorScheme.onSecondary, backgroundColor: Theme.of(context).colorScheme.secondary,
                                       ),
                                       child: Text(
                                         AppLocalizations.of(context)!.submit,
-                                        style: TextStyle(fontSize: 15),
+                                        style: const TextStyle(fontSize: 15),
                                       ),
                                       onPressed: () {
                                         if (_formKey.currentState!.validate()) {

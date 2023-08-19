@@ -144,7 +144,7 @@ Future<void> initiateWebviewController() async {
       floatingActionButton: Stack(
           children: [
             FloatingActionButton(
-              backgroundColor: Theme.of(context).colorScheme.primary,
+              backgroundColor: Theme.of(context).colorScheme.secondary,
               onPressed: () {
                 showShoppingCart(context).then((value) {
                   setState(() {
@@ -152,7 +152,7 @@ Future<void> initiateWebviewController() async {
                   });
                 });
               },
-              child: const Icon(Icons.shopping_cart, color: Colors.white,),
+              child: Icon(Icons.shopping_cart, color: Theme.of(context).colorScheme.onSecondary,),
             ),
 
             reservationsToCheckOut.isEmpty?

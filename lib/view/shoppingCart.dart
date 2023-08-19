@@ -27,6 +27,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
     number = 0;
     return Container(
       padding: EdgeInsets.all(10),
+      width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(color: Colors.grey.shade100),
       child: Column(
         children: [

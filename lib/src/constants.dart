@@ -20,12 +20,13 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 List<Pages> getAdminDashButtons(BuildContext context){
+  Color color = Theme.of(context).colorScheme.onPrimary;
   return [
     Pages(
       Icons.supervised_user_circle_outlined,
       AppLocalizations.of(context)!.users,
-      Theme.of(context).primaryColor,
-          (BuildContext ctx) {
+      color,
+      (BuildContext ctx) {
         Navigator.of(
           ctx,
         ).push(MaterialPageRoute(builder: (_) {
@@ -36,7 +37,7 @@ List<Pages> getAdminDashButtons(BuildContext context){
     Pages(
       Icons.calendar_month_outlined,
       AppLocalizations.of(context)!.reservations,
-      Theme.of(context).primaryColor,
+      color,
           (BuildContext ctx) {
         Navigator.of(
           ctx,
@@ -48,7 +49,7 @@ List<Pages> getAdminDashButtons(BuildContext context){
     Pages(
       Icons.payments_outlined,
       AppLocalizations.of(context)!.payments,
-      Theme.of(context).primaryColor,
+      color,
           (BuildContext ctx) {
         Navigator.of(
           ctx,
@@ -60,7 +61,7 @@ List<Pages> getAdminDashButtons(BuildContext context){
     Pages(
       Icons.block,
       AppLocalizations.of(context)!.adminReservation,
-      Theme.of(context).primaryColor,
+      color,
           (BuildContext ctx) {
         Navigator.of(
           ctx,
@@ -72,7 +73,7 @@ List<Pages> getAdminDashButtons(BuildContext context){
     Pages(
         Icons.sensor_door_outlined,
         AppLocalizations.of(context)!.openDoor,
-        Theme.of(context).primaryColor, (BuildContext ctx) async {
+        color, (BuildContext ctx) async {
       if (kIsWeb) {
         launchUrlString(openDoorFullUrl);
       } else {
@@ -88,11 +89,12 @@ List<Pages> getAdminDashButtons(BuildContext context){
 }
 
 List<Pages> getDashButtons(BuildContext context, Function? settingState){
+  Color color = Theme.of(context).colorScheme.onPrimary;
   return [
     Pages(
       Icons.person,
       AppLocalizations.of(context)!.profile,
-      Theme.of(context).primaryColor,
+      color,
           (BuildContext ctx) {
         Navigator.of(
           ctx,
@@ -104,7 +106,7 @@ List<Pages> getDashButtons(BuildContext context, Function? settingState){
     Pages(
       Icons.edit_calendar_outlined,
       AppLocalizations.of(context)!.makeReservation,
-      Theme.of(context).primaryColor,
+      color,
           (BuildContext ctx) {
         Navigator.of(
           ctx,
@@ -118,7 +120,7 @@ List<Pages> getDashButtons(BuildContext context, Function? settingState){
     Pages(
       Icons.calendar_month_outlined,
       AppLocalizations.of(context)!.myReservations,
-      Theme.of(context).primaryColor,
+      color,
           (BuildContext ctx) {
         Navigator.of(
           ctx,
@@ -132,7 +134,7 @@ List<Pages> getDashButtons(BuildContext context, Function? settingState){
     Pages(
         Icons.contact_phone,
         AppLocalizations.of(context)!.contacts,
-        Theme.of(context).primaryColor,
+        color,
             (BuildContext ctx) {
           Navigator.of(
             ctx,
@@ -145,7 +147,7 @@ List<Pages> getDashButtons(BuildContext context, Function? settingState){
     Pages(
       Icons.shopping_bag_rounded,
       AppLocalizations.of(context)!.onlineShop,
-      Theme.of(context).primaryColor,
+      color,
           (BuildContext ctx) async {
         if (await canLaunchUrl(Uri.parse('https://www.corkpadel.pt/en/store'))) {
           await launchUrl(
@@ -165,7 +167,7 @@ List<Pages> getDashButtons(BuildContext context, Function? settingState){
     //     size: 120,
     //   ),
     //   AppLocalizations.of(context.!about,
-    //   Theme.of(context).primaryColor,
+    //   color,
     //         (BuildContext ctx) {
     //       Navigator.of(
     //         ctx,
@@ -178,7 +180,7 @@ List<Pages> getDashButtons(BuildContext context, Function? settingState){
       Pages(
           Icons.admin_panel_settings_outlined,
           AppLocalizations.of(context)!.admin,
-          Theme.of(context).primaryColor,
+          color,
               (BuildContext ctx) {
             Navigator.of(
               ctx,
@@ -190,7 +192,7 @@ List<Pages> getDashButtons(BuildContext context, Function? settingState){
     Pages(
         Icons.exit_to_app_rounded,
         AppLocalizations.of(context)!.logout,
-        Theme.of(context).primaryColor, (BuildContext ctx) {
+        color, (BuildContext ctx) {
       FirebaseAuth.instance.signOut();
       Navigator.of(
         ctx,

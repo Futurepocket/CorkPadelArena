@@ -270,14 +270,10 @@ class _DashState extends State<Dash> {
             title: const Align(
                 alignment: Alignment.center,
                 child: Text("Cork Padel Arena")),
-            backgroundColor: Theme
-                .of(context)
-                .primaryColor,
           ),
           body:
           SafeArea(
             child: SingleChildScrollView(
-
               child: Column(
                 children: [
                   isToday ?
@@ -320,20 +316,9 @@ class _DashState extends State<Dash> {
                                   });
                                 }
                               }
-                                  : () {},
-                              background: canOpen ? Theme
-                                  .of(context)
-                                  .primaryColor
-                                  : Colors.grey,
-                              border: canOpen ? Theme
-                                  .of(context)
-                                  .primaryColor
-                                  : Colors.grey,
-                              child: Text(AppLocalizations.of(context)!.openDoor,
-                                style: TextStyle(color: canOpen ? Colors.white
-                                    : Colors.red
-                                ),)),
-                        )
+                                  : null,
+                              child: Text(AppLocalizations.of(context)!.openDoor,)),
+                        ),
                       ],
                     ),
                   ) : Container(),
@@ -350,12 +335,9 @@ class _DashState extends State<Dash> {
                             padding: const EdgeInsets.only(bottom: 8.0),
                             child: Text(
                               '${AppLocalizations.of(context)!
-                                  .welcome} ${myName}',
+                                  .welcome} $myName',
                               style: TextStyle(
                                 fontSize: 26,
-                                color: Theme
-                                    .of(context)
-                                    .primaryColor,
                               ),
                             ),
                           ),
@@ -374,14 +356,13 @@ class _DashState extends State<Dash> {
                           Expanded(
                             child: Scrollbar(
                               child: GridView(
-
-                                padding: const EdgeInsets.all(5),
+                                shrinkWrap: true,
                                 gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                                  maxCrossAxisExtent: 350,
+                                  maxCrossAxisExtent: 150,
                                   childAspectRatio: 0.5,
                                   crossAxisSpacing: 0,
                                   mainAxisSpacing: 0,
-                                  mainAxisExtent: 180,
+                                  mainAxisExtent: 150,
                                 ),
                                 children: getDashButtons(context, settingState)
                                     .map((menus) =>
@@ -404,16 +385,13 @@ class _DashState extends State<Dash> {
           floatingActionButton: Stack(
               children: [
                 FloatingActionButton(
-                  backgroundColor: Theme
-                      .of(context)
-                      .colorScheme
-                      .primary,
+                  backgroundColor: Theme.of(context).colorScheme.secondary,
                   onPressed: () {
                     showShoppingCart(context).then((value) {
                       settingState();
                     });
                   },
-                  child: const Icon(Icons.shopping_cart, color: Colors.white,),
+                  child: Icon(Icons.shopping_cart, color: Theme.of(context).colorScheme.onSecondary),
                 ),
 
                 reservationsToCheckOut.isEmpty ?
@@ -444,12 +422,9 @@ class _DashState extends State<Dash> {
       return Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
+          centerTitle: true,
           title: const Align(
-              alignment: Alignment.center,
               child: Text("Cork Padel Arena")),
-          backgroundColor: Theme
-              .of(context)
-              .primaryColor,
         ),
         body: SafeArea(
                 child: SingleChildScrollView(
@@ -525,7 +500,7 @@ class _DashState extends State<Dash> {
                                 padding: const EdgeInsets.only(bottom: 8.0),
                                 child: Text(
                                   '${AppLocalizations.of(context)!
-                                      .welcome} ${myName}',
+                                      .welcome} $myName',
                                   style: TextStyle(
                                     fontSize: 26,
                                     color: Theme
@@ -579,16 +554,13 @@ class _DashState extends State<Dash> {
         floatingActionButton: Stack(
             children: [
               FloatingActionButton(
-                backgroundColor: Theme
-                    .of(context)
-                    .colorScheme
-                    .primary,
+                backgroundColor: Theme.of(context).colorScheme.secondary,
                 onPressed: () {
                   showShoppingCart(context).then((value) {
                     settingState();
                   });
                 },
-                child: const Icon(Icons.shopping_cart, color: Colors.white,),
+                child: Icon(Icons.shopping_cart, color: Theme.of(context).colorScheme.onSecondary,),
               ),
 
               reservationsToCheckOut.isEmpty ?

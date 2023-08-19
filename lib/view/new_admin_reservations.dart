@@ -240,7 +240,7 @@ class _NewAdminReservationsState extends State<NewAdminReservations> {
                       setState(() {
                         _selectedDay = null;
                       });
-
+                      _groupReservations(today);
                     },
                     child: Text(
                       AppLocalizations.of(context)!.yesCancel,

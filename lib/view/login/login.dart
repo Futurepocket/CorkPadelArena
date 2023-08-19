@@ -202,10 +202,7 @@ class _LoginState extends State<Login> {
       return Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
-          title: const Text("Cork Padel", style: TextStyle(color: Colors.white),),
-          backgroundColor: Theme
-              .of(context)
-              .primaryColor,
+          title: const Text("Cork Padel"),
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.only(top: 40),
@@ -233,7 +230,7 @@ class _LoginState extends State<Login> {
                           fontSize: 26,
                           color: Theme
                               .of(context)
-                              .primaryColor,
+                              .colorScheme.secondary,
                         ),
                       ),
                       Container(
@@ -253,17 +250,17 @@ class _LoginState extends State<Login> {
                                   textInputAction: TextInputAction.next,
                                   keyboardType: TextInputType.emailAddress,
                                   decoration: InputDecoration(
-                                    prefixIcon: Icon(Icons.alternate_email),
+                                    prefixIcon: const Icon(Icons.alternate_email),
                                     contentPadding: const EdgeInsets.all(10),
                                     focusedBorder: OutlineInputBorder(
                                       borderSide: BorderSide(color: Theme
                                           .of(context)
-                                          .primaryColor, width: 1.5),
+                                          .colorScheme.secondary, width: 1.5),
                                     ),
                                     enabledBorder: OutlineInputBorder(
                                       borderSide: BorderSide(color: Theme
                                           .of(context)
-                                          .primaryColor, width: 1.5),
+                                          .colorScheme.secondary, width: 1.5),
                                     ),
                                     labelText: 'Email',
                                   ),
@@ -284,7 +281,7 @@ class _LoginState extends State<Login> {
                                   obscureText: _isObscure,
                                   autofillHints: [AutofillHints.password],
                                   decoration: InputDecoration(
-                                    prefixIcon: Icon(Icons.password),
+                                    prefixIcon: const Icon(Icons.password),
                                     suffixIcon:
                                     GestureDetector(
                                         onTap: () =>
@@ -298,12 +295,12 @@ class _LoginState extends State<Login> {
                                     focusedBorder: OutlineInputBorder(
                                       borderSide: BorderSide(color: Theme
                                           .of(context)
-                                          .primaryColor, width: 1.5),
+                                          .colorScheme.secondary, width: 1.5),
                                     ),
                                     enabledBorder: OutlineInputBorder(
                                       borderSide: BorderSide(color: Theme
                                           .of(context)
-                                          .primaryColor, width: 1.5),
+                                          .colorScheme.secondary, width: 1.5),
                                     ),
                                     labelText: AppLocalizations.of(context)!
                                         .password,
@@ -320,18 +317,13 @@ class _LoginState extends State<Login> {
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(top: 10),
-                                child: Container(
-                                  width: 150,
+                                child: FittedBox(
+                                  fit: BoxFit.none,
                                   child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      foregroundColor: Colors.white, backgroundColor: Theme
-                                          .of(context)
-                                          .primaryColor,
-                                    ),
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                                       children: [
-                                        Icon(Icons.login),
+                                        const Icon(Icons.login),
                                         Text(
                                           AppLocalizations.of(context)!.login,
                                           style: const TextStyle(fontSize: 15),
@@ -350,21 +342,15 @@ class _LoginState extends State<Login> {
                                 Padding(
                                   padding: const EdgeInsets.symmetric(
                                       vertical: 10),
-                                  child: Container(
-                                    width: 180,
+                                  child: FittedBox(
+                                    fit: BoxFit.none,
                                     child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          foregroundColor: Colors.white, backgroundColor: Theme
-                                              .of(context)
-                                              .primaryColor,
-                                        ),
-                                        child: Row(
+                                        child: const Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                          children: const [
+                                          children: [
                                             Icon(Icons.fingerprint),
                                             Text(
-                                              'Login Biometrico',
-                                              style: TextStyle(fontSize: 15),
+                                              'Login Biometrico'
                                             ),
                                           ],
                                         ),
@@ -382,7 +368,7 @@ class _LoginState extends State<Login> {
                                         fontSize: 16,
                                         color: Theme
                                             .of(context)
-                                            .primaryColor,
+                                            .colorScheme.secondary,
                                       ),
                                       children: <TextSpan>[
                                         TextSpan(text: AppLocalizations.of(
@@ -394,7 +380,7 @@ class _LoginState extends State<Login> {
                                                 fontSize: 16,
                                                 color: Theme
                                                     .of(context)
-                                                    .primaryColor,
+                                                    .colorScheme.secondary,
                                                 fontWeight: FontWeight.bold),
                                             recognizer: TapGestureRecognizer()
                                               ..onTap = () async {
@@ -430,23 +416,18 @@ class _LoginState extends State<Login> {
                                       fontSize: 16,
                                       color: Theme
                                           .of(context)
-                                          .primaryColor,
+                                          .colorScheme.secondary,
                                     )),
                               ),
-                              Container(
-                                width: 150,
-                                padding: const EdgeInsets.only(
-                                    left: 10, right: 10),
+                              FittedBox(
+                                fit: BoxFit.none,
+                                // padding: const EdgeInsets.only(
+                                //     left: 10, right: 10),
                                 child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.white, backgroundColor: Theme
-                                        .of(context)
-                                        .primaryColor,
-                                  ),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                                     children: [
-                                      Icon(Icons.app_registration),
+                                      const Icon(Icons.app_registration),
                                       Text(
                                         AppLocalizations.of(context)!.register,
                                         style: const TextStyle(fontSize: 15),

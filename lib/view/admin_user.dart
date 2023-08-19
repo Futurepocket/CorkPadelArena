@@ -35,7 +35,7 @@ class _AdminUserState extends State<AdminUser> {
           title: const Align(
               alignment: Alignment.centerLeft,
               child: Text("Cork Padel Arena")),
-          backgroundColor: Theme.of(context).primaryColor,),
+          ),
       body: SingleChildScrollView(
           child: Container(
             padding: const EdgeInsets.only(left:20.0, top:8),
@@ -242,13 +242,13 @@ class _AdminUserState extends State<AdminUser> {
       floatingActionButton: Stack(
           children: [
             FloatingActionButton(
-              backgroundColor: Theme.of(context).colorScheme.primary,
+              backgroundColor: Theme.of(context).colorScheme.secondary,
               onPressed: () {
                 showShoppingCart(context).then((value) {
                   settingState();
                 });
               },
-              child: const Icon(Icons.shopping_cart, color: Colors.white,),
+              child: Icon(Icons.shopping_cart, color: Theme.of(context).colorScheme.onSecondary),
             ),
 
             reservationsToCheckOut.isEmpty?

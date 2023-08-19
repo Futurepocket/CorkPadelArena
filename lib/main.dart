@@ -11,6 +11,7 @@ import 'package:cork_padel_arena/view/profile.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -36,7 +37,10 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await init();
-
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   runApp(
     // kIsWeb? const Center(
     //   child: SizedBox(
@@ -66,7 +70,7 @@ class _MyAppState extends State<MyApp> {
     700: const Color.fromRGBO(190, 255, 109, 1),
     800: const Color.fromRGBO(190, 247, 89, 1),
     900: const Color.fromRGBO(190, 227, 69, 1),
-    1000: const Color.fromRGBO(190, 207, 49, 1)
+    1000: const Color.fromRGBO(190, 255, 49, 1)
   };
 
   @override
@@ -85,18 +89,33 @@ class _MyAppState extends State<MyApp> {
       ],
       title: 'Cork Padel',
       theme: ThemeData(
-        appBarTheme: AppBarTheme(
-            titleTextStyle: TextStyle(color: Colors.white, fontSize: 24, fontFamily: GoogleFonts.robotoCondensed().fontFamily),
-            iconTheme: const IconThemeData(color: Colors.white)),
+        useMaterial3: true,
+        colorSchemeSeed: const Color.fromRGBO(20, 207, 20, 1),
+        brightness: Brightness.light,
+        appBarTheme: const AppBarTheme(
+            elevation: 6,
+        shadowColor: Color.fromRGBO(190, 255, 49, 1),
+        ),
         visualDensity: VisualDensity.adaptivePlatformDensity,
-        primarySwatch: MaterialColor(_colorMap[1000]!.value, _colorMap),
+        //primarySwatch: MaterialColor(_colorMap[1000]!.value, _colorMap),
+        fontFamily: 'ApexSans',
+      ),
+      darkTheme: ThemeData(
+        useMaterial3: true,
+        colorSchemeSeed: const Color.fromRGBO(190, 207, 49, 1),
+        brightness: Brightness.dark,
+        appBarTheme: const AppBarTheme(
+            elevation: 6,
+            shadowColor: Color.fromRGBO(190, 255, 49, 1)),
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+        //primarySwatch: MaterialColor(_colorMap[1000]!.value, _colorMap),
         fontFamily: 'ApexSans',
       ),
       initialRoute: '/login',
       routes: {
 //        '/': (context) => HomePage(),
         '/login': (context) => Login(),
-        '/dash': (context) => Dash(),
+        '/dash': (context) => const Dash(),
         '/profile': (context) => Profile(),
         '/register': (context) => Register(),
         '/splash':(context) => RegisterSplash(),

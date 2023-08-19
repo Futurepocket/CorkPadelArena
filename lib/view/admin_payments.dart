@@ -32,58 +32,55 @@ class _AdminPaymentsState extends State<AdminPayments>with TickerProviderStateMi
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
           title: Text(AppLocalizations.of(context)!.payments),
-          backgroundColor: Theme.of(context).primaryColor),
-      body: Container(
-            width: MediaQuery.of(context).size.width*0.9,
-            height: MediaQuery.of(context).size.height,
-            //constraints: const BoxConstraints(minWidth: double.infinity, maxHeight: 680),
-            child: SingleChildScrollView(
-              child: Column(
-                  children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width *0.9,
-                      height: MediaQuery.of(context).size.height*0.9,
-                      child:
-                      Scrollbar(
-                      child:
-                      StreamBuilder<QuerySnapshot>(
-                        stream: dbPayments,
-                        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                          if (snapshot.hasError) {
-                            return Text('Something went wrong');
-                          }
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return ColorLoader();
-                          }
-                          return snapshot.data!.docs.isNotEmpty?
-                          ListView(
-                            children: snapshot.data!.docs.map((DocumentSnapshot document) {
-                              Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
-                              return ListTile(
-                                leading: Icon(Icons.payments_outlined),
-                                title: Text(data['Referencia']),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('${data['EmailCliente']}'),
-                                    Text('€ ${data['amount']}'),
-                                  ],
-                                ),
-
-                              );
-                            }).toList(),
-                          )
-                              :Padding(
-                            padding: const EdgeInsets.only(top: 20.0),
-                            child: Text('Sem pagamentos para mostrar'),
-                          );
-                        },
-                      ),
-                    ),)
-                  ]
-              ),
-            ),
           ),
+      body: SingleChildScrollView(
+        child: Column(
+            children: [
+              Container(
+                // width: MediaQuery.of(context).size.width *0.9,
+                height: MediaQuery.of(context).size.height*0.9,
+                child:
+                Scrollbar(
+                child:
+                StreamBuilder<QuerySnapshot>(
+                  stream: dbPayments,
+                  builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasError) {
+                      return Text('Something went wrong');
+                    }
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return ColorLoader();
+                    }
+                    return snapshot.data!.docs.isNotEmpty?
+                    ListView(
+                      children: snapshot.data!.docs.map((DocumentSnapshot document) {
+                        Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
+                        return Card(
+                          child: ListTile(
+                            leading: Icon(Icons.payments_outlined),
+                            title: Text(data['Referencia']),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('${data['EmailCliente']}'),
+                                Text('€ ${data['amount']}'),
+                              ],
+                            ),
+
+                          ),
+                        );
+                      }).toList(),
+                    )
+                        :Padding(
+                      padding: const EdgeInsets.only(top: 20.0),
+                      child: Text('Sem pagamentos para mostrar'),
+                    );
+                  },
+                ),
+              ),)
+            ]
+        ),
+      ),
     );
   }
 }

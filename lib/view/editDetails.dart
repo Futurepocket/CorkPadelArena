@@ -19,7 +19,6 @@ class _EditDetailsState extends State<EditDetails> {
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
           title: const Text("Cork Padel Arena"),
-          backgroundColor: Theme.of(context).primaryColor,
         ),
         body: Padding(
           padding: const EdgeInsets.only(top: 20.0),
@@ -127,8 +126,7 @@ class _EditDetailsWidgetState extends State<EditDetailsWidget> {
                                 contentPadding: const EdgeInsets.all(10),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
-                                      color: Theme.of(context).primaryColor,
-                                      width: 1.5),
+                                      color: Theme.of(context).primaryColor, width: 1.5),
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
@@ -372,7 +370,6 @@ class _EditDetailsWidgetState extends State<EditDetailsWidget> {
                   width: 150,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white, primary: Theme.of(context).primaryColor,
                     ),
                     child: const Text(
                       "Submeter",

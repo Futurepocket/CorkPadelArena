@@ -39,8 +39,8 @@ class _ProfileState extends State<Profile> {
         title: Text(AppLocalizations.of(context)!.myProfile),
       ),
       body: SingleChildScrollView(
-            child: Container(
-              height: MediaQuery.of(context).size.height,
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height-100,
               width: MediaQuery.of(context).size.width,
               child: Stack(
                       alignment: Alignment.topCenter,
@@ -49,10 +49,10 @@ class _ProfileState extends State<Profile> {
                           top: -700, //: 850,
                           child: CircleAvatar(
                               radius: 400,
-                              backgroundColor: Theme.of(context).colorScheme.primary,
-                            child: const CircleAvatar(
+                              backgroundColor: Theme.of(context).colorScheme.onSecondary,
+                            child: CircleAvatar(
                               radius: 398,
-                              backgroundColor: Colors.white,
+                              backgroundColor: Theme.of(context).colorScheme.secondary,
                             ),
                             ),
                         ),
@@ -60,9 +60,10 @@ class _ProfileState extends State<Profile> {
                           top: 10,
                           child: Text(
                             '${_userr.name} ${_userr.surname}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontFamily: 'Roboto Condensed',
                               fontSize: 28,
+                              color: Theme.of(context).colorScheme.onSecondary
                             ),
                           ),
                         ),
@@ -72,14 +73,14 @@ class _ProfileState extends State<Profile> {
                             padding: const EdgeInsets.only(top: 8.0),
                               child: CircleAvatar(
                                 radius: 35,
-                                backgroundColor: Theme.of(context).colorScheme.primary,
+                                backgroundColor: Theme.of(context).colorScheme.onSecondary,
                                 child: CircleAvatar(
                                   radius: 33,
-                                  backgroundColor: Colors.white,
+                                  backgroundColor: Theme.of(context).colorScheme.secondary,
                                   child: Icon(
                                     Icons.person,
                                     size: 50,
-                                    color: Theme.of(context).colorScheme.primary,
+                                    color: Theme.of(context).colorScheme.onSecondary,
                                   ),
                                 ),
                               ),
@@ -187,13 +188,10 @@ class _ProfileState extends State<Profile> {
                           ),
                         ),
                         Positioned(
-                          top: 500,
+                          top: 550,
                           child: Container(
                             padding: const EdgeInsets.only(top: 15, right: 20),
                             child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                foregroundColor: Colors.white, backgroundColor: Theme.of(context).primaryColor,
-                              ),
                               child: Text(
                                 AppLocalizations.of(context)!.editProfile,
                                 style: const TextStyle(fontSize: 15, letterSpacing: 1.2),
@@ -216,15 +214,15 @@ class _ProfileState extends State<Profile> {
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: Stack(children: [
         FloatingActionButton(
-          backgroundColor: Theme.of(context).colorScheme.primary,
+          backgroundColor: Theme.of(context).colorScheme.secondary,
           onPressed: () {
             showShoppingCart(context).then((value) {
               settingState();
             });
           },
-          child: const Icon(
+          child: Icon(
             Icons.shopping_cart,
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.onSecondary,
           ),
         ),
         reservationsToCheckOut.isEmpty

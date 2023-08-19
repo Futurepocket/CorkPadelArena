@@ -96,31 +96,27 @@ class _UsersState extends State<Users> with TickerProviderStateMixin {
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
           title: Text(AppLocalizations.of(context)!.users),
-          backgroundColor: Theme.of(context).primaryColor),
-      body: Scaffold(
-        appBar: AppBar(
-          elevation: 8,
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(0.0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: TabBar(
-                  tabs: tabs,
-                  indicatorColor: Colors.white,
-                  labelStyle:
-                  const TextStyle(fontWeight: FontWeight.w500, letterSpacing: 1),
-                  controller: _tabController,
-                  isScrollable: true,
-                  onTap: (index) {
-                    setState(() {
-                      activeLetter = tabs[index].text!;
-                      activeUsers = userMap[activeLetter];
-                    });
-                  }),
-            ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(30.0),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: TabBar(
+                tabs: tabs,
+                indicatorColor: Colors.white,
+                labelStyle:
+                const TextStyle(fontWeight: FontWeight.w500, letterSpacing: 1),
+                controller: _tabController,
+                isScrollable: true,
+                onTap: (index) {
+                  setState(() {
+                    activeLetter = tabs[index].text!;
+                    activeUsers = userMap[activeLetter];
+                  });
+                }),
           ),
         ),
-        body: SingleChildScrollView(
+          ),
+      body: SingleChildScrollView(
           child: Column(children: [
             Container(
               width: MediaQuery.of(context).size.width * 0.9,
@@ -129,7 +125,6 @@ class _UsersState extends State<Users> with TickerProviderStateMixin {
             )
           ]),
         ),
-      ),
     );
   }
 }

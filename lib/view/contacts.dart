@@ -17,13 +17,12 @@ class _ContactsState extends State<Contacts> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        title: const Text("Cork Padel", style: TextStyle(color: Colors.white),),
-        backgroundColor: Theme.of(context).primaryColor,
+        title: const Text("Cork Padel"),
       ),
       body: SingleChildScrollView(
           child: Container(
             padding: const EdgeInsets.only(right: 10),
-            height: MediaQuery.of(context).size.height-300,
+            height: MediaQuery.of(context).size.height-100,
             width: MediaQuery.of(context).size.width,
             child:
                   Stack(
@@ -33,10 +32,10 @@ class _ContactsState extends State<Contacts> {
                         top: -700,
                         child: CircleAvatar(
                           radius: 400,
-                          backgroundColor: Theme.of(context).colorScheme.primary,
-                          child: const CircleAvatar(
+                          backgroundColor: Theme.of(context).colorScheme.onSecondary,
+                          child: CircleAvatar(
                             radius: 398,
-                            backgroundColor: Colors.white,
+                            backgroundColor: Theme.of(context).colorScheme.secondary,
                           ),
                         ),
                       ),
@@ -47,14 +46,14 @@ class _ContactsState extends State<Contacts> {
                           padding: const EdgeInsets.only(top: 8.0),
                           child: CircleAvatar(
                             radius: 35,
-                            backgroundColor: Theme.of(context).colorScheme.primary,
+                            backgroundColor: Theme.of(context).colorScheme.onSecondary,
                             child: CircleAvatar(
                               radius: 33,
-                              backgroundColor: Colors.white,
+                              backgroundColor: Theme.of(context).colorScheme.secondary,
                               child: Icon(
                                 Icons.contact_mail_outlined,
                                 size: 50,
-                                color: Theme.of(context).colorScheme.primary,
+                                color: Theme.of(context).colorScheme.onSecondary,
                               ),
                             ),
                           ),
@@ -65,9 +64,10 @@ class _ContactsState extends State<Contacts> {
                           padding: const EdgeInsets.only(top:8.0),
                           child: Text(
                             AppLocalizations.of(context)!.contacts,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontFamily: 'Roboto Condensed',
                               fontSize: 28,
+                                color: Theme.of(context).colorScheme.onPrimary
                             ),
                           ),
                         ),
@@ -75,13 +75,12 @@ class _ContactsState extends State<Contacts> {
                        Positioned(
                         top: 130,
                         child: Card(
-                          child: Container(
+                          child: SizedBox(
                             width: 350,
                             child: ListTile(
                               leading: const Icon(Icons.alternate_email),
                               title: const Text('corkpadel@corkpadel.com', style: TextStyle(
                                   fontSize: 16,
-                                  color: Colors.black,
                                   fontWeight: FontWeight.bold
                               ),
                               ),
@@ -89,6 +88,7 @@ class _ContactsState extends State<Contacts> {
                         launchUrlString(
                             'mailto:corkpadel@corkpadel.com?subject=Cork%20Padel%20Arena');
                       },
+                              trailing: const Icon(Icons.touch_app),
                             ),
                           ),
                         ),
@@ -96,7 +96,7 @@ class _ContactsState extends State<Contacts> {
                       Positioned(
                         top: 200,
                         child: Card(
-                          child: Container(
+                          child: SizedBox(
                             width: 350,
                             child: ListTile(
                               leading: const Icon(Icons.phone),
@@ -104,11 +104,11 @@ class _ContactsState extends State<Contacts> {
                                 '91 248 23 38',
                                 style: TextStyle(
                                     fontSize: 16,
-                                    color: Colors.black,
                                     fontWeight: FontWeight.bold
                                 ),
                               ),
                               onTap: () async => await launchUrlString('tel://912482338'),
+                              trailing: const Icon(Icons.touch_app),
                             ),
                           ),
                         ),
@@ -116,7 +116,7 @@ class _ContactsState extends State<Contacts> {
                       Positioned(
                         top: 270,
                         child: Card(
-                          child: Container(
+                          child: SizedBox(
                             width: 350,
                             child: ListTile(
                               leading: const Icon(Icons.location_on_outlined),
@@ -125,16 +125,16 @@ class _ContactsState extends State<Contacts> {
                                   "2495-143 Santa Catarina da Serra",
                                 style: TextStyle(
                                     fontSize: 16,
-                                    color: Colors.black,
                                     fontWeight: FontWeight.bold
                                 ),),
                               onTap: () => launchUrlString("https://goo.gl/maps/jRBM83orrxARDWDA6"),
+                              trailing: const Icon(Icons.touch_app),
                             ),
                           ),
                         ),
                       ),
                       Positioned(
-                        top: 370,
+                        top: 400,
                         child: Image.asset(
                             'assets/images/arena.jpeg',
                             width: 432.0,
@@ -150,7 +150,7 @@ class _ContactsState extends State<Contacts> {
       floatingActionButton: Stack(
           children: [
             FloatingActionButton(
-              backgroundColor: Theme.of(context).colorScheme.primary,
+              backgroundColor: Theme.of(context).colorScheme.secondary,
               onPressed: () {
                 showShoppingCart(context).then((value) {
                   setState(() {
@@ -158,7 +158,7 @@ class _ContactsState extends State<Contacts> {
                   });
                 });
               },
-              child: const Icon(Icons.shopping_cart, color: Colors.white,),
+              child: Icon(Icons.shopping_cart, color: Theme.of(context).colorScheme.onSecondary),
             ),
 
             reservationsToCheckOut.isEmpty?

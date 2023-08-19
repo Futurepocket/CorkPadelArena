@@ -329,14 +329,14 @@ class _ReserveState extends State<Reserve> {
       floatingActionButton: Stack(
           children: [
             FloatingActionButton(
-              backgroundColor: Theme.of(context).colorScheme.primary,
+              backgroundColor: Theme.of(context).colorScheme.secondary,
               onPressed: () {
                 ShoppingCart().createState().build(context);
                 showShoppingCart(context).then((value) {
                   settingState();
                 });
               },
-              child: const Icon(Icons.shopping_cart, color: Colors.white,),
+              child: Icon(Icons.shopping_cart, color: Theme.of(context).colorScheme.onSecondary),
             ),
             reservationsToCheckOut.isEmpty?
             Positioned(
@@ -363,7 +363,6 @@ class _ReserveState extends State<Reserve> {
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: const Text("Cork Padel Arena"),
-        backgroundColor: Theme.of(context).primaryColor,
       ),
       body: SingleChildScrollView(
             child: Container(
@@ -459,10 +458,11 @@ class _ReserveState extends State<Reserve> {
                                             alignment: Alignment.centerRight,
                                             isExpanded: false,
                                             icon: Padding(
-                                              padding: EdgeInsets.only(left: 3.0),
+                                              padding: const EdgeInsets.only(left: 3.0),
                                               child: Row(
                                                 children: [
-                                                  Icon(Icons.timelapse_outlined),
+                                                  const Icon(Icons.timelapse_outlined),
+                                                  if(_selectedDuration != null)
                                                   Text(
                                                     AppLocalizations.of(context)!.hours,
                                                     style: const TextStyle(
@@ -471,7 +471,7 @@ class _ReserveState extends State<Reserve> {
                                                 ],
                                               ),
                                             ),
-                                            hint: Text(AppLocalizations.of(context)!.choose, textAlign: TextAlign.end,),
+                                            hint: Text(AppLocalizations.of(context)!.chooseDuration, textAlign: TextAlign.end,),
                                             value: _selectedDuration,
                                             items: <String>["01:00", "01:30", "02:00"]
                                                 .map((String value) {
@@ -531,6 +531,12 @@ class _ReserveState extends State<Reserve> {
                             child: Text(name, style: const TextStyle(fontSize: 14),),
                           );
                         }).toList(),
+                        elevation: 3,
+                        borderRadius: const BorderRadius.all(Radius.circular(20)),
+                        menuMaxHeight: MediaQuery.of(context).size.height*0.5,
+                        dropdownColor: Theme.of(context).colorScheme.surfaceVariant,
+                        isExpanded: true,
+                        iconSize: 20,
                         onChanged: (value) {
                           int index = clientsName.indexOf(value!);
                           setState(() {
@@ -544,13 +550,11 @@ class _ReserveState extends State<Reserve> {
                   Align(
                     alignment: Alignment.center,
                     child: Container(
-                      padding: const EdgeInsets.only(left: 5.0, right: 5),
+                      margin: EdgeInsets.only(top: 10),
                       width: 150,
 ////////////////////// BUTTON TO RESERVE ////////////////////////////////////////////////
                       child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white, backgroundColor: Theme.of(context).primaryColor,
-                        ),
+
                         child: Text(
                           AppLocalizations.of(context)!.reserve,
                           style: const TextStyle(

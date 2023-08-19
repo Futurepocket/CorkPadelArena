@@ -237,7 +237,7 @@ class _CheckoutState extends State<Checkout> {
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
           title: Text("Pagamento"),
-          backgroundColor: Theme.of(context).primaryColor),
+      ),
       body: Center(
         child: SingleChildScrollView(
             child: Column(
