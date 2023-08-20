@@ -202,3 +202,23 @@ List<Pages> getDashButtons(BuildContext context, Function? settingState){
     }),
   ];
 }
+
+InputDecoration inputDecor({
+  IconData? prefixIcon, required String label, Widget? sufixIcon, required BuildContext context
+}){
+  ThemeData theme = Theme.of(context);
+  return InputDecoration(
+    prefixIcon: prefixIcon != null? Icon(prefixIcon) : null,
+    contentPadding: const EdgeInsets.all(10),
+    focusedBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: theme
+          .colorScheme.primary, width: 1.5),
+    ),
+    suffixIcon: sufixIcon,
+    enabledBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: theme
+          .colorScheme.secondary, width: 1.5),
+    ),
+    labelText: label,
+  );
+}

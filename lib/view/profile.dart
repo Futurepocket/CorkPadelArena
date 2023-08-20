@@ -1,3 +1,4 @@
+import 'package:cork_padel_arena/main.dart';
 import 'package:cork_padel_arena/models/checkoutValue.dart';
 import 'package:cork_padel_arena/models/splitScaffoldBody.dart';
 import 'package:cork_padel_arena/models/userr.dart';
@@ -151,7 +152,7 @@ class _ProfileState extends State<Profile> {
                                         border: Border(bottom: BorderSide(color: Colors.grey))
                                     ),
                                     child: ListTile(
-                                        leading: const Icon(Icons.numbers),
+                                        leading: const Icon(Icons.signpost_outlined),
                                         title: Text(
                                           _userr.postCode,
                                           style: const TextStyle(fontSize: 16),
@@ -189,11 +190,11 @@ class _ProfileState extends State<Profile> {
                         ),
                         Positioned(
                           top: 550,
-                          child: Container(
-                            padding: const EdgeInsets.only(top: 15, right: 20),
+
+                            // padding: const EdgeInsets.only(top: 15, right: 20),
                             child: ElevatedButton(
                               child: Text(
-                                AppLocalizations.of(context)!.editProfile,
+                                localizations.editProfile,
                                 style: const TextStyle(fontSize: 15, letterSpacing: 1.2),
                               ),
                               onPressed: () {
@@ -204,7 +205,6 @@ class _ProfileState extends State<Profile> {
                                 }));
                               },
                             ),
-                          ),
                         )
                       ],
                     ),
@@ -212,37 +212,20 @@ class _ProfileState extends State<Profile> {
 
         ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: Stack(children: [
-        FloatingActionButton(
+      floatingActionButton: Badge(
+        label: Text(reservationsToCheckOut.length.toString()),
+        backgroundColor: Theme.of(context).colorScheme.error,
+        isLabelVisible: reservationsToCheckOut.isEmpty? false : true,
+        child: FloatingActionButton(
           backgroundColor: Theme.of(context).colorScheme.secondary,
           onPressed: () {
             showShoppingCart(context).then((value) {
               settingState();
             });
           },
-          child: Icon(
-            Icons.shopping_cart,
-            color: Theme.of(context).colorScheme.onSecondary,
-          ),
+          child: Icon(Icons.shopping_cart, color: Theme.of(context).colorScheme.onSecondary),
         ),
-        reservationsToCheckOut.isEmpty
-            ? Positioned(top: 1.0, left: 1.0, child: Container())
-            : Positioned(
-                top: 1.0,
-                left: 1.0,
-                child: CircleAvatar(
-                  radius: 10,
-                  backgroundColor: Colors.red,
-                  child: Text(
-                    reservationsToCheckOut.length.toString(),
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 11.0,
-                        fontWeight: FontWeight.w500),
-                  ),
-                ),
-              )
-      ]),
+      ),
     );
   }
 }

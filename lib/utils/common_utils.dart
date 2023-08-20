@@ -87,8 +87,8 @@ Future<bool> showShoppingCart(BuildContext ctx) async{
       builder: (_) {
         return GestureDetector(
           onTap: () {},
-          child: ShoppingCart(),
           behavior: HitTestBehavior.opaque,
+          child: ShoppingCart(),
         );
       }) ?? true;
 }
@@ -118,11 +118,11 @@ void showWebView(BuildContext context) {
             onPressed: () {
               Navigator.of(context).pop();
             },
-            background: Colors.red,
-            border: Colors.red,
-            child:  const Text(
+            background: Theme.of(context).colorScheme.error,
+            border: Theme.of(context).colorScheme.error,
+            child: Text(
               'OK',
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: Theme.of(context).colorScheme.onError),
             ),
           ),
         ],
@@ -155,12 +155,12 @@ void showErrorDialog(BuildContext context, String title, Exception e) {
             onPressed: () {
               Navigator.of(context).pop();
             },
+            background: Theme.of(context).colorScheme.error,
+            border: Theme.of(context).colorScheme.error,
             child:  Text(
               'OK',
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: Theme.of(context).colorScheme.onError),
             ),
-            background: Colors.red,
-            border: Colors.red,
           ),
         ],
       );

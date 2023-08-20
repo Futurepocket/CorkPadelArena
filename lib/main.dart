@@ -18,6 +18,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'firebase_options.dart';
 import 'view/login/login.dart';
 
+late AppLocalizations localizations;
 void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
@@ -92,12 +93,11 @@ class _MyAppState extends State<MyApp> {
         useMaterial3: true,
         colorSchemeSeed: const Color.fromRGBO(20, 207, 20, 1),
         brightness: Brightness.light,
-        appBarTheme: const AppBarTheme(
-            elevation: 6,
-        shadowColor: Color.fromRGBO(190, 255, 49, 1),
-        ),
         visualDensity: VisualDensity.adaptivePlatformDensity,
-        //primarySwatch: MaterialColor(_colorMap[1000]!.value, _colorMap),
+        appBarTheme: const AppBarTheme(
+          elevation: 3,
+          // shadowColor: Color.fromRGBO(190, 255, 49, 1),
+        ),
         fontFamily: 'ApexSans',
       ),
       darkTheme: ThemeData(
@@ -105,8 +105,9 @@ class _MyAppState extends State<MyApp> {
         colorSchemeSeed: const Color.fromRGBO(190, 207, 49, 1),
         brightness: Brightness.dark,
         appBarTheme: const AppBarTheme(
-            elevation: 6,
-            shadowColor: Color.fromRGBO(190, 255, 49, 1)),
+            elevation: 3,
+            // shadowColor: Color.fromRGBO(190, 255, 49, 1),
+        ),
         visualDensity: VisualDensity.adaptivePlatformDensity,
         //primarySwatch: MaterialColor(_colorMap[1000]!.value, _colorMap),
         fontFamily: 'ApexSans',

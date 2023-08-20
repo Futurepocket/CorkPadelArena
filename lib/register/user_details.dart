@@ -1,3 +1,5 @@
+import 'package:cork_padel_arena/main.dart';
+import 'package:cork_padel_arena/src/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,13 +12,12 @@ class UserDetails extends StatefulWidget {
 }
 
 class _UserDetailsState extends State<UserDetails> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
-          title: Text("Cork Padel"),
+          title: const Text("Cork Padel"),
           backgroundColor: Theme.of(context).primaryColor,
         ),
         body: Center(
@@ -42,7 +43,6 @@ class UserDetailsWidget extends StatefulWidget {
 }
 
 class _UserDetailsWidgetState extends State<UserDetailsWidget> {
-
   void _saveForm() {
     final isValid = _form.currentState!.validate();
     if (!isValid) {
@@ -50,8 +50,8 @@ class _UserDetailsWidgetState extends State<UserDetailsWidget> {
     }
     _form.currentState!.save();
 
-    AddUser(Userr().id, Userr().name, Userr().surname, Userr().phoneNbr, Userr().address, Userr().city,
-         Userr().postCode, Userr().nif)
+    AddUser(Userr().id, Userr().name, Userr().surname, Userr().phoneNbr,
+            Userr().address, Userr().city, Userr().postCode, Userr().nif)
         .addUser();
 
     //await newUser.addUser();
@@ -71,9 +71,10 @@ class _UserDetailsWidgetState extends State<UserDetailsWidget> {
 
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
     return Container(
       alignment: Alignment.topCenter,
-      margin: EdgeInsets.all(20),
+      margin: const EdgeInsets.all(20),
       width: double.infinity,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -83,7 +84,7 @@ class _UserDetailsWidgetState extends State<UserDetailsWidget> {
             AppLocalizations.of(context)!.personalDetails,
             style: TextStyle(
               fontSize: 26,
-              color: Theme.of(context).primaryColor,
+              color: theme.primaryColor,
             ),
           ),
           Form(
@@ -104,21 +105,9 @@ class _UserDetailsWidgetState extends State<UserDetailsWidget> {
                               textInputAction: TextInputAction.next,
                               keyboardType: TextInputType.name,
                               autofillHints: [AutofillHints.givenName],
-                              decoration: InputDecoration(
-                                contentPadding: EdgeInsets.all(10),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Theme.of(context).primaryColor,
-                                      width: 1.5),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Theme.of(context).primaryColor,
-                                      width: 1.5),
-                                ),
-                                labelText: AppLocalizations.of(context)!.firstName,
-                                // errorText: 'Error Text',
-                              ),
+                              decoration: inputDecor(
+                                  label: localizations.firstName,
+                                  context: context),
                               onSaved: (value) {
                                 Userr().name = value.toString();
                               },
@@ -143,21 +132,9 @@ class _UserDetailsWidgetState extends State<UserDetailsWidget> {
                               textInputAction: TextInputAction.next,
                               keyboardType: TextInputType.name,
                               autofillHints: [AutofillHints.familyName],
-                              decoration: InputDecoration(
-                                contentPadding: EdgeInsets.all(10),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Theme.of(context).primaryColor,
-                                      width: 1.5),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Theme.of(context).primaryColor,
-                                      width: 1.5),
-                                ),
-                                labelText: AppLocalizations.of(context)!.familyName,
-                                // errorText: 'Error Text',
-                              ),
+                              decoration: inputDecor(
+                                  label: localizations.familyName,
+                                  context: context),
                               onSaved: (value) {
                                 Userr().surname = value.toString();
                               },
@@ -179,19 +156,10 @@ class _UserDetailsWidgetState extends State<UserDetailsWidget> {
                     textInputAction: TextInputAction.next,
                     keyboardType: TextInputType.streetAddress,
                     autofillHints: [AutofillHints.fullStreetAddress],
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.all(10),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Theme.of(context).primaryColor, width: 1.5),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Theme.of(context).primaryColor, width: 1.5),
-                      ),
-                      labelText: AppLocalizations.of(context)!.address,
-                      // errorText: 'Error Text',
-                    ),
+                    decoration: inputDecor(
+                        label: localizations.address,
+                        context: context,
+                        prefixIcon: Icons.home_work_outlined),
                     onSaved: (value) {
                       Userr().address = value.toString();
                     },
@@ -210,19 +178,11 @@ class _UserDetailsWidgetState extends State<UserDetailsWidget> {
                     textInputAction: TextInputAction.next,
                     autofillHints: [AutofillHints.telephoneNumber],
                     keyboardType:
-                    TextInputType.numberWithOptions(decimal: false),
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.all(10),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Theme.of(context).primaryColor, width: 1.5),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Theme.of(context).primaryColor, width: 1.5),
-                      ),
-                      labelText: AppLocalizations.of(context)!.phone,
-                    ),
+                        const TextInputType.numberWithOptions(decimal: false),
+                    decoration: inputDecor(
+                        label: localizations.familyName,
+                        context: context,
+                        prefixIcon: Icons.phone),
                     onSaved: (value) {
                       Userr().phoneNbr = value.toString();
                     },
@@ -250,21 +210,10 @@ class _UserDetailsWidgetState extends State<UserDetailsWidget> {
                           textInputAction: TextInputAction.next,
                           keyboardType: TextInputType.streetAddress,
                           autofillHints: [AutofillHints.addressCity],
-                          decoration: InputDecoration(
-                            contentPadding: EdgeInsets.all(10),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Theme.of(context).primaryColor,
-                                  width: 1.5),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Theme.of(context).primaryColor,
-                                  width: 1.5),
-                            ),
-                            labelText: AppLocalizations.of(context)!.city,
-                            // errorText: 'Error Text',
-                          ),
+                          decoration: inputDecor(
+                              label: localizations.city,
+                              context: context,
+                              prefixIcon: Icons.location_city),
                           onSaved: (value) {
                             Userr().city = value.toString();
                           },
@@ -285,21 +234,7 @@ class _UserDetailsWidgetState extends State<UserDetailsWidget> {
                         child: TextFormField(
                           textInputAction: TextInputAction.next,
                           autofillHints: [AutofillHints.postalCode],
-                          decoration: InputDecoration(
-                            contentPadding: EdgeInsets.all(10),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Theme.of(context).primaryColor,
-                                  width: 1.5),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Theme.of(context).primaryColor,
-                                  width: 1.5),
-                            ),
-                            labelText: AppLocalizations.of(context)!.postCode,
-                            // errorText: 'Error Text',
-                          ),
+                          decoration: inputDecor(label: localizations.postCode, context: context, prefixIcon: Icons.signpost_outlined),
                           onSaved: (value) {
                             Userr().postCode = value.toString();
                           },
@@ -320,20 +255,8 @@ class _UserDetailsWidgetState extends State<UserDetailsWidget> {
                   child: TextFormField(
                     textInputAction: TextInputAction.done,
                     keyboardType:
-                        TextInputType.numberWithOptions(decimal: true),
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.all(10),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Theme.of(context).primaryColor, width: 1.5),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Theme.of(context).primaryColor, width: 1.5),
-                      ),
-                      labelText: AppLocalizations.of(context)!.nif,
-                      // errorText: 'Error Text',
-                    ),
+                        const TextInputType.numberWithOptions(decimal: true),
+                    decoration: inputDecor(label: localizations.nif, context: context, prefixIcon: Icons.currency_exchange),
                     onSaved: (value) {
                       Userr().nif = value.toString();
                     },
@@ -351,16 +274,10 @@ class _UserDetailsWidgetState extends State<UserDetailsWidget> {
                   ),
                 ),
 //---------------------------------------//BOTAO-------------------------------------------------------------
-                Container(
-                  width: 150,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: Theme.of(context).primaryColor,
-                      onPrimary: Colors.white,
-                    ),
+
+              ElevatedButton(
                     child: Text(
                       AppLocalizations.of(context)!.submit,
-                      style: TextStyle(fontSize: 15),
                     ),
                     onPressed: () {
                       _saveForm();
@@ -370,7 +287,6 @@ class _UserDetailsWidgetState extends State<UserDetailsWidget> {
                       }
                     },
                   ),
-                ),
               ],
             ),
           ),
@@ -392,8 +308,8 @@ class AddUser {
 
   User? _user;
 
-  AddUser(this._id, this._name, this._surname, this._phoneNbr, this._address, this._city,
-      this._postCode, this._nif);
+  AddUser(this._id, this._name, this._surname, this._phoneNbr, this._address,
+      this._city, this._postCode, this._nif);
 
   CollectionReference users = FirebaseFirestore.instance.collection('users');
 
@@ -413,7 +329,6 @@ class AddUser {
       'postal_code': _postCode,
     }).then((value) {
       print("User Added");
-
     }).catchError((error) => print("Failed to add user: $error"));
   }
 }

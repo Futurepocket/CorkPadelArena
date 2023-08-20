@@ -140,7 +140,7 @@ class _PaymentDetailsState extends State<PaymentDetails> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-          title: Align(
+          title: const Align(
               alignment: Alignment.centerLeft,
               child: Text("Cork Padel Arena")),
           backgroundColor: Theme.of(context).primaryColor),
@@ -151,15 +151,15 @@ class _PaymentDetailsState extends State<PaymentDetails> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'Pagamentos',
                 style: TextStyle(
                   fontFamily: 'Roboto Condensed',
                   fontSize: 16,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(top:8.0),
+              const Padding(
+                padding: EdgeInsets.only(top:8.0),
                 child: Text(
                   'Detalhes de Pagamento',
                   style: TextStyle(
@@ -179,7 +179,7 @@ class _PaymentDetailsState extends State<PaymentDetails> {
                         ))),),
               Container(
                 padding:
-                EdgeInsets.only(top: 20, right: 15, bottom: 15),
+                const EdgeInsets.only(top: 20, right: 15, bottom: 15),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
                 ),
@@ -189,18 +189,18 @@ class _PaymentDetailsState extends State<PaymentDetails> {
                     children: [
                       Container(
                       width: MediaQuery.of(context).size.width,
-                        padding: EdgeInsets.only(top:5, left: 10),
+                        padding: const EdgeInsets.only(top:5, left: 10),
                         child: FutureBuilder<DocumentSnapshot>(
                           future: pagamentos.doc(widget.paymentID).get(),
                           builder:
                               (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
 
                             if (snapshot.hasError) {
-                              return Text("Something went wrong");
+                              return const Text("Something went wrong");
                             }
 
                             if (snapshot.hasData && !snapshot.data!.exists) {
-                              return Text("Document does not exist");
+                              return const Text("Document does not exist");
                             }
 
                             if (snapshot.connectionState == ConnectionState.done) {
@@ -218,7 +218,7 @@ class _PaymentDetailsState extends State<PaymentDetails> {
                                     padding: const EdgeInsets.all(5.0),
                                     child: Row(
                                       children: [
-                                        Text("Nome do Cliente: ", style: TextStyle(fontWeight: FontWeight.bold),),
+                                        const Text("Nome do Cliente: ", style: TextStyle(fontWeight: FontWeight.bold),),
                                         Text('${data['clientName']}')
                                       ],
                                     ),
@@ -227,7 +227,7 @@ class _PaymentDetailsState extends State<PaymentDetails> {
                                     padding: const EdgeInsets.all(5.0),
                                     child: Row(
                                       children: [
-                                          Text("Email do Cliente: ", style: TextStyle(fontWeight: FontWeight.bold),),
+                                          const Text("Email do Cliente: ", style: TextStyle(fontWeight: FontWeight.bold),),
                                         Text('${data['reservations'][0]['client_email']}')
                                       ],
                                     ),
@@ -236,7 +236,7 @@ class _PaymentDetailsState extends State<PaymentDetails> {
                                     padding: const EdgeInsets.all(5.0),
                                     child: Row(
                                       children: [
-                                        Text("ID de Pagamento: ", style: TextStyle(fontWeight: FontWeight.bold),),
+                                        const Text("ID de Pagamento: ", style: TextStyle(fontWeight: FontWeight.bold),),
                                         Text("${data['OrderId']}"),
                                       ],
                                     ),
@@ -245,7 +245,7 @@ class _PaymentDetailsState extends State<PaymentDetails> {
                                     padding: const EdgeInsets.all(5.0),
                                     child: Row(
                                       children: [
-                                        Text("Data do Pedido: ", style: TextStyle(fontWeight: FontWeight.bold),),
+                                        const Text("Data do Pedido: ", style: TextStyle(fontWeight: FontWeight.bold),),
                                         Text("${data['data']}"),
                                       ],
                                     ),
@@ -254,7 +254,7 @@ class _PaymentDetailsState extends State<PaymentDetails> {
                                     padding: const EdgeInsets.all(5.0),
                                     child: Row(
                                       children: [
-                                        Text("Valor: ", style: TextStyle(fontWeight: FontWeight.bold),),
+                                        const Text("Valor: ", style: TextStyle(fontWeight: FontWeight.bold),),
                                         Text("€ ${data['Amount']}"),
                                       ],
                                     ),
@@ -263,13 +263,13 @@ class _PaymentDetailsState extends State<PaymentDetails> {
                                     padding: const EdgeInsets.all(5.0),
                                     child: Row(
                                       children: [
-                                        Text("Confirmado: ", style: TextStyle(fontWeight: FontWeight.bold),),
+                                        const Text("Confirmado: ", style: TextStyle(fontWeight: FontWeight.bold),),
                                         Text("${data['confirmado']}"),
                                       ],
                                     ),
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(top:8.0),
+                                  const Padding(
+                                    padding: EdgeInsets.only(top:8.0),
                                     child: Text("Reservas: ", style: TextStyle(fontWeight: FontWeight.bold),),
                                   ),
                                   Expanded(
@@ -279,7 +279,7 @@ class _PaymentDetailsState extends State<PaymentDetails> {
                                 )
                               );
                             }
-                            return Text("loading");
+                            return const Text("loading");
                           },
                         )
                       ),
@@ -292,24 +292,23 @@ class _PaymentDetailsState extends State<PaymentDetails> {
                   Align(
                       alignment: Alignment.center,
                       child: Column(children: [
-                        const Padding(
-                          padding: EdgeInsets.only(top: 3.0),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 3.0),
                           child: Text(
                             'Este pagemento expirou!',
                             style: TextStyle(
                               fontFamily: 'Roboto Condensed',
                               fontSize: 14,
-                              color: Colors.red,
+                              color: Theme.of(context).colorScheme.error,
                             ),
                           ),
                         ),
                         Container(
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              primary: Colors.red,
-                              onPrimary: Colors.white,
+                              foregroundColor: Theme.of(context).colorScheme.onError, backgroundColor: Theme.of(context).colorScheme.error,
                             ),
-                            child: Text(
+                            child: const Text(
                               "REMOVER PAGAMENTO",
                               style: TextStyle(fontSize: 15,),
                             ),
@@ -330,7 +329,7 @@ class _PaymentDetailsState extends State<PaymentDetails> {
                       primary: Theme.of(context).primaryColor,
                       onPrimary: Colors.white,
                     ),
-                    child: Text(
+                    child: const Text(
                       "CONFIRMAR PAGAMENTO",
                       style: TextStyle(fontSize: 15,),
                     ),

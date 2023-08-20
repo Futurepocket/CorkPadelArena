@@ -67,9 +67,9 @@ class _CheckoutState extends State<Checkout> {
         return StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
               return AlertDialog(
-                title: Text('Pagamento Multibanco'),
+                title: const Text('Pagamento Multibanco'),
                 content: SingleChildScrollView(
-                  padding: EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(8),
                   child:
                   Error != ''?
                   ListBody(
@@ -102,11 +102,11 @@ class _CheckoutState extends State<Checkout> {
                           style: const TextStyle(fontSize: 16),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                      const Padding(
+                        padding: EdgeInsets.only(top: 8.0, bottom: 8.0),
                         child: Text(
                           'Vai receber um email com estes detalhes',
-                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                         ),
                       )
                     ],
@@ -126,7 +126,7 @@ class _CheckoutState extends State<Checkout> {
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
-                    child: Text(
+                    child: const Text(
                       "Cancelar",
                     ),
                   ),
@@ -137,10 +137,10 @@ class _CheckoutState extends State<Checkout> {
                     onPressed: () {
                       Navigator.of(context)
                           .pushReplacement(MaterialPageRoute(builder: (context){
-                            return Dash();
+                            return const Dash();
                       }));
                     },
-                    child: Text(
+                    child: const Text(
                       "OK",
                       style: TextStyle(color: Colors.white),
                     ),
@@ -236,7 +236,7 @@ class _CheckoutState extends State<Checkout> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-          title: Text("Pagamento"),
+          title: const Text("Pagamento"),
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -266,7 +266,7 @@ class _CheckoutState extends State<Checkout> {
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 'Valor total: € ${_price!}.00',
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'Roboto Condensed',
                   fontSize: 24,
                 ),
@@ -355,23 +355,26 @@ class _CheckoutState extends State<Checkout> {
                 //     },
                 //   ),
                 // ),
-                Container(
-                  height: 50,
-                  width: 100,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    color: Theme.of(context).primaryColor,
-                  ),
-                  child: IconButton(
-                    icon: Image.asset('assets/images/Logo_MBWay.png'),
-                    iconSize: 75,
-                    onPressed: () {
-                        Navigator.of(
-                        context,
-                      ).push(MaterialPageRoute(builder: (_) {
-                        return MbWayPayment();
-                      }));
-                    },
+                Padding(
+                  padding: const EdgeInsets.only(top: 18.0),
+                  child: Container(
+                    height: 50,
+                    width: 100,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+                    child: IconButton(
+                      icon: Image.asset('assets/images/Logo_MBWay.png'),
+                      iconSize: 75,
+                      onPressed: () {
+                          Navigator.of(
+                          context,
+                        ).push(MaterialPageRoute(builder: (_) {
+                          return const MbWayPayment();
+                        }));
+                      },
+                    ),
                   ),
                 ),
               ],

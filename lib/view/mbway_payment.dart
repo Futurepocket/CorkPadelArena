@@ -2,10 +2,12 @@ import 'dart:async';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:cork_padel_arena/apis/mbway.dart';
 import 'package:cork_padel_arena/apis/webservice.dart';
+import 'package:cork_padel_arena/main.dart';
 import 'package:cork_padel_arena/models/checkoutValue.dart';
 import 'package:cork_padel_arena/models/payment.dart';
 import 'package:cork_padel_arena/models/reservation.dart';
 import 'package:cork_padel_arena/models/userr.dart';
+import 'package:cork_padel_arena/src/constants.dart';
 import 'package:cork_padel_arena/utils/color_loader.dart';
 import 'package:cork_padel_arena/utils/common_utils.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -43,8 +45,8 @@ class _MbWayPaymentState extends State<MbWayPayment> {
   bool shallIPay = true;
   Map<String, dynamic> companyEmailToCloud = {};
   Map<String, dynamic> clientEmailToCloud = {};
-  // FirebaseFirestore databasePayments = FirebaseFirestore.instance.collection('MBWayPayments').id("");
 
+  // FirebaseFirestore databasePayments = FirebaseFirestore.instance.collection('MBWayPayments').id("");
 
   @override
   void initState() {
@@ -58,7 +60,7 @@ class _MbWayPaymentState extends State<MbWayPayment> {
   generateEmailDetails() {
     reservationsToCheckOut.forEach((element) {
       emailDetails +=
-      '<p>Dia: ${element.day}, das ${element.hour} às ${element.duration}.</p>';
+          '<p>Dia: ${element.day}, das ${element.hour} às ${element.duration}.</p>';
     });
   }
 
@@ -71,7 +73,8 @@ class _MbWayPaymentState extends State<MbWayPayment> {
       'to': emailController.text,
       'message': {
         'subject': "Reserva Confirmada",
-        'html': '''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        'html':
+            '''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
         
         <p>Olá, ${Userr().name},</p>
@@ -90,13 +93,14 @@ class _MbWayPaymentState extends State<MbWayPayment> {
   }
 
   _createCompanyEmail() {
-     companyEmailToCloud = {
-       'to': 'corkpadel@corkpadel.com',
-       'bcc': 'david@corkpadel.com; corkpadel@gmail.com',
-       'message': {
-         'subject': "Nova reserva de ${Userr().name} ${Userr()
-             .surname} na Arena",
-         'html': '''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    companyEmailToCloud = {
+      'to': 'corkpadel@corkpadel.com',
+      'bcc': 'david@corkpadel.com; corkpadel@gmail.com',
+      'message': {
+        'subject':
+            "Nova reserva de ${Userr().name} ${Userr().surname} na Arena",
+        'html':
+            '''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
         
         <p>Reserva de ${Userr().name} ${Userr().surname},</p>
@@ -113,8 +117,8 @@ class _MbWayPaymentState extends State<MbWayPayment> {
        <p>A sua equipa Cork Padel Arena</p>
         
         </html>''',
-       }
-     };
+      }
+    };
   }
 
   DatabaseReference database = FirebaseDatabase.instance.ref();
@@ -130,36 +134,36 @@ class _MbWayPaymentState extends State<MbWayPayment> {
   Widget build(BuildContext context) {
     price = checkoutValue().price.toString();
     void _clearAll() {
-        checkoutValue().reservations = 0;
-        checkoutValue().price = 0;
-        setState(() {
-          price = '0';
-        });
-        reservationsToCheckOut.clear();
-        Navigator.of(context).pop();
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) {
-          return const Dash();
-        }));
-        ScaffoldMessenger.of(context).showSnackBar(
-            newSnackBar(context, const Text('Reservas Efetuados')));
-      }
+      checkoutValue().reservations = 0;
+      checkoutValue().price = 0;
+      setState(() {
+        price = '0';
+      });
+      reservationsToCheckOut.clear();
+      Navigator.of(context).pop();
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) {
+        return const Dash();
+      }));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(newSnackBar(context, const Text('Reservas Efetuados')));
+    }
 
-
-    void itIsDone() async{ //COLOCAR NA CLOUD FUNCTION
-      await Future.delayed(
-          const Duration(milliseconds: 2000), (){
-           _clearAll();
+    void itIsDone() async {
+      //COLOCAR NA CLOUD FUNCTION
+      await Future.delayed(const Duration(milliseconds: 2000), () {
+        _clearAll();
       });
     }
+
     Timer? timer;
 
     void awaitingConfirmation(BuildContext context) async {
-      String idd = 'Arena$paymentTlm${DateFormat('ddMMyyyy HH:mm').format(DateTime.now())}';
+      String idd =
+          'Arena$paymentTlm${DateFormat('ddMMyyyy HH:mm').format(DateTime.now())}';
       Map<String, dynamic> payment = {
         "IdPedido": idPedido!,
-        "DataHoraPedidoRegistado": DateFormat('ddMMyyyy HH:mm')
-            .format(
-            DateTime.now()),
+        "DataHoraPedidoRegistado":
+            DateFormat('ddMMyyyy HH:mm').format(DateTime.now()),
         "EmailCliente": paymentEmail!,
         "Referencia": referencia!,
         "tlmCliente": paymentTlm!,
@@ -178,121 +182,125 @@ class _MbWayPaymentState extends State<MbWayPayment> {
         builder: (context) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
-                if(shallIPay) {
-                  timer?.cancel();
-                  timer = Timer.periodic(Duration(seconds: 2), (Timer t) async {
-                    if (!confirmed) {
-                      // Get reference to Firestore collection
-                      var collectionRef = FirebaseFirestore.instance.collection(
-                          'MBWayPayments');
-                      var doc = await collectionRef.doc(idd).get();
-                      if (doc.exists) {
-                        setState(() {
-                          confirmed = true;
-                        });
-                      } else {
-                        setState(() {
-                          _showLoading = true;
-                          _isAproved = false;
-                          _resultText =
+            if (shallIPay) {
+              timer?.cancel();
+              timer =
+                  Timer.periodic(const Duration(seconds: 2), (Timer t) async {
+                if (!confirmed) {
+                  // Get reference to Firestore collection
+                  var collectionRef =
+                      FirebaseFirestore.instance.collection('MBWayPayments');
+                  var doc = await collectionRef.doc(idd).get();
+                  if (doc.exists) {
+                    setState(() {
+                      confirmed = true;
+                    });
+                  } else {
+                    setState(() {
+                      _showLoading = true;
+                      _isAproved = false;
+                      _resultText =
                           'Por favor confirme o pagamento na app MBWay.';
-                        });
-                        /////////////////////SAVING PAYMENT////////////////////////////////////
-                        List<dynamic> list = reservationsToCheckOut.map((e) =>
-                            Reservation.toMap(e)).toList();
-                        try {
-                          final result = await functions.httpsCallable(
-                              "checkPayment").call({
-                            "reservationsToCheckOut": list,
-                            "companyEmailToCloud": companyEmailToCloud,
-                            "clientEmailToCloud": clientEmailToCloud,
-                            "idPedido": idPedido,
-                            "payment": payment,
-                            "idd": idd
-                          });
-                          print(result);
-                        } on FirebaseFunctionsException catch (error) {
-                          print(error.code);
-                          print(error.details);
-                          print(error.message);
-                        }
-                      }
-                    } else {
-                      timer!.cancel();
-                      setState(() {
-                        _showLoading = false;
-                        _isAproved = false;
-                        _resultText =
-                        'Pagamento confirmado. Receberá confirmação dentro de momentos.';
+                    });
+                    /////////////////////SAVING PAYMENT////////////////////////////////////
+                    List<dynamic> list = reservationsToCheckOut
+                        .map((e) => Reservation.toMap(e))
+                        .toList();
+                    try {
+                      final result =
+                          await functions.httpsCallable("checkPayment").call({
+                        "reservationsToCheckOut": list,
+                        "companyEmailToCloud": companyEmailToCloud,
+                        "clientEmailToCloud": clientEmailToCloud,
+                        "idPedido": idPedido,
+                        "payment": payment,
+                        "idd": idd
                       });
-                      itIsDone();
+                      print(result);
+                    } on FirebaseFunctionsException catch (error) {
+                      print(error.code);
+                      print(error.details);
+                      print(error.message);
                     }
+                  }
+                } else {
+                  timer!.cancel();
+                  setState(() {
+                    _showLoading = false;
+                    _isAproved = false;
+                    _resultText =
+                        'Pagamento confirmado. Receberá confirmação dentro de momentos.';
                   });
-                  return AlertDialog(
-                    content: SingleChildScrollView(
-                      padding: const EdgeInsets.all(8),
-                      child: ListBody(
-                        children: <Widget>[
-                          const Padding(
-                            padding: EdgeInsets.only(bottom: 8.0),
-                            child: Text(
-                              'A aguardar pagamento MBWay',
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          const Text(
-                            "Não feche a app antes de finalizar o pagamento MBWay",
-                            style: TextStyle(color: Colors.red),),
-                          _showLoading ?
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ColorLoader(),
-                          )
-                              :
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                top: 8.0, bottom: 8.0),
-                            child: Text(
-                              _resultText,
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                    actions: <Widget>[
-                      _isAproved ?
-                      Container(
-                      )
-                          : OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                        ),
-                        onPressed: () {
-                          if (timer != null) {
-                            timer!.cancel();
-                          }
-                          setState((){
-                            shallIPay = false;
-                          });
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text(
-                          "CANCELAR",
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ],
-                  );
-                }else{
-                  return SizedBox();
+                  itIsDone();
                 }
-              }
-          );
+              });
+              return AlertDialog(
+                content: SingleChildScrollView(
+                  padding: const EdgeInsets.all(8),
+                  child: ListBody(
+                    children: <Widget>[
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 8.0),
+                        child: Text(
+                          'A aguardar pagamento MBWay',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Text(
+                        "Não feche a app antes de finalizar o pagamento MBWay",
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.error),
+                      ),
+                      _showLoading
+                          ? Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ColorLoader(),
+                            )
+                          : Padding(
+                              padding:
+                                  const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                              child: Text(
+                                _resultText,
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                            )
+                    ],
+                  ),
+                ),
+                actions: <Widget>[
+                  _isAproved
+                      ? Container()
+                      : OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            backgroundColor:
+                                Theme.of(context).colorScheme.error,
+                          ),
+                          onPressed: () {
+                            if (timer != null) {
+                              timer!.cancel();
+                            }
+                            setState(() {
+                              shallIPay = false;
+                            });
+                            Navigator.of(context).pop();
+                          },
+                          child: Text(
+                            "CANCELAR",
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.onError),
+                          ),
+                        ),
+                ],
+              );
+            } else {
+              return const SizedBox();
+            }
+          });
         },
       );
     }
+
     void _saveForm(BuildContext context) {
       final isValid = _form.currentState!.validate();
       if (!isValid) {
@@ -306,102 +314,104 @@ class _MbWayPaymentState extends State<MbWayPayment> {
         builder: (context) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
-                if (!requested) {
-                  _generateReference();
-                  ws.get(Mbway.getRequest(
+            if (!requested) {
+              _generateReference();
+              ws
+                  .get(Mbway.getRequest(
                       referencia: referencia!,
-                      valor: price!, // price!
+                      valor: price!,
+                      // price!
                       nrtlm: paymentTlm!,
                       email: paymentEmail!,
-                      descricao: 'testdesc')).then((value) async {
-                    await Future.delayed(
-                        const Duration(milliseconds: 2000), () {});
-                    if (value.Estado == "000") {
-                      requested = true;
-                      setState(() {
-                        _showLoading = false;
-                        _isAproved = true;
-                        _resultText =
+                      descricao: 'testdesc'))
+                  .then((value) async {
+                await Future.delayed(const Duration(milliseconds: 2000), () {});
+                if (value.Estado == "000") {
+                  requested = true;
+                  setState(() {
+                    _showLoading = false;
+                    _isAproved = true;
+                    _resultText =
                         "Por favor aprove o pagamento na sua app MBWay";
-                        idPedido = value.IdPedido;
-                      });
-                      Navigator.of(context).pop();
-                      awaitingConfirmation(context);
-                    }
-                    else {
-                      setState(() {
-                        _showLoading = false;
-                        _isAproved = false;
-                        _resultText = 'Estado: ${value.Estado}\n'
-                            '${value.MsgDescricao}';
-                      });
-                    }
+                    idPedido = value.IdPedido;
+                  });
+                  Navigator.of(context).pop();
+                  awaitingConfirmation(context);
+                } else {
+                  setState(() {
+                    _showLoading = false;
+                    _isAproved = false;
+                    _resultText = 'Estado: ${value.Estado}\n'
+                        '${value.MsgDescricao}';
                   });
                 }
-                return AlertDialog(
-                  content: SingleChildScrollView(
-                    padding: const EdgeInsets.all(8),
-                    child: ListBody(
-                      children: <Widget>[
-                        const Padding(
-                          padding: EdgeInsets.only(bottom: 8.0),
-                          child: Text(
-                            'A processar pagamento',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        _showLoading ?
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ColorLoader(),
-                        )
-                            :
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                          child: Text(
-                            _resultText,
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  actions: <Widget>[
-                    _isAproved ?
-                    Container(
-                    )
-                        : _showLoading == false ? OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text(
-                        "OK",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ) : OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                      ),
-                      onPressed: () {
-                        setState((){
-                          shallIPay = false;
-                        });
-                        Navigator.of(context).pop();
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text(
-                        "CANCEL",
-                        style: TextStyle(color: Colors.white),
+              });
+            }
+            return AlertDialog(
+              content: SingleChildScrollView(
+                padding: const EdgeInsets.all(8),
+                child: ListBody(
+                  children: <Widget>[
+                    const Padding(
+                      padding: EdgeInsets.only(bottom: 8.0),
+                      child: Text(
+                        'A processar pagamento',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                     ),
+                    _showLoading
+                        ? Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ColorLoader(),
+                          )
+                        : Padding(
+                            padding:
+                                const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                            child: Text(
+                              _resultText,
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          )
                   ],
-                );
-              }
-          );
+                ),
+              ),
+              actions: <Widget>[
+                _isAproved
+                    ? Container()
+                    : _showLoading == false
+                        ? OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.error,
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text(
+                              "OK",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          )
+                        : OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.error,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                shallIPay = false;
+                              });
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text(
+                              "CANCEL",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+              ],
+            );
+          });
         },
       );
     }
@@ -409,159 +419,124 @@ class _MbWayPaymentState extends State<MbWayPayment> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-          title: const Text("Pagamento"),
-          backgroundColor: Theme
-              .of(context)
-              .primaryColor),
+        title: const Text("Pagamento"),
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(35.0),
           child: Form(
             key: _form,
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Image.asset(
-                      'assets/images/logo.png',
-                      width: 80.0,
-                      height: 100.0,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0),
+            child:
+                Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Image.asset(
+                  'assets/images/logo.png',
+                  width: 80.0,
+                  height: 100.0,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10.0),
+                child: Card(
+                  clipBehavior: Clip.antiAlias,
+                  color: Theme.of(context).colorScheme.secondary,
+                  child: Container(
+                    width: 100,
+                    padding: const EdgeInsets.all(8),
                     child: Image.asset(
                       'assets/images/Logo_MBWay.png',
-                      width: 80.0,
-                      height: 100.0,
+                      // width: 80.0,
+                      scale: 0.5,
+                      // height: 80.0,
                     ),
                   ),
+                ),
+              ),
 
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: Text(
-                      'Valor total: € $price.00',
-                      style: const TextStyle(
-                        fontFamily: 'Roboto Condensed',
-                        fontSize: 24,
-                      ),
-                    ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Text(
+                  'Valor total: € $price.00',
+                  style: const TextStyle(
+                    fontFamily: 'Roboto Condensed',
+                    fontSize: 24,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      'Pagamento',
-                      style: TextStyle(
-                        fontFamily: 'Roboto Condensed',
-                        fontSize: 26,
-                        color: Theme
-                            .of(context)
-                            .primaryColor,
-                      ),
-                    ),
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text(
+                  'Pagamento',
+                  style: TextStyle(
+                    fontSize: 26,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: TextFormField(
-                      controller: tlmController,
-                      textInputAction: TextInputAction.next,
-                      keyboardType:
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: TextFormField(
+                  controller: tlmController,
+                  textInputAction: TextInputAction.next,
+                  keyboardType:
                       const TextInputType.numberWithOptions(decimal: false),
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.all(10),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Theme
-                                  .of(context)
-                                  .primaryColor,
-                              width: 1.5),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Theme
-                                  .of(context)
-                                  .primaryColor,
-                              width: 1.5),
-                        ),
-                        labelText: 'Numero de Telemovel',
-                        // errorText: 'Error Text',
-                      ),
-                      onSaved: (value) {
-                        paymentTlm = value.toString();
-                      },
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return AppLocalizations.of(context)!.required;
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
+                  decoration: inputDecor(
+                      label: localizations.phone,
+                      context: context,
+                      prefixIcon: Icons.phone),
+                  onSaved: (value) {
+                    paymentTlm = value.toString();
+                  },
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return AppLocalizations.of(context)!.required;
+                    }
+                    return null;
+                  },
+                ),
+              ),
 
 //---------------------------------------//EMAIL-------------------------------------------------------------
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: TextFormField(
-                      textInputAction: TextInputAction.next,
-                      keyboardType: TextInputType.emailAddress,
-                      controller: emailController,
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.all(10),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Theme
-                                  .of(context)
-                                  .primaryColor, width: 1.5),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Theme
-                                  .of(context)
-                                  .primaryColor, width: 1.5),
-                        ),
-                        labelText: "Email",
-                        // errorText: 'Error Text',
-                      ),
-                      onSaved: (value) {
-                        paymentEmail = value.toString();
-                      },
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return AppLocalizations.of(context)!.required;
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: TextFormField(
+                  textInputAction: TextInputAction.next,
+                  keyboardType: TextInputType.emailAddress,
+                  controller: emailController,
+                  decoration: inputDecor(
+                      label: "Email",
+                      context: context,
+                      prefixIcon: Icons.alternate_email),
+                  onSaved: (value) {
+                    paymentEmail = value.toString();
+                  },
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return AppLocalizations.of(context)!.required;
+                    }
+                    return null;
+                  },
+                ),
+              ),
 //---------------------------------------//BOTAO-------------------------------------------------------------
-                  Container(
-                    width: 150,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        primary: Theme
-                            .of(context)
-                            .primaryColor,
-                        onPrimary: Colors.white,
-                      ),
-                      child: Text(
-                        AppLocalizations.of(context)!.submit,
-                        style: const TextStyle(fontSize: 15),
-                      ),
-                      onPressed: () {
-                        final isValid = _form.currentState!.validate();
-                        if (isValid) {
-                          _saveForm(context);
-                        }
-                      },
-                    ),
+
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                  child: Text(
+                    AppLocalizations.of(context)!.submit,
                   ),
-                ]
-            ),
+                  onPressed: () {
+                    final isValid = _form.currentState!.validate();
+                    if (isValid) {
+                      _saveForm(context);
+                    }
+                  },
+                ),
+              ),
+            ]),
           ),
         ),
-
-
       ),
     );
   }

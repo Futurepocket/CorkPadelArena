@@ -53,8 +53,8 @@ android {
         minSdkVersion 21
         multiDexEnabled = true
         targetSdkVersion 33
-        versionCode 15
-        versionName "2.2.1"
+        versionCode 16
+        versionName "2.2.2"
     }
 
     signingConfigs {

@@ -90,37 +90,22 @@ class _AdminDashState extends State<AdminDash> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: Stack(children: [
-        FloatingActionButton(
+      floatingActionButton: Badge(
+        label: Text(_check.reservations.toString()),
+        backgroundColor: Theme.of(context).colorScheme.error,
+        isLabelVisible: _check.reservations == 0? false : true,
+        child: FloatingActionButton(
           backgroundColor: Theme.of(context).colorScheme.secondary,
           onPressed: () {
             showShoppingCart(context).then((value) {
-              settingState();
+              setState(() {
+
+              });
             });
           },
-          child: Icon(
-            Icons.shopping_cart,
-            color: Theme.of(context).colorScheme.onSecondary,
-          ),
+          child: Icon(Icons.shopping_cart, color: Theme.of(context).colorScheme.onSecondary),
         ),
-        _check.reservations == 0
-            ? Positioned(top: 1.0, left: 1.0, child: Container())
-            : Positioned(
-                top: 1.0,
-                left: 1.0,
-                child: CircleAvatar(
-                  radius: 10,
-                  backgroundColor: Colors.red,
-                  child: Text(
-                    _check.reservations.toString(),
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 11.0,
-                        fontWeight: FontWeight.w500),
-                  ),
-                ),
-              )
-      ]),
+      ),
     );
   }
 }

@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cork_padel_arena/apis/local_auth_api.dart';
+import 'package:cork_padel_arena/main.dart';
+import 'package:cork_padel_arena/src/constants.dart';
 import 'package:cork_padel_arena/utils/common_utils.dart';
 import 'package:cork_padel_arena/utils/firebase_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -199,6 +201,8 @@ class _LoginState extends State<Login> {
   var _isObscure = true;
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
+    localizations = AppLocalizations.of(context)!;
       return Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
@@ -228,8 +232,7 @@ class _LoginState extends State<Login> {
                         AppLocalizations.of(context)!.signIn,
                         style: TextStyle(
                           fontSize: 26,
-                          color: Theme
-                              .of(context)
+                          color: theme
                               .colorScheme.secondary,
                         ),
                       ),
@@ -249,21 +252,7 @@ class _LoginState extends State<Login> {
                                   enableInteractiveSelection: true,
                                   textInputAction: TextInputAction.next,
                                   keyboardType: TextInputType.emailAddress,
-                                  decoration: InputDecoration(
-                                    prefixIcon: const Icon(Icons.alternate_email),
-                                    contentPadding: const EdgeInsets.all(10),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(color: Theme
-                                          .of(context)
-                                          .colorScheme.secondary, width: 1.5),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(color: Theme
-                                          .of(context)
-                                          .colorScheme.secondary, width: 1.5),
-                                    ),
-                                    labelText: 'Email',
-                                  ),
+                                  decoration: inputDecor(prefixIcon: Icons.alternate_email, label: 'Email', context: context),
                                   validator: (value) {
                                     if (value!.isEmpty) {
                                       return AppLocalizations.of(context)!
@@ -280,31 +269,12 @@ class _LoginState extends State<Login> {
                                   autocorrect: false,
                                   obscureText: _isObscure,
                                   autofillHints: [AutofillHints.password],
-                                  decoration: InputDecoration(
-                                    prefixIcon: const Icon(Icons.password),
-                                    suffixIcon:
-                                    GestureDetector(
-                                        onTap: () =>
-                                            setState(() {
-                                              _isObscure = !_isObscure;
-                                            }),
-                                        child: Icon(_isObscure
-                                            ? Icons.visibility
-                                            : Icons.visibility_off)),
-                                    contentPadding: const EdgeInsets.all(10),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(color: Theme
-                                          .of(context)
-                                          .colorScheme.secondary, width: 1.5),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(color: Theme
-                                          .of(context)
-                                          .colorScheme.secondary, width: 1.5),
-                                    ),
-                                    labelText: AppLocalizations.of(context)!
-                                        .password,
-                                  ),
+                                  decoration: inputDecor(prefixIcon: Icons.password, context: context, label: localizations.password, sufixIcon: IconButton(onPressed: () =>
+                                      setState(() {
+                                        _isObscure = !_isObscure;
+                                      }), icon: Icon(_isObscure
+                                      ? Icons.visibility
+                                      : Icons.visibility_off))),
                                   controller: _passwordController,
                                   validator: (value) {
                                     if (value!.isEmpty) {
@@ -320,13 +290,15 @@ class _LoginState extends State<Login> {
                                 child: FittedBox(
                                   fit: BoxFit.none,
                                   child: ElevatedButton(
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                    child: Wrap(
                                       children: [
                                         const Icon(Icons.login),
-                                        Text(
-                                          AppLocalizations.of(context)!.login,
-                                          style: const TextStyle(fontSize: 15),
+                                        Padding(
+                                          padding: const EdgeInsets.only(left: 5.0),
+                                          child: Text(
+                                              AppLocalizations.of(context)!.login,
+                                              style: const TextStyle(fontSize: 15),
+                                            ),
                                         ),
                                       ],
                                     ),
@@ -345,12 +317,14 @@ class _LoginState extends State<Login> {
                                   child: FittedBox(
                                     fit: BoxFit.none,
                                     child: ElevatedButton(
-                                        child: const Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                        child: const Wrap(
                                           children: [
                                             Icon(Icons.fingerprint),
-                                            Text(
-                                              'Login Biometrico'
+                                            Padding(
+                                              padding: EdgeInsets.only(left: 5.0),
+                                              child: Text(
+                                                'Login Biometrico'
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -414,8 +388,7 @@ class _LoginState extends State<Login> {
                                 child: Text(AppLocalizations.of(context)!.or,
                                     style: TextStyle(
                                       fontSize: 16,
-                                      color: Theme
-                                          .of(context)
+                                      color: theme
                                           .colorScheme.secondary,
                                     )),
                               ),
@@ -424,13 +397,15 @@ class _LoginState extends State<Login> {
                                 // padding: const EdgeInsets.only(
                                 //     left: 10, right: 10),
                                 child: ElevatedButton(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  child: Wrap(
                                     children: [
                                       const Icon(Icons.app_registration),
-                                      Text(
-                                        AppLocalizations.of(context)!.register,
-                                        style: const TextStyle(fontSize: 15),
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 5.0),
+                                        child: Text(
+                                          AppLocalizations.of(context)!.register,
+                                          style: const TextStyle(fontSize: 15),
+                                        ),
                                       ),
                                     ],
                                   ),

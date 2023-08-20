@@ -326,39 +326,19 @@ class _ReserveState extends State<Reserve> {
 
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: Stack(
-          children: [
-            FloatingActionButton(
-              backgroundColor: Theme.of(context).colorScheme.secondary,
-              onPressed: () {
-                ShoppingCart().createState().build(context);
-                showShoppingCart(context).then((value) {
-                  settingState();
-                });
-              },
-              child: Icon(Icons.shopping_cart, color: Theme.of(context).colorScheme.onSecondary),
-            ),
-            reservationsToCheckOut.isEmpty?
-            Positioned(
-                top: 1.0,
-                left: 1.0,
-                child: Container())
-                : Positioned(
-              top: 1.0,
-              left: 1.0,
-              child: CircleAvatar(
-                radius: 10,
-                backgroundColor: Colors.red,
-                child: Text(reservationsToCheckOut.length.toString(),
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 11.0,
-                      fontWeight: FontWeight.w500
-                  ),
-                ),
-              ),
-            )
-          ]
+      floatingActionButton: Badge(
+        label: Text(reservationsToCheckOut.length.toString()),
+        backgroundColor: Theme.of(context).colorScheme.error,
+        isLabelVisible: reservationsToCheckOut.isEmpty? false : true,
+        child: FloatingActionButton(
+          backgroundColor: Theme.of(context).colorScheme.secondary,
+          onPressed: () {
+            showShoppingCart(context).then((value) {
+              settingState();
+            });
+          },
+          child: Icon(Icons.shopping_cart, color: Theme.of(context).colorScheme.onSecondary),
+        ),
       ),
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
@@ -394,9 +374,9 @@ class _ReserveState extends State<Reserve> {
                       padding: const EdgeInsets.only(top: 20.0, right:10),
                       child: Text(
                         AppLocalizations.of(context)!.attention30Mins,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
-                          color: Colors.red,
+                          color: Theme.of(context).colorScheme.error,
                         ),
                       ),
                     ),

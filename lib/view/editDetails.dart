@@ -1,3 +1,6 @@
+import 'package:cork_padel_arena/main.dart';
+import 'package:cork_padel_arena/src/constants.dart';
+
 import '../src/profileUpdatedSplash.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -122,20 +125,7 @@ class _EditDetailsWidgetState extends State<EditDetailsWidget> {
                             child: TextFormField(
                               controller: nameController,
                               textInputAction: TextInputAction.next,
-                              decoration: InputDecoration(
-                                contentPadding: const EdgeInsets.all(10),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Theme.of(context).primaryColor, width: 1.5),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Theme.of(context).primaryColor,
-                                      width: 1.5),
-                                ),
-                                labelText: 'Nome',
-                                // errorText: 'Error Text',
-                              ),
+                              decoration: inputDecor(label: localizations.name, context: context),
                               onSaved: (value) {
                                 _userr.name = value.toString();
                               },
@@ -158,21 +148,7 @@ class _EditDetailsWidgetState extends State<EditDetailsWidget> {
                             child: TextFormField(
                               controller: surnameController,
                               textInputAction: TextInputAction.next,
-                              decoration: InputDecoration(
-                                contentPadding: const EdgeInsets.all(10),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Theme.of(context).primaryColor,
-                                      width: 1.5),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Theme.of(context).primaryColor,
-                                      width: 1.5),
-                                ),
-                                labelText: 'Sobrenome',
-                                // errorText: 'Error Text',
-                              ),
+                              decoration: inputDecor(label: localizations.familyName, context: context),
                               onSaved: (value) {
                                 _userr.surname = value.toString();
                               },
@@ -193,19 +169,7 @@ class _EditDetailsWidgetState extends State<EditDetailsWidget> {
                   child: TextFormField(
                     textInputAction: TextInputAction.next,
                     controller: addressController,
-                    decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.all(10),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Theme.of(context).primaryColor, width: 1.5),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Theme.of(context).primaryColor, width: 1.5),
-                      ),
-                      labelText: 'Morada',
-                      // errorText: 'Error Text',
-                    ),
+                    decoration: inputDecor(label: localizations.address, context: context, prefixIcon: Icons.place_outlined),
                     onSaved: (value) {
                       _userr.address = value.toString();
                     },
@@ -228,21 +192,7 @@ class _EditDetailsWidgetState extends State<EditDetailsWidget> {
                         child: TextFormField(
                           controller: cityController,
                           textInputAction: TextInputAction.next,
-                          decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.all(10),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Theme.of(context).primaryColor,
-                                  width: 1.5),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Theme.of(context).primaryColor,
-                                  width: 1.5),
-                            ),
-                            labelText: 'Localidade',
-                            // errorText: 'Error Text',
-                          ),
+                          decoration: inputDecor(label: localizations.city, context: context, prefixIcon: Icons.location_city_outlined),
                           onSaved: (value) {
                             _userr.city = value.toString();
                           },
@@ -263,21 +213,7 @@ class _EditDetailsWidgetState extends State<EditDetailsWidget> {
                         child: TextFormField(
                           controller: postCodeController,
                           textInputAction: TextInputAction.next,
-                          decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.all(10),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Theme.of(context).primaryColor,
-                                  width: 1.5),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Theme.of(context).primaryColor,
-                                  width: 1.5),
-                            ),
-                            labelText: 'Codigo Postal',
-                            // errorText: 'Error Text',
-                          ),
+                          decoration: inputDecor(label: localizations.postCode, context: context, prefixIcon: Icons.signpost_outlined),
                           onSaved: (value) {
                             _userr.postCode = value.toString();
                           },
@@ -301,19 +237,7 @@ class _EditDetailsWidgetState extends State<EditDetailsWidget> {
                     autofillHints: [AutofillHints.telephoneNumber],
                     keyboardType:
                     const TextInputType.numberWithOptions(decimal: false),
-                    decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.all(10),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Theme.of(context).primaryColor, width: 1.5),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Theme.of(context).primaryColor, width: 1.5),
-                      ),
-                      labelText: 'Numero de Telemovel',
-                      // errorText: 'Error Text',
-                    ),
+                    decoration: inputDecor(label: localizations.phone, context: context, prefixIcon: Icons.phone),
                     onSaved: (value) {
                       _userr.phoneNbr = value.toString();
                     },
@@ -337,19 +261,7 @@ class _EditDetailsWidgetState extends State<EditDetailsWidget> {
                     textInputAction: TextInputAction.next,
                     keyboardType:
                         const TextInputType.numberWithOptions(decimal: true),
-                    decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.all(10),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Theme.of(context).primaryColor, width: 1.5),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Theme.of(context).primaryColor, width: 1.5),
-                      ),
-                      labelText: 'NIF',
-                      // errorText: 'Error Text',
-                    ),
+                    decoration: inputDecor(label: localizations.nif, context: context, prefixIcon: Icons.account_balance_outlined),
                     onSaved: (value) {
                       _userr.nif = value.toString();
                     },
@@ -366,14 +278,11 @@ class _EditDetailsWidgetState extends State<EditDetailsWidget> {
                   ),
                 ),
 //---------------------------------------//BOTAO-------------------------------------------------------------
-                Container(
-                  width: 150,
-                  child: ElevatedButton(
+                ElevatedButton(
                     style: ElevatedButton.styleFrom(
                     ),
-                    child: const Text(
-                      "Submeter",
-                      style: TextStyle(fontSize: 15),
+                    child: Text(
+                      localizations.submit,
                     ),
                     onPressed: () {
                       _saveForm();
@@ -386,7 +295,6 @@ class _EditDetailsWidgetState extends State<EditDetailsWidget> {
                       }
                     },
                   ),
-                ),
               ],
             ),
           ),

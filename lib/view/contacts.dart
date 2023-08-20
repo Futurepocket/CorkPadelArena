@@ -86,7 +86,7 @@ class _ContactsState extends State<Contacts> {
                               ),
                               onTap: () {
                         launchUrlString(
-                            'mailto:corkpadel@corkpadel.com?subject=Cork%20Padel%20Arena');
+                            'mailto:corkpadel@corkpadel.com?subject=Cork%20Padel%20Arena', mode: LaunchMode.externalApplication);
                       },
                               trailing: const Icon(Icons.touch_app),
                             ),
@@ -107,7 +107,7 @@ class _ContactsState extends State<Contacts> {
                                     fontWeight: FontWeight.bold
                                 ),
                               ),
-                              onTap: () async => await launchUrlString('tel://912482338'),
+                              onTap: () async => await launchUrlString('tel://912482338', mode: LaunchMode.externalApplication),
                               trailing: const Icon(Icons.touch_app),
                             ),
                           ),
@@ -127,7 +127,7 @@ class _ContactsState extends State<Contacts> {
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold
                                 ),),
-                              onTap: () => launchUrlString("https://goo.gl/maps/jRBM83orrxARDWDA6"),
+                              onTap: () => launchUrlString("https://goo.gl/maps/jRBM83orrxARDWDA6", mode: LaunchMode.externalApplication),
                               trailing: const Icon(Icons.touch_app),
                             ),
                           ),
@@ -147,41 +147,21 @@ class _ContactsState extends State<Contacts> {
           ),
         ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: Stack(
-          children: [
-            FloatingActionButton(
-              backgroundColor: Theme.of(context).colorScheme.secondary,
-              onPressed: () {
-                showShoppingCart(context).then((value) {
-                  setState(() {
+      floatingActionButton: Badge(
+        label: Text(reservationsToCheckOut.length.toString()),
+        backgroundColor: Theme.of(context).colorScheme.error,
+        isLabelVisible: reservationsToCheckOut.isEmpty? false : true,
+        child: FloatingActionButton(
+          backgroundColor: Theme.of(context).colorScheme.secondary,
+          onPressed: () {
+            showShoppingCart(context).then((value) {
+              setState(() {
 
-                  });
-                });
-              },
-              child: Icon(Icons.shopping_cart, color: Theme.of(context).colorScheme.onSecondary),
-            ),
-
-            reservationsToCheckOut.isEmpty?
-            Positioned(
-                top: 1.0,
-                left: 1.0,
-                child: Container())
-                : Positioned(
-              top: 1.0,
-              left: 1.0,
-              child: CircleAvatar(
-                radius: 10,
-                backgroundColor: Colors.red,
-                child: Text(reservationsToCheckOut.length.toString(),
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 11.0,
-                      fontWeight: FontWeight.w500
-                  ),
-                ),
-              ),
-            )
-          ]
+              });
+            });
+          },
+          child: Icon(Icons.shopping_cart, color: Theme.of(context).colorScheme.onSecondary),
+        ),
       ),
     );
   }

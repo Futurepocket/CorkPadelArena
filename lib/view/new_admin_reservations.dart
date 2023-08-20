@@ -110,7 +110,7 @@ class _NewAdminReservationsState extends State<NewAdminReservations> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Reservas'),
+        title: const Text('Reservas'),
       ),
       body: kReservations == null? Center(child: ColorLoader(),) :Column(
         children: [
@@ -130,12 +130,12 @@ class _NewAdminReservationsState extends State<NewAdminReservations> {
             onDaySelected: _onDaySelected,
             calendarStyle: CalendarStyle(
               markersMaxCount: 4,
-              markerDecoration: BoxDecoration(
+              markerDecoration: const BoxDecoration(
                 color: Colors.green,
                 shape: BoxShape.circle,
               ),
-              todayDecoration: BoxDecoration(
-                color: const Color.fromRGBO(212, 207, 96, 0.7),
+              todayDecoration: const BoxDecoration(
+                color: Color.fromRGBO(212, 207, 96, 0.7),
                 shape: BoxShape.circle,
               ),
               selectedDecoration: BoxDecoration(
@@ -174,19 +174,19 @@ class _NewAdminReservationsState extends State<NewAdminReservations> {
                       child: Card(
                         elevation: 5,
                         child: ListTile(
-                          leading: Icon(Icons.timelapse),
+                          leading: const Icon(Icons.timelapse),
                           title: Text(value[index].userEmail),
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text('Dia ${value[index].day} Das ${value[index].hour} às ${value[index].duration}'),
-                              value[index].completed == false? Text('No carrinho do utilizador', style: TextStyle(color: Colors.red, fontSize: 10),)
+                              value[index].completed == false? Text('No carrinho do utilizador', style: TextStyle(color: Theme.of(context).colorScheme.error, fontSize: 10),)
                                   :Container()
                             ],
                           ),
                           trailing: IconButton(
                             onPressed: (){_deleting(context, value[index].id);},
-                              icon: Icon(Icons.delete, color: Colors.red,),
+                              icon: Icon(Icons.delete, color: Theme.of(context).colorScheme.error,),
                           ),
                         ),
                       ),
@@ -226,12 +226,12 @@ class _NewAdminReservationsState extends State<NewAdminReservations> {
                     onPressed: () {
                       Navigator.of(context).pop(false);
                     },
+                    background: Colors.white,
+                    border: Theme.of(context).colorScheme.primary,
                     child: Text(
                       AppLocalizations.of(context)!.doNotCancel,
                       style: TextStyle(color: Theme.of(context).colorScheme.primary),
                     ),
-                    background: Colors.white,
-                    border: Theme.of(context).colorScheme.primary,
                   ),
                   StyledButton(
                     onPressed: () {
@@ -242,12 +242,12 @@ class _NewAdminReservationsState extends State<NewAdminReservations> {
                       });
                       _groupReservations(today);
                     },
+                    background: Theme.of(context).colorScheme.error,
+                    border: Theme.of(context).colorScheme.error,
                     child: Text(
                       AppLocalizations.of(context)!.yesCancel,
-                      style: const TextStyle(color: Colors.white),
+                      style: TextStyle(color: Theme.of(context).colorScheme.onError),
                     ),
-                    background: Colors.red,
-                    border: Colors.red,
                   ),
                 ],
               );

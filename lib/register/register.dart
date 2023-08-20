@@ -1,3 +1,5 @@
+import 'package:cork_padel_arena/main.dart';
+import 'package:cork_padel_arena/src/constants.dart';
 import 'package:cork_padel_arena/utils/common_utils.dart';
 import 'package:cork_padel_arena/utils/firebase_utils.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -22,6 +24,7 @@ class _RegisterState extends State<Register> {
 
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
@@ -54,7 +57,7 @@ class _RegisterState extends State<Register> {
                         AppLocalizations.of(context)!.registration,
                         style: TextStyle(
                           fontSize: 26,
-                          color: Theme.of(context).colorScheme.secondary,
+                          color: theme.colorScheme.secondary,
                         ),
                       ),
                     ),
@@ -77,21 +80,7 @@ class _RegisterState extends State<Register> {
                                         keyboardType: TextInputType.name,
                                         autofillHints: [AutofillHints.givenName],
                                         textInputAction: TextInputAction.next,
-                                        decoration: InputDecoration(
-                                          contentPadding: const EdgeInsets.all(10),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Theme.of(context).colorScheme.secondary,
-                                                width: 1.5),
-                                          ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Theme.of(context).colorScheme.secondary,
-                                                width: 1.5),
-                                          ),
-                                          labelText: 'Nome',
-                                          // errorText: 'Error Text',
-                                        ),
+                                        decoration: inputDecor(label: localizations.name, context: context),
                                         controller: _displayNameController,
                                         validator: (value) {
                                           if (value!.isEmpty) {
@@ -109,21 +98,7 @@ class _RegisterState extends State<Register> {
                                         keyboardType: TextInputType.name,
                                         autofillHints: [AutofillHints.familyName],
                                         textInputAction: TextInputAction.next,
-                                        decoration: InputDecoration(
-                                          contentPadding: const EdgeInsets.all(10),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Theme.of(context).colorScheme.secondary,
-                                                width: 1.5),
-                                          ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Theme.of(context).colorScheme.secondary,
-                                                width: 1.5),
-                                          ),
-                                          labelText: 'Sobrenome',
-                                          // errorText: 'Error Text',
-                                        ),
+                                        decoration: inputDecor(label: localizations.familyName, context: context),
                                         controller: _displaySurnameController,
                                         validator: (value) {
                                           if (value!.isEmpty) {
@@ -143,19 +118,7 @@ class _RegisterState extends State<Register> {
                                 keyboardType: TextInputType.emailAddress,
                                 autofillHints: [AutofillHints.email],
                                 textInputAction: TextInputAction.next,
-                                decoration: InputDecoration(
-                                  contentPadding: const EdgeInsets.all(10),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: Theme.of(context).colorScheme.secondary, width: 1.5),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: Theme.of(context).colorScheme.secondary, width: 1.5),
-                                  ),
-                                  labelText: 'Email',
-                                  // errorText: 'Error Text',
-                                ),
+                                decoration: inputDecor(label: 'Email', context: context),
                                 controller: _emailController,
                                 validator: (value) {
                                   if (value!.isEmpty) {
@@ -174,17 +137,7 @@ class _RegisterState extends State<Register> {
                                 autocorrect: false,
                                 obscureText: true,
                                 autofillHints: [AutofillHints.password],
-                                decoration: InputDecoration(
-                                  contentPadding: const EdgeInsets.all(10),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary, width: 1.5),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary, width: 1.5),
-                                  ),
-                                  labelText: 'Password',
-                                  // errorText: 'Error Text',
-                                ),
+                                decoration: inputDecor(label: localizations.password, context: context),
                                 controller: _passController,
                                 validator: (value) {
                                   if (value!.isEmpty) {
@@ -200,17 +153,7 @@ class _RegisterState extends State<Register> {
                                 enableSuggestions: false,
                                 autocorrect: false,
                                 obscureText: true,
-                                decoration: InputDecoration(
-                                  contentPadding: const EdgeInsets.all(10),
-                                  focusedBorder:  OutlineInputBorder(
-                                    borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary, width: 1.5),
-                                  ),
-                                  enabledBorder:  OutlineInputBorder(
-                                    borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary, width: 1.5),
-                                  ),
-                                  labelText: AppLocalizations.of(context)!.confirmPassword,
-                                  // errorText: 'Error Text',
-                                ),
+                                decoration: inputDecor(label: localizations.confirmPassword, context: context),
                                 controller: _passwordController,
                                 validator: (value) {
                                   if (value!.isEmpty) {
@@ -223,40 +166,35 @@ class _RegisterState extends State<Register> {
                                 },
                               ),
                             ),
-                            Container(
-                              width: 150,
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
                               child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        foregroundColor: Theme.of(context).colorScheme.onSecondary, backgroundColor: Theme.of(context).colorScheme.secondary,
+                                        child: Text(localizations.submit,
+                                        ),
+                                        onPressed: () {
+                                          if (_formKey.currentState!.validate()) {
+                                            registerAccount(
+                                              _emailController.text,
+                                              _displayNameController.text,
+                                              _passwordController.text,
+                                                    (e) => showErrorDialog(context, AppLocalizations.of(context)!.registerError, e)
+                                            ).then((value) {
+                                              if(value == true){
+                                                getUserDetails().then((user){
+                                                  Userr().id = user!.uid.toString();
+                                                  Userr().email = user.email.toString();
+                                                  Userr().name = _displayNameController.text;
+                                                  Userr().surname = _displaySurnameController.text;
+                                                  Userr().email = _emailController.text;
+                                                  user.sendEmailVerification();
+                                                });
+                                                Navigator.pushReplacementNamed(context, '/splash');
+                                              }
+                                            });
+                                          }
+                                        },
                                       ),
-                                      child: Text(
-                                        AppLocalizations.of(context)!.submit,
-                                        style: const TextStyle(fontSize: 15),
-                                      ),
-                                      onPressed: () {
-                                        if (_formKey.currentState!.validate()) {
-                                          registerAccount(
-                                            _emailController.text,
-                                            _displayNameController.text,
-                                            _passwordController.text,
-                                                  (e) => showErrorDialog(context, AppLocalizations.of(context)!.registerError, e)
-                                          ).then((value) {
-                                            if(value == true){
-                                              getUserDetails().then((user){
-                                                Userr().id = user!.uid.toString();
-                                                Userr().email = user.email.toString();
-                                                Userr().name = _displayNameController.text;
-                                                Userr().surname = _displaySurnameController.text;
-                                                Userr().email = _emailController.text;
-                                                user.sendEmailVerification();
-                                              });
-                                              Navigator.pushReplacementNamed(context, '/splash');
-                                            }
-                                          });
-                                        }
-                                      },
-                                    ),
-                            )
+                            ),
                           ],
                         ),
                       ),

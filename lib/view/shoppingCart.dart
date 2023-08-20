@@ -1,3 +1,4 @@
+import 'package:cork_padel_arena/main.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:cork_padel_arena/models/ReservationStreamPublisher.dart';
 import 'package:cork_padel_arena/models/reservation.dart';
@@ -25,20 +26,17 @@ class _ShoppingCartState extends State<ShoppingCart> {
   @override
   Widget build(BuildContext context) {
     number = 0;
-    return Container(
-      padding: EdgeInsets.all(10),
-      width: MediaQuery.of(context).size.width,
-      decoration: BoxDecoration(color: Colors.grey.shade100),
-      child: Column(
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: const Text(
+        'Carrinho',
+        style: TextStyle(
+          fontFamily: 'Roboto Condensed',
+        ),
+      ),),
+      body: Column(
         children: [
-          Text(
-            'Carrinho',
-            style: TextStyle(
-              fontFamily: 'Roboto Condensed',
-              fontSize: 26,
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(2.0),
@@ -67,10 +65,10 @@ class _ShoppingCartState extends State<ShoppingCart> {
                         reservationsToCheckOut = reservations as List<Reservation>;
                       }
                       checkoutValue().reservations = reservationsToCheckOut.length;
-                        var price = 0;
-                      reservationsToCheckOut.forEach((element) {
+                      var price = 0;
+                      for (var element in reservationsToCheckOut) {
                         price += int.parse(element.price);
-                      });
+                      }
                       checkoutValue().price = price;
                       if(Userr().role != 'administrador'){
                         try {
@@ -80,14 +78,14 @@ class _ShoppingCartState extends State<ShoppingCart> {
                             return Card(
                               elevation: 5,
                               child: ListTile(
-                                leading: Icon(Icons.watch),
+                                leading: const Icon(Icons.watch),
                                 title: Text('Dia ' + nextReservation.day),
                                 subtitle: Text('Das ' +
                                     nextReservation.hour +
                                     ' as ' +
                                     nextReservation.duration),
                                 trailing: IconButton(
-                                  icon: Icon(Icons.delete),
+                                  icon: const Icon(Icons.delete),
                                   onPressed: () {
                                     _deleting(context, nextReservation.id, nextReservation.price);
                                   },
@@ -100,7 +98,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
                           }));
 
                         } catch (e) {
-                          return Text('O carrinho esta vazio');
+                          return Center(child: Text(localizations.shoppingCartEmpty));
                         }
                       }else{
                         try {
@@ -110,14 +108,14 @@ class _ShoppingCartState extends State<ShoppingCart> {
                             return Card(
                               elevation: 5,
                               child: ListTile(
-                                leading: Icon(Icons.watch),
+                                leading: const Icon(Icons.watch),
                                 title: Text(nextReservation.userEmail),
                                 subtitle: Text('Dia ' + nextReservation.day + ' Das ' +
                                     nextReservation.hour +
                                     ' as ' +
                                     nextReservation.duration),
                                 trailing: IconButton(
-                                  icon: Icon(Icons.delete),
+                                  icon: const Icon(Icons.delete),
                                   onPressed: () {
                                     _deleting(context, nextReservation.id, nextReservation.price);
                                   },
@@ -129,7 +127,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
                             // }
                           }));
                         } catch (e) {
-                          return Text('O carrinho esta vazio');
+                          return Center(child: Text(localizations.shoppingCartEmpty));
                         }
                       }
                     }
@@ -143,76 +141,64 @@ class _ShoppingCartState extends State<ShoppingCart> {
                               children: tilesList,
                             ),
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Text(
-                                'Total:',
-                                style: TextStyle(
-                                  fontSize: 26,
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 15.0, left: 15, right: 15),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Total: € ${checkoutValue().price.toString()}.00',
+                                  style: const TextStyle(
+                                    fontSize: 24,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                '€ ${checkoutValue().price.toString()}.00',
-                                style: TextStyle(
-                                  fontSize: 26,
-                                ),
-                              ),
-                              Container(
-                                  padding: EdgeInsets.all(15),
-                                  width: 150,
-////////////////////// BUTTON TO RESERVE ////////////////////////////////////////////////
-                                  child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        primary: Theme.of(context).primaryColor,
-                                        onPrimary: Colors.white,
-                                      ),
-                                      child: Text(
-                                        Userr().role == 'administrador'? "Finalizar"
-                                        :"Pagamento",
-                                        style: TextStyle(fontSize: 15),
-                                      ),
-                                      onPressed: () {
-                                        if(Userr().role == 'administrador'){
-                                          final reservations = database.child('reservations');
-                                          reservationsToCheckOut.forEach((element) async{
-                                            try {
-                                              await reservations.child(element.id).child("state").set('pago').then((value) async{
-                                                await reservations.child(element.id).child("completed").set(true).then((value) {
-                                                  Navigator.of(context).pop(true);
-                                                  reservationsToCheckOut.clear();
-                                                  checkoutValue().reservations = 0;
-                                                  ScaffoldMessenger.of(context).showSnackBar(
-                                                      newSnackBar(context, Text('Reservas Efetuadas')));
-                                                  Navigator.of(
-                                                    context,
-                                                  ).push(
-                                                    MaterialPageRoute(builder: (_) {
-                                                      return Dash();
-                                                    }),
-                                                  );
+                                ElevatedButton(
+                                        child: Text(
+                                          Userr().role == 'administrador'? "Finalizar"
+                                              :"Pagamento",
+                                        ),
+                                        onPressed: () {
+                                          if(Userr().role == 'administrador'){
+                                            final reservations = database.child('reservations');
+                                            reservationsToCheckOut.forEach((element) async{
+                                              try {
+                                                await reservations.child(element.id).child("state").set('pago').then((value) async{
+                                                  await reservations.child(element.id).child("completed").set(true).then((value) {
+                                                    Navigator.of(context).pop(true);
+                                                    reservationsToCheckOut.clear();
+                                                    checkoutValue().reservations = 0;
+                                                    ScaffoldMessenger.of(context).showSnackBar(
+                                                        newSnackBar(context, const Text('Reservas Efetuadas')));
+                                                    Navigator.of(
+                                                      context,
+                                                    ).push(
+                                                      MaterialPageRoute(builder: (_) {
+                                                        return const Dash();
+                                                      }),
+                                                    );
+                                                  });
                                                 });
-                                              });
-                                            } catch (e) {
-                                              print('There is an error!');
-                                            }
-                                          });
-                                        }
-                                        else
-                                        Navigator.of(
-                                          context,
-                                        ).push(
-                                          MaterialPageRoute(builder: (_) {
-                                            return Checkout();
-                                          }),
-                                        );
-                                      }))
-                            ],
+                                              } catch (e) {
+                                                print('There is an error!');
+                                              }
+                                            });
+                                          }
+                                          else
+                                            Navigator.of(
+                                              context,
+                                            ).push(
+                                              MaterialPageRoute(builder: (_) {
+                                                return Checkout();
+                                              }),
+                                            );
+                                        })
+                              ],
+                            ),
                           ),
                         ],
                       );
                     }
-                    return Text(AppLocalizations.of(context)!.shoppingCartEmpty);
+                    return Center(child: Text(localizations.shoppingCartEmpty));
                   }),
             ),
           ),
@@ -250,12 +236,12 @@ class _ShoppingCartState extends State<ShoppingCart> {
                 onPressed: () {
                   Navigator.of(context).pop(false);
                 },
+                background: Colors.white,
+                border: Theme.of(context).colorScheme.primary,
                 child: Text(
                   AppLocalizations.of(context)!.doNotCancel,
                   style: TextStyle(color: Theme.of(context).colorScheme.primary),
                 ),
-                background: Colors.white,
-                border: Theme.of(context).colorScheme.primary,
               ),
               StyledButton(
                 onPressed: () {
@@ -265,12 +251,12 @@ class _ShoppingCartState extends State<ShoppingCart> {
                     checkoutValue().reservations = reservationsToCheckOut.length;
                   Navigator.of(context).pop(true);
                 },
+                background: Theme.of(context).colorScheme.error,
+                border: Theme.of(context).colorScheme.error,
                 child: Text(
                   AppLocalizations.of(context)!.yesCancel,
                   style: const TextStyle(color: Colors.white),
                 ),
-                background: Colors.red,
-                border: Colors.red,
               ),
             ],
           );

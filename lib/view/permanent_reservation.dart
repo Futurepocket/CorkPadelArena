@@ -100,152 +100,43 @@ class _PermanentReservationState extends State<PermanentReservation> {
               Container(
                 margin: const EdgeInsets.only(top: 20.0),
                 width: MediaQuery.of(context).size.width * 0.90,
-                child: Card(
-                  elevation: 5,
-                  child: Container(
+                child: Container(
                     padding:
                         const EdgeInsets.only(left: 15, right: 15, top: 10),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Row(children: <Widget>[
-                          Text(
-                            AppLocalizations.of(context)!.weekDay,
-                            style: const TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.bold),
-                            textAlign: TextAlign.right,
-                          ),
-                          Container(
-                            padding: const EdgeInsets.only(left: 15),
-                            width: 110,
-                            child: DropdownButton<String>(
-                              hint: Text(AppLocalizations.of(context)!.choose),
-                              value: _selectedDay,
-                              items: <String>[
-                                "Segunda",
-                                "Terça",
-                                "Quarta",
-                                "Quinta",
-                                "Sexta",
-                                "Sábado",
-                                "Domingo"
-                              ].map((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              }).toList(),
-                              onChanged: (newValue) {
-                                setState(
-                                  () {
-                                    if (newValue != null) {
-                                      setState(() {
-                                        _selectedDay = newValue;
-                                        switch(newValue){
-                                          case "Segunda":
-                                            weekDayInt = 1;
-                                            break;
-                                          case "Terça":
-                                            weekDayInt = 2;
-                                            break;
-                                          case "Quarta":
-                                            weekDayInt = 3;
-                                            break;
-                                          case "Quinta":
-                                            weekDayInt = 4;
-                                            break;
-                                          case "Sexta":
-                                            weekDayInt = 5;
-                                            break;
-                                          case "Sábado":
-                                            weekDayInt = 6;
-                                            break;
-                                          case "Domingo":
-                                            weekDayInt = 7;
-                                            break;
-                                        }
-                                      });
-                                    }
-                                  },
-                                );
-                              },
-                            ),
-                          ),
-                        ]),
-                        Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-////////////////////////////////BUTTON TO CHOOSE TIME ////////////////////////////////////////////////
-                                  Container(
-                                    width: 150,
-                                    child: ElevatedButton(
-                                      onPressed: _presentTimePicker,
-                                      style: TextButton.styleFrom(
-                                        foregroundColor:
-                                            Theme.of(context).primaryColor,
-                                      ), //_presentTimePicker,
-                                      child: FittedBox(
-                                        child: Text(
-                                            AppLocalizations.of(context)!
-                                                .chooseTime,
-                                            style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.white,
-                                                letterSpacing: 1,
-                                                fontSize: 12)),
-                                      ),
-                                    ),
-                                  ),
-/////////////////////////////////TEXT SHOWING CHOSEN TIME ////////////////////////////////////////////////
-
-                                  SizedBox(
-                                    width: 180,
-                                    child: Text(
-                                      _timeChosen == null
-                                          ? _warning
-                                          : TimeOfDay(
-                                                  hour: _timeChosen!.hour,
-                                                  minute: _timeChosen!.minute)
-                                              .format(context),
-                                      style: const TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold),
-                                      maxLines: 2,
-                                      textAlign: TextAlign.right,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 5.0, right: 5),
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: <Widget>[
-                                Text(
-                                  '${AppLocalizations.of(context)!.duration}:',
-                                  style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.only(
-                                      left: 5.0, right: 5),
-                                  width: 120,
-//DROPDOWN LIST TO CHOOSE DURATION ////////////////////////////////////////////////
-                                  child: DropdownButton<String>(
-                                    hint: Text(
-                                        AppLocalizations.of(context)!.choose),
-                                    value: _selectedDuration,
-                                    items: <String>["01:00", "01:30", "02:00", "02:30", "03:00", "03:30", "04:00", "04:30", "05:00"]
-                                        .map((String value) {
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Card(
+                            elevation: 3,
+                            child: Container(
+                              padding:
+                              const EdgeInsets.only(left: 10.0, right: 10),
+//DROPDOWN LIST TO CHOOSE weekday ////////////////////////////////////////////////
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: [
+                                  Text(
+                                    AppLocalizations.of(context)!.weekDay,
+                                    style: const TextStyle(
+                                        fontSize: 14, fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.right,
+                                  ),
+                                  DropdownButton<String>(
+                                    alignment: Alignment.centerRight,
+                                    isExpanded: false,
+                                    hint: Text(AppLocalizations.of(context)!.choose, textAlign: TextAlign.end,),
+                                    value: _selectedDay,
+                                    items: <String>[
+                                      "Segunda",
+                                      "Terça",
+                                      "Quarta",
+                                      "Quinta",
+                                      "Sexta",
+                                      "Sábado",
+                                      "Domingo"
+                                    ].map((String value) {
                                       return DropdownMenuItem<String>(
                                         value: value,
                                         child: Text(value),
@@ -253,24 +144,120 @@ class _PermanentReservationState extends State<PermanentReservation> {
                                     }).toList(),
                                     onChanged: (newValue) {
                                       setState(
-                                        () {
-                                          if (_timeChosen != null) {
+                                            () {
+                                          if (newValue != null) {
                                             setState(() {
-                                              _selectedDuration = newValue;
+                                              _selectedDay = newValue;
+                                              switch(newValue){
+                                                case "Segunda":
+                                                  weekDayInt = 1;
+                                                  break;
+                                                case "Terça":
+                                                  weekDayInt = 2;
+                                                  break;
+                                                case "Quarta":
+                                                  weekDayInt = 3;
+                                                  break;
+                                                case "Quinta":
+                                                  weekDayInt = 4;
+                                                  break;
+                                                case "Sexta":
+                                                  weekDayInt = 5;
+                                                  break;
+                                                case "Sábado":
+                                                  weekDayInt = 6;
+                                                  break;
+                                                case "Domingo":
+                                                  weekDayInt = 7;
+                                                  break;
+                                              }
                                             });
                                           }
                                         },
                                       );
                                     },
                                   ),
-                                ),
-                                const Text(" horas")
-                              ]),
+                                ],
+                              ),
+                            ),
+                          ),
+
                         ),
+                        Padding(
+                          padding: const EdgeInsets.only(top:8.0),
+                          child:
+                          Card(
+                            elevation: 3,
+                            child: ListTile(
+                              leading: const Icon(Icons.watch_later_outlined),
+                              title: Text(
+                                _timeChosen == null
+                                    ? _warning
+                                    : TimeOfDay(hour: _timeChosen!.hour, minute: _timeChosen!.minute).format(context),
+                                style: const TextStyle(
+                                    fontSize: 14, fontWeight: FontWeight.bold),
+                                maxLines: 2,
+                                textAlign: TextAlign.right,
+                              ),
+                              onTap: _presentTimePicker,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Card(
+                            elevation: 3,
+                            child: Container(
+                              padding:
+                              const EdgeInsets.only(left: 10.0, right: 10),
+//DROPDOWN LIST TO CHOOSE DURATION ////////////////////////////////////////////////
+                              child: DropdownButton<String>(
+                                alignment: Alignment.centerRight,
+                                isExpanded: false,
+                                icon: Padding(
+                                  padding: const EdgeInsets.only(left: 3.0),
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.timelapse_outlined),
+                                      if(_selectedDuration != null)
+                                        Text(
+                                          AppLocalizations.of(context)!.hours,
+                                          style: const TextStyle(
+                                              fontSize: 16, fontWeight: FontWeight.bold),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                                hint: Text(AppLocalizations.of(context)!.chooseDuration, textAlign: TextAlign.end,),
+                                value: _selectedDuration,
+                                items: <String>["01:00", "01:30", "02:00", "02:30", "03:00", "03:30", "04:00", "04:30", "05:00"]
+                                    .map((String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    alignment: Alignment.centerRight,
+                                    child: Text(value),
+                                  );
+                                }).toList(),
+                                onChanged: (newValue) {
+                                  setState(
+                                        () {
+                                      if (_timeChosen != null) {
+                                        setState(() {
+                                          _selectedDuration = newValue;
+                                        });
+                                      }
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+
+                        ),
+
                       ],
                     ),
                   ),
-                ),
               ),
               Align(
                 alignment: Alignment.center,
@@ -370,7 +357,7 @@ class _PermanentReservationState extends State<PermanentReservation> {
                                   ],
                                 ),
                                 trailing: IconButton(
-                                  icon: const Icon(Icons.delete_forever),
+                                  icon: Icon(Icons.delete_forever, color: Theme.of(context).colorScheme.error,),
                                   onPressed: () {
                                    firestore.collection("adminReservations").doc(data["id"]).delete();
                                   },

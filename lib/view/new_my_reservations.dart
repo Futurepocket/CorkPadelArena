@@ -197,10 +197,10 @@ class _NewMyReservationsState extends State<NewMyReservations> {
                                       Text(
                                           'Dia ${value[index].day} Das ${value[index].hour} às ${value[index].duration}'),
                                       value[index].completed == false
-                                          ? const Text(
+                                          ? Text(
                                               'No carrinho do utilizador',
                                               style: TextStyle(
-                                                  color: Colors.red,
+                                                  color: Theme.of(context).colorScheme.error,
                                                   fontSize: 10),
                                             )
                                           : Container()
@@ -260,11 +260,11 @@ class _NewMyReservationsState extends State<NewMyReservations> {
                     _selectedDay = null;
                   });
                 },
-                background: Colors.red,
-                border: Colors.red,
+                background: Theme.of(context).colorScheme.error,
+                border: Theme.of(context).colorScheme.error,
                 child: Text(
                   AppLocalizations.of(context)!.yesCancel,
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(color: Theme.of(context).colorScheme.onError),
                 ),
               ),
             ],

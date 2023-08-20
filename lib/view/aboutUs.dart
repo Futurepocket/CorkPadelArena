@@ -141,41 +141,21 @@ Future<void> initiateWebviewController() async {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: Stack(
-          children: [
-            FloatingActionButton(
-              backgroundColor: Theme.of(context).colorScheme.secondary,
-              onPressed: () {
-                showShoppingCart(context).then((value) {
-                  setState(() {
+      floatingActionButton: Badge(
+        label: Text(reservationsToCheckOut.length.toString()),
+        backgroundColor: Theme.of(context).colorScheme.error,
+        isLabelVisible: reservationsToCheckOut.isEmpty? false : true,
+        child: FloatingActionButton(
+          backgroundColor: Theme.of(context).colorScheme.secondary,
+          onPressed: () {
+            showShoppingCart(context).then((value) {
+              setState(() {
 
-                  });
-                });
-              },
-              child: Icon(Icons.shopping_cart, color: Theme.of(context).colorScheme.onSecondary,),
-            ),
-
-            reservationsToCheckOut.isEmpty?
-            Positioned(
-                top: 1.0,
-                left: 1.0,
-                child: Container())
-                : Positioned(
-              top: 1.0,
-              left: 1.0,
-              child: CircleAvatar(
-                radius: 10,
-                backgroundColor: Colors.red,
-                child: Text(reservationsToCheckOut.length.toString(),
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 11.0,
-                      fontWeight: FontWeight.w500
-                  ),
-                ),
-              ),
-            )
-          ]
+              });
+            });
+          },
+          child: Icon(Icons.shopping_cart, color: Theme.of(context).colorScheme.onSecondary),
+        ),
       ),
     );
   }

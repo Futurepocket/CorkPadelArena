@@ -1,3 +1,4 @@
+import 'package:cork_padel_arena/main.dart';
 import 'package:flutter/material.dart';
 
 class Menu_Item extends StatelessWidget {
@@ -18,25 +19,27 @@ class Menu_Item extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    color ??= Colors.grey.shade800;
     return InkWell(
       onTap: () => fun(context),
-      splashColor: Theme.of(context).colorScheme.background,
+      splashColor: Theme.of(context).colorScheme.primary,
       borderRadius: BorderRadius.circular(20),
       child: Card(
-        color: Theme.of(context).colorScheme.primaryContainer,
+        color: ElevationOverlay.applySurfaceTint(
+            Theme.of(context).colorScheme.surface,
+            Theme.of(context).colorScheme.surfaceTint,
+            3),
         child: GridTile(
           footer: Padding(
             padding: const EdgeInsets.only(bottom: 8.0),
             child: Text(
               title,
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onPrimaryContainer),
+            style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
           ),
         child: Padding(
-          padding: const EdgeInsets.only(bottom: 8.0),
-          child: Icon(ikon, size: iconSize, color: Theme.of(context).colorScheme.onPrimaryContainer,),
+          padding: const EdgeInsets.only(bottom: 30.0),
+          child: Icon(ikon, size: iconSize, color: Theme.of(context).colorScheme.onSurfaceVariant,),
         ),),
       )
       // Container(
