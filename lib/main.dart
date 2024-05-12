@@ -29,11 +29,7 @@ void main() async {
     final proxy = CustomProxy(ipAddress: 'localhost', port: 8888, allowBadCertificates: true);
     proxy.enable();
   }
-  Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform
-  ).whenComplete(() async{
-    //initialLink = await FirebaseDynamicLinks.instance.getInitialLink();
-  });
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
