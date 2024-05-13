@@ -1,23 +1,23 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cork_padel_arena/register/register.dart';
 import 'package:cork_padel_arena/register/user_details.dart';
 import 'package:cork_padel_arena/src/registerSplash.dart';
 import 'package:cork_padel_arena/utils/custom_proxy.dart';
-
 import 'package:cork_padel_arena/utils/firebase_utils.dart';
 import 'package:cork_padel_arena/view/dash.dart';
 import 'package:cork_padel_arena/view/email_verify.dart';
 import 'package:cork_padel_arena/view/profile.dart';
-import 'package:flutter/foundation.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'firebase_options.dart';
 import 'view/login/login.dart';
 
+late PackageInfo packageInfo;
+late FirebaseMessaging messaging;
 late AppLocalizations localizations;
 void main() async {
 
@@ -29,10 +29,23 @@ void main() async {
     final proxy = CustomProxy(ipAddress: 'localhost', port: 8888, allowBadCertificates: true);
     proxy.enable();
   }
+  packageInfo = await PackageInfo.fromPlatform();
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  messaging = FirebaseMessaging.instance;
+  await messaging.requestPermission(
+    alert: true,
+    announcement: true,
+    badge: true,
+    carPlay: false,
+    criticalAlert: false,
+    provisional: false,
+    sound: true,
+  );
+
+  messaging.setAutoInitEnabled(true);
   await init();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

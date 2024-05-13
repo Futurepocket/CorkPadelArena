@@ -58,10 +58,10 @@ class _MbWayPaymentState extends State<MbWayPayment> {
   String emailDetails = '';
 
   generateEmailDetails() {
-    reservationsToCheckOut.forEach((element) {
+    for (var element in reservationsToCheckOut) {
       emailDetails +=
           '<p>Dia: ${element.day}, das ${element.hour} às ${element.duration}.</p>';
-    });
+    }
   }
 
   void _generateReference() {
@@ -133,31 +133,31 @@ class _MbWayPaymentState extends State<MbWayPayment> {
   @override
   Widget build(BuildContext context) {
     price = checkoutValue().price.toString();
-    void _clearAll() {
+    void clearAll() {
       checkoutValue().reservations = 0;
       checkoutValue().price = 0;
       setState(() {
         price = '0';
       });
       reservationsToCheckOut.clear();
-      Navigator.of(context).pop();
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) {
+      // Navigator.of(context).pop();
+      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (_) {
         return const Dash();
-      }));
+      }), ModalRoute.withName("/login"));
       ScaffoldMessenger.of(context)
           .showSnackBar(newSnackBar(context, const Text('Reservas Efetuados')));
     }
 
     void itIsDone() async {
       //COLOCAR NA CLOUD FUNCTION
-      await Future.delayed(const Duration(milliseconds: 2000), () {
-        _clearAll();
+      await Future.delayed(const Duration(seconds: 5), () {
+        clearAll();
       });
     }
 
     Timer? timer;
 
-    void awaitingConfirmation(BuildContext context) async {
+    void awaitingConfirmation() async {
       String idd =
           'Arena$paymentTlm${DateFormat('ddMMyyyy HH:mm').format(DateTime.now())}';
       Map<String, dynamic> payment = {
@@ -176,64 +176,48 @@ class _MbWayPaymentState extends State<MbWayPayment> {
       _showLoading = true;
       _isAproved = false;
       bool confirmed = false;
+      var collectionRef =
+      FirebaseFirestore.instance.collection('MBWayPayments');
+      var doc = await collectionRef.doc(idd).get();
+      if (doc.exists) {
+        setState(() {
+          confirmed = true;
+        });
+      } else {
+        // setState(() {
+        //   _showLoading = true;
+        //   _isAproved = false;
+          _resultText =
+          'Por favor confirme o pagamento na app MBWay.';
+        // });
+        /////////////////////SAVING PAYMENT////////////////////////////////////
+        List<dynamic> list = reservationsToCheckOut
+            .map((e) => Reservation.toMap(e))
+            .toList();
+        try {
+          functions.httpsCallable("checkPayment", options: HttpsCallableOptions(timeout: const Duration(minutes: 6))).call({
+            "reservationsToCheckOut": list,
+            "companyEmailToCloud": companyEmailToCloud,
+            "clientEmailToCloud": clientEmailToCloud,
+            "idPedido": idPedido,
+            "payment": payment,
+            "idd": idd
+          });
+          // print(result);
+        } on FirebaseFunctionsException catch (error) {
+          print(error.code);
+          print(error.details);
+          print(error.message);
+        }
+      }
+
       showDialog<void>(
         barrierDismissible: false,
         context: context,
         builder: (context) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
-            if (shallIPay) {
-              timer?.cancel();
-              timer =
-                  Timer.periodic(const Duration(seconds: 2), (Timer t) async {
-                if (!confirmed) {
-                  // Get reference to Firestore collection
-                  var collectionRef =
-                      FirebaseFirestore.instance.collection('MBWayPayments');
-                  var doc = await collectionRef.doc(idd).get();
-                  if (doc.exists) {
-                    setState(() {
-                      confirmed = true;
-                    });
-                  } else {
-                    setState(() {
-                      _showLoading = true;
-                      _isAproved = false;
-                      _resultText =
-                          'Por favor confirme o pagamento na app MBWay.';
-                    });
-                    /////////////////////SAVING PAYMENT////////////////////////////////////
-                    List<dynamic> list = reservationsToCheckOut
-                        .map((e) => Reservation.toMap(e))
-                        .toList();
-                    try {
-                      final result =
-                          await functions.httpsCallable("checkPayment").call({
-                        "reservationsToCheckOut": list,
-                        "companyEmailToCloud": companyEmailToCloud,
-                        "clientEmailToCloud": clientEmailToCloud,
-                        "idPedido": idPedido,
-                        "payment": payment,
-                        "idd": idd
-                      });
-                      print(result);
-                    } on FirebaseFunctionsException catch (error) {
-                      print(error.code);
-                      print(error.details);
-                      print(error.message);
-                    }
-                  }
-                } else {
-                  timer!.cancel();
-                  setState(() {
-                    _showLoading = false;
-                    _isAproved = false;
-                    _resultText =
-                        'Pagamento confirmado. Receberá confirmação dentro de momentos.';
-                  });
-                  itIsDone();
-                }
-              });
+
               return AlertDialog(
                 content: SingleChildScrollView(
                   padding: const EdgeInsets.all(8),
@@ -248,7 +232,7 @@ class _MbWayPaymentState extends State<MbWayPayment> {
                         ),
                       ),
                       Text(
-                        "Não feche a app antes de finalizar o pagamento MBWay",
+                        _resultText,
                         style: TextStyle(
                             color: Theme.of(context).colorScheme.error),
                       ),
@@ -268,37 +252,13 @@ class _MbWayPaymentState extends State<MbWayPayment> {
                     ],
                   ),
                 ),
-                actions: <Widget>[
-                  _isAproved
-                      ? Container()
-                      : OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.error,
-                          ),
-                          onPressed: () {
-                            if (timer != null) {
-                              timer!.cancel();
-                            }
-                            setState(() {
-                              shallIPay = false;
-                            });
-                            Navigator.of(context).pop();
-                          },
-                          child: Text(
-                            "CANCELAR",
-                            style: TextStyle(
-                                color: Theme.of(context).colorScheme.onError),
-                          ),
-                        ),
-                ],
               );
-            } else {
-              return const SizedBox();
-            }
+
           });
+
         },
       );
+      itIsDone();
     }
 
     void _saveForm(BuildContext context) {
@@ -320,7 +280,6 @@ class _MbWayPaymentState extends State<MbWayPayment> {
                   .get(Mbway.getRequest(
                       referencia: referencia!,
                       valor: price!,
-                      // price!
                       nrtlm: paymentTlm!,
                       email: paymentEmail!,
                       descricao: 'testdesc'))
@@ -336,7 +295,7 @@ class _MbWayPaymentState extends State<MbWayPayment> {
                     idPedido = value.IdPedido;
                   });
                   Navigator.of(context).pop();
-                  awaitingConfirmation(context);
+                  awaitingConfirmation();
                 } else {
                   setState(() {
                     _showLoading = false;

@@ -1,3 +1,4 @@
+import 'package:cork_padel_arena/constants/constants.dart';
 import 'package:cork_padel_arena/main.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:cork_padel_arena/models/ReservationStreamPublisher.dart';
@@ -159,7 +160,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
                                         ),
                                         onPressed: () {
                                           if(Userr().role == 'administrador'){
-                                            final reservations = database.child('reservations');
+                                            final reservations = database.child(reservationDatabase);
                                             reservationsToCheckOut.forEach((element) async{
                                               try {
                                                 await reservations.child(element.id).child("state").set('pago').then((value) async{
@@ -209,7 +210,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
   void _deleting(BuildContext context, String id, String price) {
     final _database =
-        FirebaseDatabase.instance.ref().child('reservations').child(id);
+        FirebaseDatabase.instance.ref().child(reservationDatabase).child(id);
     showDialog<void>(
       context: context,
       builder: (context) {

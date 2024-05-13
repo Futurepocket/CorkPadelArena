@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cork_padel_arena/apis/local_auth_api.dart';
+import 'package:cork_padel_arena/constants/constants.dart';
 import 'package:cork_padel_arena/main.dart';
 import 'package:cork_padel_arena/src/constants.dart';
 import 'package:cork_padel_arena/utils/common_utils.dart';
 import 'package:cork_padel_arena/utils/firebase_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -114,7 +116,7 @@ class _LoginState extends State<Login> {
               final String _email = fbUser!.email
                   .toString();
               FirebaseFirestore.instance
-                  .collection('users')
+                  .collection(userCollection)
                   .doc(_email).get().then((value) {
                 if (value.exists) {
                   Navigator.of(context).pushReplacementNamed(
@@ -154,8 +156,16 @@ class _LoginState extends State<Login> {
               final String _email = fbUser!.email
                   .toString();
               FirebaseFirestore.instance
-                  .collection('users')
-                  .doc(_email).get().then((value) {
+                  .collection(userCollection)
+                  .doc(_email).get().then((value) async {
+                    if(!kIsWeb){
+                      // final String? fcmToken = await messaging.getToken(vapidKey: "kPjxDW4z1Klemmfwcw7CJNqA8IFloeTNFoD6lgOc8n0");
+                      // print("fcmToken: $fcmToken");
+
+                      final String? fcmToken = await messaging
+                          .getToken();
+                    }
+
                 if (value.exists) {
                   Navigator.of(context).pushReplacementNamed(
                       '/dash');
@@ -182,7 +192,8 @@ class _LoginState extends State<Login> {
   void initState() {
     _accountNameController.addListener(() => _readAll());
     _readAll().then((v) {
-      if (_items[0].key.isNotEmpty) {
+
+      if (_items.isNotEmpty && _items[0].key.isNotEmpty) {
         setState(() {
           _alreadyLoggedIn = true;
         });

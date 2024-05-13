@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cork_padel_arena/constants/constants.dart';
 import 'package:cork_padel_arena/main.dart';
 import 'package:cork_padel_arena/models/checkoutValue.dart';
 import 'package:cork_padel_arena/models/reservation.dart';
@@ -66,7 +67,7 @@ class _DashState extends State<Dash> {
   void deleteOldReservations() {
     final DateTime today = DateTime.now();
     final formatter = DateFormat('dd/MM/yyyy HH:mm');
-    database.child('reservations').onValue.listen((event) {
+    database.child(reservationDatabase).onValue.listen((event) {
       if (event.snapshot.value != null) {
         Map<String, dynamic>.from(event.snapshot.value as dynamic)
             .forEach((key, value) {
@@ -173,7 +174,7 @@ class _DashState extends State<Dash> {
 
   _removeFromDB() {
     for (String key in keys) {
-      database.child('reservations').child(key).remove();
+      database.child(reservationDatabase).child(key).remove();
     }
     keys.clear();
   }
@@ -242,291 +243,165 @@ class _DashState extends State<Dash> {
 
   @override
   Widget build(BuildContext context) {
+    // appVersion = "2.2.3";
     ThemeData theme = Theme.of(context);
-    if (!kIsWeb) {
-      return UpgradeAlert(
-        upgrader: Upgrader(
-            canDismissDialog: false,
-            countryCode: "PT",
-            languageCode: "PT",
-            minAppVersion: appVersion,
-            onIgnore: () {
-              Navigator.of(context).pop();
-              return false;
-            },
-            onLater: () {
-              Navigator.of(context).pop();
-              return false;
-            },
-            onUpdate: () {
-              if (Platform.isIOS) {
-                launchUrl(
-                  Uri.parse(
-                      'https://apps.apple.com/pt/app/cork-padel-arena/id1607689892'),
-                  mode: LaunchMode.externalApplication,
-                  //headers: <String, String>{'my_header_key': 'my_header_value'},
-                );
-              }
-              if (Platform.isAndroid) {
-                launchUrl(
-                  Uri.parse(
-                      'https://play.google.com/store/apps/details?id=com.corkpadel.arena'),
-                  mode: LaunchMode.externalApplication,
-                  //headers: <String, String>{'my_header_key': 'my_header_value'},
-                );
-              }
-              return false;
-            }),
-        child: Scaffold(
-          resizeToAvoidBottomInset: true,
-          appBar: AppBar(
-            title: const Align(
-                alignment: Alignment.center, child: Text("Cork Padel Arena")),
-          ),
-          body: SafeArea(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  isToday
-                      ? Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: 50,
-                          decoration:
-                              BoxDecoration(color: Colors.yellow.shade200),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(left: 8.0),
-                                child: Text(
-                                  '${localizations.resToday} ${reservedToday!.hour}',
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(right: 10.0),
-                                child: StyledButton(
-                                    onPressed: canOpen
-                                        ? () async {
-                                            var client = DigestAuthClient(
-                                                "admin", "cork2021");
-                                            await client
-                                                .get(Uri.parse(openDoorUrl))
-                                                .then((response) {
-                                              if (response.statusCode == 200) {
-                                                showWebView(context);
-                                              }
-                                            });
-                                          }
-                                        : null,
-                                    child: Text(
-                                      localizations.openDoor,
-                                    )),
-                              ),
-                            ],
-                          ),
-                        )
-                      : Container(),
-                  Container(
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 15, horizontal: 10),
-                      width: double.infinity,
-                      height: MediaQuery.of(context).size.height * 0.85,
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: Text(
-                              '${localizations.welcome} $myName',
-                              style: const TextStyle(
-                                fontSize: 26,
-                              ),
-                            ),
-                          ),
-                          Userr().role == "administrador"
-                              ? Padding(
-                                  padding: const EdgeInsets.only(bottom: 8.0),
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      appBar: AppBar(
+        title: const Align(
+            alignment: Alignment.center, child: Text("Cork Padel Arena")),
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: !kIsWeb && appVersion != packageInfo.version
+              ? Container(
+                  height: MediaQuery.of(context).size.height - 200,
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(25),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(localizations.differentAppVersion, textAlign: TextAlign.center,),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 25.0),
+                        child: ElevatedButton(
+                            onPressed: () {
+                              if (Platform.isIOS) {
+                                launchUrl(
+                                  Uri.parse(
+                                      'https://apps.apple.com/pt/app/cork-padel-arena/id1607689892'),
+                                  mode: LaunchMode.externalApplication,
+                                  //headers: <String, String>{'my_header_key': 'my_header_value'},
+                                );
+                              }
+                              if (Platform.isAndroid) {
+                                launchUrl(
+                                  Uri.parse(
+                                      'https://play.google.com/store/apps/details?id=com.corkpadel.arena'),
+                                  mode: LaunchMode.externalApplication,
+                                  //headers: <String, String>{'my_header_key': 'my_header_value'},
+                                );
+                              }
+                            },
+                            child: Text(localizations.updateApp)),
+                      )
+                    ],
+                  ),
+                )
+              : Column(
+                  children: [
+                    isToday
+                        ? Container(
+                            width: MediaQuery.of(context).size.width,
+                            height: 50,
+                            decoration:
+                                BoxDecoration(color: Colors.yellow.shade200),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
                                   child: Text(
-                                    localizations.adminAccount,
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      color: theme.colorScheme.error,
+                                    '${localizations.resToday} ${reservedToday!.hour}',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black,
                                     ),
                                   ),
-                                )
-                              : Container(),
-                          Expanded(
-                            child: Scrollbar(
-                              child: GridView(
-                                shrinkWrap: true,
-                                gridDelegate:
-                                    const SliverGridDelegateWithMaxCrossAxisExtent(
-                                  maxCrossAxisExtent: 150,
-                                  childAspectRatio: 0.5,
-                                  crossAxisSpacing: 0,
-                                  mainAxisSpacing: 0,
-                                  mainAxisExtent: 150,
                                 ),
-                                children: getDashButtons(context, settingState)
-                                    .map((menus) => Menu_Item(
-                                          ikon: menus.ikon,
-                                          title: menus.title,
-                                          fun: menus.fun,
-                                        ))
-                                    .toList(),
-                              ),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 10.0),
+                                  child: StyledButton(
+                                      onPressed: canOpen
+                                          ? () {
+                                              launchUrl(
+                                                  Uri.parse(openDoorFullUrl));
+                                            }
+                                          : null,
+                                      child: Text(
+                                        localizations.openDoor,
+                                      )),
+                                ),
+                              ],
                             ),
-                          ),
-                          FutureBuilder<void>(
-                              future: _launched, builder: _launchStatus)
-                        ],
-                      )),
-                ],
-              ),
-            ),
-          ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-          floatingActionButton: Badge(
-            label: Text(reservationsToCheckOut.length.toString()),
-            backgroundColor: Theme.of(context).colorScheme.error,
-            isLabelVisible: reservationsToCheckOut.isEmpty ? false : true,
-            child: FloatingActionButton(
-              backgroundColor: Theme.of(context).colorScheme.secondary,
-              onPressed: () {
-                showShoppingCart(context).then((value) {
-                  settingState();
-                });
-              },
-              child: Icon(Icons.shopping_cart,
-                  color: Theme.of(context).colorScheme.onSecondary),
-            ),
-          ),
-        ),
-      );
-    } else {
-      return Scaffold(
-        resizeToAvoidBottomInset: true,
-        appBar: AppBar(
-          title: const Align(
-              alignment: Alignment.center, child: Text("Cork Padel Arena")),
-        ),
-        body: SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                isToday
-                    ? Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: 50,
-                        decoration:
-                            BoxDecoration(color: Colors.yellow.shade200),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          )
+                        : Container(),
+                    Container(
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 15, horizontal: 10),
+                        width: double.infinity,
+                        height: MediaQuery.of(context).size.height * 0.85,
+                        child: Column(
                           children: [
                             Padding(
-                              padding: const EdgeInsets.only(left: 8.0),
+                              padding: const EdgeInsets.only(bottom: 8.0),
                               child: Text(
-                                '${localizations.resToday} ${reservedToday!.hour}',
+                                '${localizations.welcome} $myName',
                                 style: const TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.black,
+                                  fontSize: 26,
                                 ),
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(right: 10.0),
-                              child: StyledButton(
-                                  onPressed: canOpen
-                                      ? () {
-                                          launchUrl(Uri.parse(openDoorFullUrl));
-                                        }
-                                      : null,
-                                  child: Text(
-                                    localizations.openDoor,
-                                  )),
-                            ),
-                          ],
-                        ),
-                      )
-                    : Container(),
-                Container(
-                    margin: const EdgeInsets.symmetric(
-                        vertical: 15, horizontal: 10),
-                    width: double.infinity,
-                    height: MediaQuery.of(context).size.height * 0.85,
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8.0),
-                          child: Text(
-                            '${localizations.welcome} $myName',
-                            style: const TextStyle(
-                              fontSize: 26,
-                            ),
-                          ),
-                        ),
-                        Userr().role == "administrador"
-                            ? Padding(
-                                padding: const EdgeInsets.only(bottom: 8.0),
-                                child: Text(
-                                  localizations.adminAccount,
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: theme.colorScheme.error,
+                            Userr().role == "administrador"
+                                ? Padding(
+                                    padding: const EdgeInsets.only(bottom: 8.0),
+                                    child: Text(
+                                      localizations.adminAccount,
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        color: theme.colorScheme.error,
+                                      ),
+                                    ),
+                                  )
+                                : Container(),
+                            Expanded(
+                              child: Scrollbar(
+                                child: GridView(
+                                  shrinkWrap: true,
+                                  gridDelegate:
+                                      const SliverGridDelegateWithMaxCrossAxisExtent(
+                                    maxCrossAxisExtent: 150,
+                                    childAspectRatio: 0.5,
+                                    crossAxisSpacing: 0,
+                                    mainAxisSpacing: 0,
+                                    mainAxisExtent: 150,
                                   ),
+                                  children:
+                                      getDashButtons(context, settingState)
+                                          .map((menus) => Menu_Item(
+                                                ikon: menus.ikon,
+                                                title: menus.title,
+                                                fun: menus.fun,
+                                              ))
+                                          .toList(),
                                 ),
-                              )
-                            : Container(),
-                        Expanded(
-                          child: Scrollbar(
-                            child: GridView(
-                              shrinkWrap: true,
-                              gridDelegate:
-                                  const SliverGridDelegateWithMaxCrossAxisExtent(
-                                maxCrossAxisExtent: 150,
-                                childAspectRatio: 0.5,
-                                crossAxisSpacing: 0,
-                                mainAxisSpacing: 0,
-                                mainAxisExtent: 150,
                               ),
-                              children: getDashButtons(context, settingState)
-                                  .map((menus) => Menu_Item(
-                                        ikon: menus.ikon,
-                                        title: menus.title,
-                                        fun: menus.fun,
-                                      ))
-                                  .toList(),
                             ),
-                          ),
-                        ),
-                        FutureBuilder<void>(
-                            future: _launched, builder: _launchStatus)
-                      ],
-                    )),
-              ],
-            ),
-          ),
+                            FutureBuilder<void>(
+                                future: _launched, builder: _launchStatus)
+                          ],
+                        )),
+                  ],
+                ),
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-        floatingActionButton: Badge(
-          label: Text(reservationsToCheckOut.length.toString()),
-          backgroundColor: Theme.of(context).colorScheme.error,
-          isLabelVisible: reservationsToCheckOut.isEmpty ? false : true,
-          child: FloatingActionButton(
-            backgroundColor: Theme.of(context).colorScheme.secondary,
-            onPressed: () {
-              showShoppingCart(context).then((value) {
-                settingState();
-              });
-            },
-            child: Icon(Icons.shopping_cart,
-                color: Theme.of(context).colorScheme.onSecondary),
-          ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: !kIsWeb && appVersion != packageInfo.version? null : Badge(
+        label: Text(reservationsToCheckOut.length.toString()),
+        backgroundColor: Theme.of(context).colorScheme.error,
+        isLabelVisible: reservationsToCheckOut.isEmpty ? false : true,
+        child: FloatingActionButton(
+          backgroundColor: Theme.of(context).colorScheme.secondary,
+          onPressed: () {
+            showShoppingCart(context).then((value) {
+              settingState();
+            });
+          },
+          child: Icon(Icons.shopping_cart,
+              color: Theme.of(context).colorScheme.onSecondary),
         ),
-      );
-    }
+      ),
+    );
   }
 }

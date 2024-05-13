@@ -39,8 +39,7 @@ class _OnlineShopState extends State<OnlineShop> {
         children: [
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              primary: Theme.of(context).primaryColor,
-              onPrimary: Colors.white,
+              foregroundColor: Colors.white, backgroundColor: Theme.of(context).primaryColor,
             ),
             child: Text(
               "Submeter",

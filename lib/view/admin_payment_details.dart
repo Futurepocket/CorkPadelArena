@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cork_padel_arena/constants/constants.dart';
 import 'package:cork_padel_arena/utils/common_utils.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -64,7 +65,7 @@ class _PaymentDetailsState extends State<PaymentDetails> {
   }
 
   void _confirmPayment() {
-    final reservations = database.child('reservations');
+    final reservations = database.child(reservationDatabase);
     simpleConfirmationDialogue(context: context,
         warning: AppLocalizations.of(context)!.validatePayment,)
         .then((value) {
@@ -326,8 +327,7 @@ class _PaymentDetailsState extends State<PaymentDetails> {
                 Container(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      primary: Theme.of(context).primaryColor,
-                      onPrimary: Colors.white,
+                      foregroundColor: Colors.white, backgroundColor: Theme.of(context).primaryColor,
                     ),
                     child: const Text(
                       "CONFIRMAR PAGAMENTO",

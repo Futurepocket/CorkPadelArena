@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cork_padel_arena/constants/constants.dart';
 import 'package:cork_padel_arena/models/userr.dart';
 import 'package:cork_padel_arena/utils/firebase_utils.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,7 @@ class _EmailVerifyState extends State<EmailVerify> {
   Timer? timer;
 
   startTimer(){
-    timer = Timer.periodic(Duration(seconds: 2), (Timer t) => {checkEmail()});
+    timer = Timer.periodic(const Duration(seconds: 2), (Timer t) {checkEmail();});
   }
 
   void checkEmail(){
@@ -24,7 +25,7 @@ class _EmailVerifyState extends State<EmailVerify> {
         if (value == true) {
           final String _email = fbUser!.email.toString();
           FirebaseFirestore.instance
-              .collection('users')
+              .collection(userCollection)
               .doc(_email).get().then((value) {
             if(value.exists){
               Navigator.of(context).pushReplacementNamed('/dash');
@@ -51,14 +52,14 @@ class _EmailVerifyState extends State<EmailVerify> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        title: Text("Cork Padel"),
+        title: const Text("Cork Padel"),
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.only(top: 80),
+        padding: const EdgeInsets.only(top: 80),
         child: Container(
           alignment: Alignment.topCenter,
-          margin: EdgeInsets.symmetric(horizontal: 20),
+          margin: const EdgeInsets.symmetric(horizontal: 20),
           width: double.infinity,
           child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -92,12 +93,11 @@ class _EmailVerifyState extends State<EmailVerify> {
               width: 150,
               child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    primary: Theme.of(context).primaryColor,
-                    onPrimary: Colors.white,
+                    foregroundColor: Colors.white, backgroundColor: Theme.of(context).primaryColor,
                   ),
                   child: Text(
                     AppLocalizations.of(context)!.resend,
-                    style: TextStyle(fontSize: 15),
+                    style: const TextStyle(fontSize: 15),
                   ),
                   onPressed: () {
                     fbUser!.sendEmailVerification();

@@ -1,3 +1,4 @@
+import 'package:cork_padel_arena/constants/constants.dart';
 import 'package:cork_padel_arena/main.dart';
 import 'package:cork_padel_arena/src/constants.dart';
 
@@ -320,7 +321,7 @@ class AddUser {
   AddUser(this._id, this._name, this._surname, this._phoneNbr, this._address, this._city,
       this._postCode, this._nif, this._email);
 
-  CollectionReference users = FirebaseFirestore.instance.collection('users');
+  CollectionReference users = FirebaseFirestore.instance.collection(userCollection);
 
   Future<void> addUser() {
     //Call the user's CollectionReference to add a new user

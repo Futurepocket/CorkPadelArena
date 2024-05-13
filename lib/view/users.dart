@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cork_padel_arena/constants/constants.dart';
 import 'package:cork_padel_arena/view/admin_user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -28,7 +29,7 @@ class _UsersState extends State<Users> with TickerProviderStateMixin {
     _tabController = TabController(length: 0, vsync: this);
     List<Tab> tempTabs = [];
     FirebaseFirestore.instance
-        .collection('users')
+        .collection(userCollection)
         .orderBy('first_name')
         .get()
         .then((users) {

@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cork_padel_arena/constants/constants.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:cork_padel_arena/view/shoppingCart.dart';
 import 'package:flutter/foundation.dart';
@@ -53,7 +54,7 @@ class _ReserveState extends State<Reserve> {
     super.initState();
   }
   void getClients(){
-    FirebaseFirestore.instance.collection('users').orderBy('first_name').get().then((users){
+    FirebaseFirestore.instance.collection(userCollection).orderBy('first_name').get().then((users){
       for (var element in users.docs) {
         setState(() {
           clientsEmail.add(element['email']);
@@ -246,7 +247,7 @@ class _ReserveState extends State<Reserve> {
   var days = <String>[];
 
   void _reserve() async {
-    final reservations = database.child('reservations');
+    final reservations = database.child(reservationDatabase);
 
     String _pin = randomNumbers();
     String _idd = "${DateFormat('ddMMyyyy').format(_selectedDate!)}$_timeChosen";

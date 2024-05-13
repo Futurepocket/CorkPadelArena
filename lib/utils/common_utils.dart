@@ -1,3 +1,4 @@
+import 'package:cork_padel_arena/constants/constants.dart';
 import 'package:cork_padel_arena/view/dash.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'dart:async';
@@ -16,7 +17,7 @@ Future<void> currentUser() {
   final user = FirebaseAuth.instance.currentUser;
   final String _email = user!.email.toString();
   return FirebaseFirestore.instance
-      .collection('users')
+      .collection(userCollection)
       .doc(_email)
       .get()
       .then((value) {

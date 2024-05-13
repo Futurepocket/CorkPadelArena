@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import 'dart:collection';
 import 'package:collection/collection.dart';
+import 'package:cork_padel_arena/constants/constants.dart';
 import 'package:cork_padel_arena/models/reservation.dart';
 import 'package:cork_padel_arena/utils/calendar_utils.dart';
 import 'package:cork_padel_arena/view/dash.dart';
@@ -220,7 +221,7 @@ class _NewMyReservationsState extends State<NewMyReservations> {
 
   void _deleting(BuildContext context, String id) {
     final _database =
-        FirebaseDatabase.instance.ref().child('reservations').child(id);
+        FirebaseDatabase.instance.ref().child(reservationDatabase).child(id);
     showDialog<void>(
         context: context,
         builder: (context) {
