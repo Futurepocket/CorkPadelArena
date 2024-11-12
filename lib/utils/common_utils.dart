@@ -56,24 +56,24 @@ Future<bool> simpleConfirmationDialogue(
             actions: <Widget>[
               OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: Theme.of(context).errorColor)),
+                    side: BorderSide(color: Theme.of(context).colorScheme.error)),
                 onPressed: () {
                   Navigator.of(context).pop(false);
                 },
                 child: Text(
           AppLocalizations.of(context)!.cancel,
-                  style: TextStyle(color: Theme.of(context).errorColor),
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
               ),
               OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: Theme.of(context).errorColor)),
+                    side: BorderSide(color: Theme.of(context).colorScheme.error)),
                 onPressed: () {
                   Navigator.of(context).pop(true);
                 },
                 child: Text(
                   'OK',
-                  style: TextStyle(color: Theme.of(context).errorColor),
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
               ),
             ],
