@@ -113,11 +113,11 @@ class _LoginState extends State<Login> {
         getUserDetails().then((value) {
           checkEmailVerified(fbUser!).then((value) {
             if (value == true) {
-              final String _email = fbUser!.email
+              final String email = fbUser!.email
                   .toString();
               FirebaseFirestore.instance
                   .collection(userCollection)
-                  .doc(_email).get().then((value) {
+                  .doc(email).get().then((value) {
                 if (value.exists) {
                   Navigator.of(context).pushReplacementNamed(
                       '/dash');
@@ -152,12 +152,16 @@ class _LoginState extends State<Login> {
       if (thisFbUser != null) {
         getUserDetails().then((value) {
           checkEmailVerified(fbUser!).then((value) {
+
             if (value == true) {
-              final String _email = fbUser!.email
+              final String email = fbUser!.email
                   .toString();
+              print(fbUser?.displayName);
+              print(fbUser?.email);
               FirebaseFirestore.instance
                   .collection(userCollection)
-                  .doc(_email).get().then((value) async {
+                  .doc(email).get().then((value) async {
+                    print(value.data());
                     if(!kIsWeb){
                       // final String? fcmToken = await messaging.getToken(vapidKey: "kPjxDW4z1Klemmfwcw7CJNqA8IFloeTNFoD6lgOc8n0");
                       // print("fcmToken: $fcmToken");

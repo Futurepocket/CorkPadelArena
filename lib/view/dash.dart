@@ -243,7 +243,7 @@ class _DashState extends State<Dash> {
 
   @override
   Widget build(BuildContext context) {
-    // appVersion = "2.2.3";
+    localizations = AppLocalizations.of(context)!;
     ThemeData theme = Theme.of(context);
     return Scaffold(
       resizeToAvoidBottomInset: true,

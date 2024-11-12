@@ -202,7 +202,14 @@ class _MbWayPaymentState extends State<MbWayPayment> {
             "idPedido": idPedido,
             "payment": payment,
             "idd": idd
-          });
+          }).then((value) {
+           if(value.data != null){
+             if(value.data == 0){
+               Navigator.of(context).pop();
+             }
+           }
+          }
+            ,);
           // print(result);
         } on FirebaseFunctionsException catch (error) {
           print(error.code);
@@ -294,7 +301,7 @@ class _MbWayPaymentState extends State<MbWayPayment> {
                         "Por favor aprove o pagamento na sua app MBWay";
                     idPedido = value.IdPedido;
                   });
-                  Navigator.of(context).pop();
+                  
                   awaitingConfirmation();
                 } else {
                   setState(() {

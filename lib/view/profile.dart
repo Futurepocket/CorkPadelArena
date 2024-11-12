@@ -34,6 +34,7 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
+    localizations = AppLocalizations.of(context)!;
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(

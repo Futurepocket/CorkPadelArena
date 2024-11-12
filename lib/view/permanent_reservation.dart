@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:interval_time_picker/interval_time_picker.dart' as tPicker;
+import 'package:interval_time_picker/models/visible_step.dart';
 import 'package:uuid/uuid.dart';
 
 
@@ -39,7 +40,7 @@ class _PermanentReservationState extends State<PermanentReservation> {
         .showIntervalTimePicker(
       context: context,
       interval: 30,
-      visibleStep: tPicker.VisibleStep.thirtieths,
+      visibleStep: VisibleStep.thirtieths,
       initialEntryMode: kIsWeb
           ? tPicker.TimePickerEntryMode.input
           : tPicker.TimePickerEntryMode.dial,

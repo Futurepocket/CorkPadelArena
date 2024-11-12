@@ -15,6 +15,7 @@ class UserDetails extends StatefulWidget {
 class _UserDetailsState extends State<UserDetails> {
   @override
   Widget build(BuildContext context) {
+    localizations = AppLocalizations.of(context)!;
     return Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(

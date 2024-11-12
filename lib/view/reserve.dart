@@ -10,6 +10,7 @@ import 'package:cork_padel_arena/models/userr.dart';
 import 'package:cork_padel_arena/utils/common_utils.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:interval_time_picker/models/visible_step.dart';
 import 'package:intl/intl.dart';
 import 'package:interval_time_picker/interval_time_picker.dart' as tPicker;
 import 'dash.dart';
@@ -174,7 +175,7 @@ class _ReserveState extends State<Reserve> {
    final TimeOfDay? newTime = await tPicker.showIntervalTimePicker(
       context: context,
       interval: 30,
-      visibleStep: tPicker.VisibleStep.thirtieths,
+      visibleStep: VisibleStep.thirtieths,
       initialEntryMode: kIsWeb? tPicker.TimePickerEntryMode.input :tPicker.TimePickerEntryMode.dial,
       initialTime: const TimeOfDay(hour: 8, minute: 00),
       builder: (BuildContext context, Widget? child) {
@@ -582,6 +583,7 @@ class _ReserveState extends State<Reserve> {
                     stream: dbAdminReservations,
                     builder: (BuildContext context,
                         AsyncSnapshot<QuerySnapshot> snapshot) {
+                      print(snapshot.data?.docs);
                       if (snapshot.hasError) {
                         return const Text('Something went wrong');
                       }
@@ -596,6 +598,8 @@ class _ReserveState extends State<Reserve> {
                               .map((DocumentSnapshot document) {
                             Map<String, dynamic> data =
                             document.data()! as Map<String, dynamic>;
+                            print(data);
+                            print(_selectedDate?.weekday);
                             if(snapshot.data!.docs.isNotEmpty && !adminReservations.contains(data)){
                               adminReservations.add(data);
                             }
@@ -707,6 +711,7 @@ class ToastWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Positioned(
       top: 100.0,
       width: MediaQuery.of(context).size.width - 20,

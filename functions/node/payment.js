@@ -1,6 +1,4 @@
-const admin = require("firebase-admin");
 const functions = require("firebase-functions");
-admin.initializeApp();
 const { getDatabase } = require("firebase-admin/database");
 
 // Get a database reference to our blog
@@ -128,41 +126,3 @@ let success = false;
 
 });
 
-
-// function requestMbWay(idPedido) {
-//   const https = require("https");
-
-//   return new Promise((resolve, reject) => {
-//     const MbWayKey = "PDY-214580";
-//     const canal = "03";
-//     const url =
-//       "https://www.ifthenpay.com/mbwayws/ifthenpaymbw.asmx/EstadoPedidosJSON?MbWayKey=" +
-//       MbWayKey +
-//       "&canal=" +
-//       canal +
-//       "&idspagamento=" +
-//       idPedido;
-//     const request = https
-//       .request(url, (response) => {
-//         let data = "";
-//         response.on("data", (chunk) => {
-//           data = data + chunk.toString();
-//         });
-//         response.on("end", () => {
-//           try {
-//             const body = JSON.parse(data);
-//             console.log("Promise worked");
-//             resolve(body);
-//           } catch (e) {
-//             console.log("Promise didn't work");
-//             reject(e.message);
-//           }
-//         });
-//       })
-//       .on("error", (e) => {
-//         console.log("Promise didn't work 2:" + e.message);
-//         reject(e.message);
-//       });
-//     request.end();
-//   });
-// }

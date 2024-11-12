@@ -1,15 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:cork_padel_arena/models/userr.dart';
 import 'package:cork_padel_arena/view/login/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'dart:async';
 
-Future<void> init() async {
+import 'package:flutter/foundation.dart';
 
-  FirebaseAuth.instance
-      .authStateChanges()
-      .listen((User? user) {
+Future<void> init() async {
+  FirebaseAuth.instance.authStateChanges().listen((User? user) {
     if (user == null) {
       print('User is currently signed out!');
     } else {
@@ -23,20 +23,20 @@ Future<void> init() async {
       //_loginState = ApplicationLoginState.loggedOut;
     }
   });
-
 }
 
 String? _email;
+
 String? get email => _email;
 User? fbUser;
 bool? emailVerified;
+
 void checkEmail(
-    String email,
-    void Function(FirebaseAuthException e) errorCallback,
-    ) async {
+  String email,
+  void Function(FirebaseAuthException e) errorCallback,
+) async {
   try {
-    var methods =
-    await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
+    var methods = await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
     if (methods.contains('password')) {
       //TODO
     } else {
@@ -59,26 +59,45 @@ Future<bool> checkEmailVerified(User user) async {
 }
 
 Future<User?> signInWithEmailAndPassword(
-    String email,
-    String password,
-    void Function(FirebaseAuthException e) errorCallback,
-    ) async {
+  String email,
+  String password,
+  void Function(FirebaseAuthException e) errorCallback,
+) async {
   try {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
+    await FirebaseAuth.instance
+        .signInWithEmailAndPassword(
       email: email,
       password: password,
-    ).then((value) async {
-      getUserDetails().then((user) {
+    )
+        .then((value) async {
+
+      String clientType = kIsWeb ? "WEB_APP" : "MOBILE_APP";
+
+      final HttpsCallable callable =
+          FirebaseFunctions.instance.httpsCallable('setCustomClaim');
+
+      await callable.call({
+        'uid': value.user?.uid,
+        'clientType': clientType,
+      });
+
+      await FirebaseAuth.instance.signOut();
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      fbUser = await getUserDetails().then((user) {
         Userr().email = user!.email.toString();
         Userr().id = user.uid.toString();
         checkEmailVerified(user);
         return user;
       });
-      final instance = FirebaseFirestore.instance
-          .collection('constants');
+
+
+      final instance = FirebaseFirestore.instance.collection('constants');
 
       await instance.doc("appVersion").get().then((value) {
-          appVersion = value.data()!["version"];
+        appVersion = value.data()!["version"];
       });
     });
     return fbUser;
@@ -88,14 +107,11 @@ Future<User?> signInWithEmailAndPassword(
 }
 
 Future<User?> getUserDetails() async {
-  FirebaseAuth.instance.currentUser!.reload();
+  await FirebaseAuth.instance.currentUser!.reload();
   var user = FirebaseAuth.instance.currentUser;
   fbUser = user;
   return user;
 }
-
-
-
 
 Future<bool> registerAccount(String email, String displayName, String password,
     void Function(FirebaseAuthException e) errorCallback) async {
@@ -107,9 +123,8 @@ Future<bool> registerAccount(String email, String displayName, String password,
         Userr().id = user!.uid.toString();
         Userr().email = user.email.toString();
       });
-    }
-    );
-return true;
+    });
+    return true;
   } on FirebaseAuthException catch (e) {
     errorCallback(e);
     return false;
@@ -119,4 +134,3 @@ return true;
 void signOut() {
   FirebaseAuth.instance.signOut();
 }
-

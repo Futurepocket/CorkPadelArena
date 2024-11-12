@@ -1,2 +1,2 @@
-String userCollection = "usersCollection";
-String reservationDatabase = "reservationDatabase";
+String userCollection = "users";
+String reservationDatabase = "reservations";
