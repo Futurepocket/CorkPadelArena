@@ -1,5 +1,7 @@
 import 'package:cork_padel_arena/utils/common_utils.dart';
+import 'package:cork_padel_arena/view/widgets/shopping_cart_button.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import '../models/ReservationStreamPublisher.dart';
 import '../models/reservation.dart';
 import 'dash.dart';
@@ -238,21 +240,8 @@ class _AdminUserState extends State<AdminUser> {
           ),
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: Badge(
-        label: Text(reservationsToCheckOut.length.toString()),
-        backgroundColor: Theme.of(context).colorScheme.error,
-        isLabelVisible: reservationsToCheckOut.isEmpty? false : true,
-        child: FloatingActionButton(
-          backgroundColor: Theme.of(context).colorScheme.secondary,
-          onPressed: () {
-            showShoppingCart(context).then((value) {
-              settingState();
-            });
-          },
-          child: Icon(Icons.shopping_cart, color: Theme.of(context).colorScheme.onSecondary),
-        ),
-      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: const ShoppingCartButton(),
     );
   }
 }

@@ -6,6 +6,7 @@ class Reservation {
   late String dateMade;
   late String pin;
   late String day;
+  String? cloneId;
   late String hour;
   late String duration;
   late String price;
@@ -18,6 +19,7 @@ class Reservation {
   Reservation(
       {required this.pin,
       required this.day,
+        this.cloneId,
       required this.hour,
       required this.duration,
       required this.state,
@@ -34,6 +36,7 @@ class Reservation {
         pin: data['pin'],
         day: data['day'],
         hour: data['hour'],
+        cloneId: data["cloneId"],
         duration: data['duration'],
         state: data['state'],
         userEmail: data['client_email'],
@@ -50,6 +53,7 @@ class Reservation {
     'day': instance.day,
     'duration': instance.duration,
     'hour': instance.hour,
+    'cloneId':instance.cloneId,
     'id': instance.id,
     'pin': instance.pin,
     'price': instance.price,

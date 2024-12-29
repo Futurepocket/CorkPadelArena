@@ -5,6 +5,7 @@ import 'package:cork_padel_arena/view/admin_payments.dart';
 import 'package:cork_padel_arena/view/admindash.dart';
 import 'package:cork_padel_arena/view/contacts.dart';
 import 'package:cork_padel_arena/view/dash.dart';
+import 'package:cork_padel_arena/view/login/login.dart';
 import 'package:cork_padel_arena/view/new_admin_reservations.dart';
 import 'package:cork_padel_arena/view/new_my_Reservations.dart';
 import 'package:cork_padel_arena/view/permanent_reservation.dart';
@@ -192,13 +193,11 @@ List<Pages> getDashButtons(BuildContext context, Function? settingState){
     Pages(
         Icons.exit_to_app_rounded,
         AppLocalizations.of(context)!.logout,
-        color, (BuildContext ctx) {
-      FirebaseAuth.instance.signOut();
+        color, (BuildContext ctx) async {
+      await FirebaseAuth.instance.signOut();
       Navigator.of(
         ctx,
-      ).pushReplacement(MaterialPageRoute(builder: (ctx) {
-        return const MyApp();
-      }));
+      ).pushReplacementNamed("/login");
     }),
   ];
 }

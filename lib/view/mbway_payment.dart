@@ -58,7 +58,7 @@ class _MbWayPaymentState extends State<MbWayPayment> {
   String emailDetails = '';
 
   generateEmailDetails() {
-    for (var element in reservationsToCheckOut) {
+    for (var element in reservationsToCheckOut.value) {
       emailDetails +=
           '<p>Dia: ${element.day}, das ${element.hour} às ${element.duration}.</p>';
     }
@@ -139,7 +139,7 @@ class _MbWayPaymentState extends State<MbWayPayment> {
       setState(() {
         price = '0';
       });
-      reservationsToCheckOut.clear();
+      reservationsToCheckOut.value.clear();
       // Navigator.of(context).pop();
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (_) {
         return const Dash();
@@ -191,7 +191,7 @@ class _MbWayPaymentState extends State<MbWayPayment> {
           'Por favor confirme o pagamento na app MBWay.';
         // });
         /////////////////////SAVING PAYMENT////////////////////////////////////
-        List<dynamic> list = reservationsToCheckOut
+        List<dynamic> list = reservationsToCheckOut.value
             .map((e) => Reservation.toMap(e))
             .toList();
         try {
@@ -205,7 +205,7 @@ class _MbWayPaymentState extends State<MbWayPayment> {
           }).then((value) {
            if(value.data != null){
              if(value.data == 0){
-               Navigator.of(context).pop();
+               itIsDone();
              }
            }
           }
@@ -265,7 +265,7 @@ class _MbWayPaymentState extends State<MbWayPayment> {
 
         },
       );
-      itIsDone();
+
     }
 
     void _saveForm(BuildContext context) {

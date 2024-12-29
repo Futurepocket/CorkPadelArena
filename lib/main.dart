@@ -17,8 +17,9 @@ import 'firebase_options.dart';
 import 'view/login/login.dart';
 
 late PackageInfo packageInfo;
-late FirebaseMessaging messaging;
+// late FirebaseMessaging messaging;
 late AppLocalizations localizations;
+GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,18 +35,18 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  messaging = FirebaseMessaging.instance;
-  await messaging.requestPermission(
-    alert: true,
-    announcement: true,
-    badge: true,
-    carPlay: false,
-    criticalAlert: false,
-    provisional: false,
-    sound: true,
-  );
+  // messaging = FirebaseMessaging.instance;
+  // await messaging.requestPermission(
+  //   alert: true,
+  //   announcement: true,
+  //   badge: true,
+  //   carPlay: false,
+  //   criticalAlert: false,
+  //   provisional: false,
+  //   sound: true,
+  // );
 
-  messaging.setAutoInitEnabled(true);
+  // messaging.setAutoInitEnabled(true);
   await init();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -94,6 +95,7 @@ class _MyAppState extends State<MyApp> {
         GlobalCupertinoLocalizations.delegate,
 
       ],
+      navigatorKey: navigatorKey,
       supportedLocales: const [
         Locale('en', ''), // English, no country code
         Locale('pt', ''), // Portuguese, no country code

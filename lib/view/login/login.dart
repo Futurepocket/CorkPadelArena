@@ -166,8 +166,8 @@ class _LoginState extends State<Login> {
                       // final String? fcmToken = await messaging.getToken(vapidKey: "kPjxDW4z1Klemmfwcw7CJNqA8IFloeTNFoD6lgOc8n0");
                       // print("fcmToken: $fcmToken");
 
-                      final String? fcmToken = await messaging
-                          .getToken();
+                      // final String? fcmToken = await messaging
+                      //     .getToken();
                     }
 
                 if (value.exists) {
@@ -284,6 +284,7 @@ class _LoginState extends State<Login> {
                                   autocorrect: false,
                                   obscureText: _isObscure,
                                   autofillHints: [AutofillHints.password],
+                                  textInputAction: TextInputAction.go,
                                   decoration: inputDecor(prefixIcon: Icons.password, context: context, label: localizations.password, sufixIcon: IconButton(onPressed: () =>
                                       setState(() {
                                         _isObscure = !_isObscure;
@@ -291,6 +292,11 @@ class _LoginState extends State<Login> {
                                       ? Icons.visibility
                                       : Icons.visibility_off))),
                                   controller: _passwordController,
+                                  onFieldSubmitted: (value) {
+                                    if (_formKey.currentState!.validate()) {
+                                      _signIn();
+                                    }
+                                  },
                                   validator: (value) {
                                     if (value!.isEmpty) {
                                       return AppLocalizations.of(context)!
@@ -439,6 +445,10 @@ class _LoginState extends State<Login> {
                                   },
                                 ),
                               ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 12.0),
+                                child: Text("Versão ${packageInfo.version}"),
+                              )
 
                             ],
                           ),

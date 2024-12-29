@@ -8,7 +8,9 @@ import 'package:cork_padel_arena/models/reservation.dart';
 import 'package:cork_padel_arena/src/constants.dart';
 import 'package:cork_padel_arena/src/widgets.dart';
 import 'package:cork_padel_arena/utils/common_utils.dart';
+import 'package:cork_padel_arena/utils/firebase_utils.dart';
 import 'package:cork_padel_arena/view/login/login.dart';
+import 'package:cork_padel_arena/view/widgets/shopping_cart_button.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http_auth/http_auth.dart';
@@ -18,10 +20,11 @@ import 'package:cork_padel_arena/models/menuItem.dart';
 import 'package:flutter/material.dart';
 import 'package:upgrader/upgrader.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import '../../models/userr.dart';
 
 List<Reservation> reservationList = [];
-List<Reservation> reservationsToCheckOut = [];
+ValueNotifier<List<Reservation>> reservationsToCheckOut = ValueNotifier([]);
 String openDoorUrl = '';
 String openDoorFullUrl = '';
 
@@ -51,15 +54,16 @@ class _DashState extends State<Dash> {
 
   @override
   didChangeDependencies() {
-    super.didChangeDependencies();
     timer.cancel();
     timer = Timer.periodic(const Duration(seconds: 5), (timer) {
       deleteOldReservations();
       _removeFromDB();
     });
-    setState(() {
-      checkoutValue().reservations = reservationsToCheckOut.length;
-    });
+      checkoutValue().reservations = reservationsToCheckOut.value.length;
+      // if(fbUser == null){
+      //   Navigator.of(context).pushNamed("/login");
+      // }
+    super.didChangeDependencies();
   }
 
   List<String> keys = [];
@@ -90,11 +94,11 @@ class _DashState extends State<Dash> {
                 today.isAfter(made.add(const Duration(days: 90)))) {
               keys.add(key);
               if (value['client_email'] == Userr().email &&
-                  reservationsToCheckOut.any((element) => element.id == key)) {
-                reservationsToCheckOut
+                  reservationsToCheckOut.value.any((element) => element.id == key)) {
+                reservationsToCheckOut.value
                     .removeWhere((element) => element.id == key);
                 setState(() {
-                  checkoutValue().reservations = reservationsToCheckOut.length;
+                  checkoutValue().reservations = reservationsToCheckOut.value.length;
                   checkoutValue().price -= int.parse(value["price"]);
                 });
               }
@@ -386,22 +390,8 @@ class _DashState extends State<Dash> {
                 ),
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: !kIsWeb && appVersion != packageInfo.version? null : Badge(
-        label: Text(reservationsToCheckOut.length.toString()),
-        backgroundColor: Theme.of(context).colorScheme.error,
-        isLabelVisible: reservationsToCheckOut.isEmpty ? false : true,
-        child: FloatingActionButton(
-          backgroundColor: Theme.of(context).colorScheme.secondary,
-          onPressed: () {
-            showShoppingCart(context).then((value) {
-              settingState();
-            });
-          },
-          child: Icon(Icons.shopping_cart,
-              color: Theme.of(context).colorScheme.onSecondary),
-        ),
-      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: !kIsWeb && appVersion != packageInfo.version? null : ShoppingCartButton(),
     );
   }
 }

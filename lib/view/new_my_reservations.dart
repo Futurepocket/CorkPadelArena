@@ -51,6 +51,7 @@ class _NewMyReservationsState extends State<NewMyReservations> {
         final reservationMap =
             Map<String, dynamic>.from(event.snapshot.value as dynamic);
         reservationList = reservationMap.entries.map((e) {
+          print(e);
           return Reservation.fromRTDB(Map<String, dynamic>.from(e.value));
         }).toList();
         reservationList

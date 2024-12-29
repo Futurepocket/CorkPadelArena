@@ -2,10 +2,12 @@ import 'package:cork_padel_arena/models/userr.dart';
 import 'package:cork_padel_arena/src/constants.dart';
 import 'package:cork_padel_arena/models/checkoutValue.dart';
 import 'package:cork_padel_arena/utils/common_utils.dart';
+import 'package:cork_padel_arena/view/widgets/shopping_cart_button.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:cork_padel_arena/models/menuItem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class AdminDash extends StatefulWidget {
   @override
@@ -89,23 +91,8 @@ class _AdminDashState extends State<AdminDash> {
           ),
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: Badge(
-        label: Text(_check.reservations.toString()),
-        backgroundColor: Theme.of(context).colorScheme.error,
-        isLabelVisible: _check.reservations == 0? false : true,
-        child: FloatingActionButton(
-          backgroundColor: Theme.of(context).colorScheme.secondary,
-          onPressed: () {
-            showShoppingCart(context).then((value) {
-              setState(() {
-
-              });
-            });
-          },
-          child: Icon(Icons.shopping_cart, color: Theme.of(context).colorScheme.onSecondary),
-        ),
-      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: const ShoppingCartButton(),
     );
   }
 }

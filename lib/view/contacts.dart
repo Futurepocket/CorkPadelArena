@@ -1,3 +1,4 @@
+import 'package:cork_padel_arena/view/widgets/shopping_cart_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -146,23 +147,8 @@ class _ContactsState extends State<Contacts> {
 
           ),
         ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: Badge(
-        label: Text(reservationsToCheckOut.length.toString()),
-        backgroundColor: Theme.of(context).colorScheme.error,
-        isLabelVisible: reservationsToCheckOut.isEmpty? false : true,
-        child: FloatingActionButton(
-          backgroundColor: Theme.of(context).colorScheme.secondary,
-          onPressed: () {
-            showShoppingCart(context).then((value) {
-              setState(() {
-
-              });
-            });
-          },
-          child: Icon(Icons.shopping_cart, color: Theme.of(context).colorScheme.onSecondary),
-        ),
-      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: const ShoppingCartButton(),
     );
   }
 }

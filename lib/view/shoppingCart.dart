@@ -13,7 +13,6 @@ import 'checkout.dart';
 import 'dash.dart';
 
 class ShoppingCart extends StatefulWidget {
-
   @override
   _ShoppingCartState createState() => _ShoppingCartState();
 }
@@ -31,17 +30,18 @@ class _ShoppingCartState extends State<ShoppingCart> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: const Text(
-        'Carrinho',
-        style: TextStyle(
-          fontFamily: 'Roboto Condensed',
+          'Carrinho',
+          style: TextStyle(
+            fontFamily: 'Roboto Condensed',
+          ),
         ),
-      ),),
+      ),
       body: Column(
         children: [
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(2.0),
-              child: StreamBuilder(
+              child: StreamBuilder<List<Reservation>>(
                   stream: ReservationStreamPublisher().getReservationStream(),
                   builder: (context, snapshot) {
                     final tilesList = <Card>[];
@@ -62,16 +62,18 @@ class _ShoppingCartState extends State<ShoppingCart> {
                             i++;
                         }
                       } while (i < reservations.length);
-                      if(Userr().role != 'administrador'){
-                        reservationsToCheckOut = reservations as List<Reservation>;
+                      if (Userr().role != 'administrador') {
+                        reservationsToCheckOut.value =
+                            reservations as List<Reservation>;
                       }
-                      checkoutValue().reservations = reservationsToCheckOut.length;
+                      checkoutValue().reservations =
+                          reservationsToCheckOut.value.length;
                       var price = 0;
-                      for (var element in reservationsToCheckOut) {
+                      for (var element in reservationsToCheckOut.value) {
                         price += int.parse(element.price);
                       }
                       checkoutValue().price = price;
-                      if(Userr().role != 'administrador'){
+                      if (Userr().role != 'administrador') {
                         try {
                           tilesList.addAll(reservations.map((nextReservation) {
                             // if (_user.email == nextReservation.userEmail &&
@@ -88,7 +90,12 @@ class _ShoppingCartState extends State<ShoppingCart> {
                                 trailing: IconButton(
                                   icon: const Icon(Icons.delete),
                                   onPressed: () {
-                                    _deleting(context, nextReservation.id, nextReservation.price);
+                                    String cloneId = "";
+                                    if(reservations.any((element) => element.cloneId != null && element.cloneId == nextReservation.cloneId && element.id != nextReservation.id,)){
+                                      cloneId = reservations.firstWhere((element) => element.cloneId != null && element.cloneId == nextReservation.cloneId && element.id != nextReservation.id,).id;
+                                    }
+                                    _deleting(context, nextReservation.id,
+                                        nextReservation.price, cloneId);
                                   },
                                 ),
                               ),
@@ -97,13 +104,14 @@ class _ShoppingCartState extends State<ShoppingCart> {
                             //   throw Exception();
                             // }
                           }));
-
                         } catch (e) {
-                          return Center(child: Text(localizations.shoppingCartEmpty));
+                          return Center(
+                              child: Text(localizations.shoppingCartEmpty));
                         }
-                      }else{
+                      } else {
                         try {
-                          tilesList.addAll(reservationsToCheckOut.map((nextReservation) {
+                          tilesList.addAll(reservationsToCheckOut.value
+                              .map((nextReservation) {
                             // if (_user.email == nextReservation.userEmail &&
                             //     nextReservation.state == 'por completar') {
                             return Card(
@@ -111,14 +119,17 @@ class _ShoppingCartState extends State<ShoppingCart> {
                               child: ListTile(
                                 leading: const Icon(Icons.watch),
                                 title: Text(nextReservation.userEmail),
-                                subtitle: Text('Dia ' + nextReservation.day + ' Das ' +
-                                    nextReservation.hour +
-                                    ' as ' +
-                                    nextReservation.duration),
+                                subtitle: Text(
+                                    'Dia ${nextReservation.day} Das ${nextReservation.hour} as ${nextReservation.duration}'),
                                 trailing: IconButton(
                                   icon: const Icon(Icons.delete),
                                   onPressed: () {
-                                    _deleting(context, nextReservation.id, nextReservation.price);
+                                    String cloneId = "";
+                                    if(reservations.any((element) => element.cloneId != null && element.cloneId == nextReservation.cloneId && element.id != nextReservation.id,)){
+                                      cloneId = reservations.firstWhere((element) => element.cloneId != null && element.cloneId == nextReservation.cloneId && element.id != nextReservation.id,).id;
+                                    }
+                                    _deleting(context, nextReservation.id,
+                                        nextReservation.price, cloneId);
                                   },
                                 ),
                               ),
@@ -128,7 +139,8 @@ class _ShoppingCartState extends State<ShoppingCart> {
                             // }
                           }));
                         } catch (e) {
-                          return Center(child: Text(localizations.shoppingCartEmpty));
+                          return Center(
+                              child: Text(localizations.shoppingCartEmpty));
                         }
                       }
                     }
@@ -143,7 +155,8 @@ class _ShoppingCartState extends State<ShoppingCart> {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.only(bottom: 15.0, left: 15, right: 15),
+                            padding: const EdgeInsets.only(
+                                bottom: 15.0, left: 15, right: 15),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -154,45 +167,61 @@ class _ShoppingCartState extends State<ShoppingCart> {
                                   ),
                                 ),
                                 ElevatedButton(
-                                        child: Text(
-                                          Userr().role == 'administrador'? "Finalizar"
-                                              :"Pagamento",
-                                        ),
-                                        onPressed: () {
-                                          if(Userr().role == 'administrador'){
-                                            final reservations = database.child(reservationDatabase);
-                                            reservationsToCheckOut.forEach((element) async{
-                                              try {
-                                                await reservations.child(element.id).child("state").set('pago').then((value) async{
-                                                  await reservations.child(element.id).child("completed").set(true).then((value) {
-                                                    Navigator.of(context).pop(true);
-                                                    reservationsToCheckOut.clear();
-                                                    checkoutValue().reservations = 0;
-                                                    ScaffoldMessenger.of(context).showSnackBar(
-                                                        newSnackBar(context, const Text('Reservas Efetuadas')));
-                                                    Navigator.of(
-                                                      context,
-                                                    ).push(
-                                                      MaterialPageRoute(builder: (_) {
-                                                        return const Dash();
-                                                      }),
-                                                    );
-                                                  });
-                                                });
-                                              } catch (e) {
-                                                print('There is an error!');
-                                              }
+                                    child: Text(
+                                      Userr().role == 'administrador'
+                                          ? "Finalizar"
+                                          : "Pagamento",
+                                    ),
+                                    onPressed: () {
+                                      if (Userr().role == 'administrador') {
+                                        final reservations =
+                                            database.child(reservationDatabase);
+                                        reservationsToCheckOut.value
+                                            .forEach((element) async {
+                                          try {
+                                            await reservations
+                                                .child(element.id)
+                                                .child("state")
+                                                .set('pago')
+                                                .then((value) async {
+                                              await reservations
+                                                  .child(element.id)
+                                                  .child("completed")
+                                                  .set(true)
+                                                  .then((value) {
+                                                Navigator.of(context).pop(true);
+                                                reservationsToCheckOut.value
+                                                    .clear();
+                                                checkoutValue().reservations =
+                                                    0;
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(newSnackBar(
+                                                        context,
+                                                        const Text(
+                                                            'Reservas Efetuadas')));
+                                                Navigator.of(
+                                                  context,
+                                                ).push(
+                                                  MaterialPageRoute(
+                                                      builder: (_) {
+                                                    return const Dash();
+                                                  }),
+                                                );
+                                              });
                                             });
+                                          } catch (e) {
+                                            print('There is an error!');
                                           }
-                                          else
-                                            Navigator.of(
-                                              context,
-                                            ).push(
-                                              MaterialPageRoute(builder: (_) {
-                                                return Checkout();
-                                              }),
-                                            );
-                                        })
+                                        });
+                                      } else
+                                        Navigator.of(
+                                          context,
+                                        ).push(
+                                          MaterialPageRoute(builder: (_) {
+                                            return Checkout();
+                                          }),
+                                        );
+                                    })
                               ],
                             ),
                           ),
@@ -208,15 +237,20 @@ class _ShoppingCartState extends State<ShoppingCart> {
     );
   }
 
-  void _deleting(BuildContext context, String id, String price) {
-    final _database =
+  void _deleting(
+      BuildContext context, String id, String price, String cloneId) {
+    DatabaseReference _database =
         FirebaseDatabase.instance.ref().child(reservationDatabase).child(id);
+
+    DatabaseReference? _database2;
+    if(cloneId.isNotEmpty){
+      _database2  =
+          FirebaseDatabase.instance.ref().child(reservationDatabase).child(cloneId);
+    }
     showDialog<void>(
       context: context,
       builder: (context) {
-        return StatefulBuilder(
-            builder: (context, setState)
-        {
+        return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(
             title: Text(
               AppLocalizations.of(context)!.cancel,
@@ -241,15 +275,23 @@ class _ShoppingCartState extends State<ShoppingCart> {
                 border: Theme.of(context).colorScheme.primary,
                 child: Text(
                   AppLocalizations.of(context)!.doNotCancel,
-                  style: TextStyle(color: Theme.of(context).colorScheme.primary),
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.primary),
                 ),
               ),
               StyledButton(
                 onPressed: () {
-                    checkoutValue().price -= int.parse(price);
-                    _database.remove();
-                    reservationsToCheckOut.removeWhere((element) => element.id == id);
-                    checkoutValue().reservations = reservationsToCheckOut.length;
+                  checkoutValue().price -= int.parse(price);
+                  _database.remove();
+                  if(_database2 != null){
+                    _database2.remove();
+                    reservationsToCheckOut.value
+                        .removeWhere((element) => element.id == cloneId);
+                  }
+                  reservationsToCheckOut.value
+                      .removeWhere((element) => element.id == id);
+                  checkoutValue().reservations =
+                      reservationsToCheckOut.value.length;
                   Navigator.of(context).pop(true);
                 },
                 background: Theme.of(context).colorScheme.error,
